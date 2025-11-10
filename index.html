@@ -3,12 +3,23 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kalopathor - AI Intelligence Portfolio</title>
+    <title>HAWKEYE Flood Intelligence - Technical Report</title>
     
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/lenis/1.0.42/lenis.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:wght@300;400;600&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    
+    <!-- GSAP Premium Plugins -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+    <script src="https://assets.codepen.io/16327/ScrollSmoother.min.js"></script>
+    <script src="https://assets.codepen.io/16327/SplitText.min.js"></script>
+    <script src="https://assets.codepen.io/16327/CustomEase.min.js"></script>
+    
+    <!-- MathJax for formulas -->
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     
     <style>
         * {
@@ -16,1506 +27,804 @@
             padding: 0;
             box-sizing: border-box;
         }
-
+        
         :root {
-            --bg: #000000;
-            --bg-secondary: #0a0a0a;
-            --text: #ffffff;
-            --text-dim: #8b8b8b;
-            --accent: #00ffaa;
-            --accent-blue: #00a6ff;
-            --accent-purple: #8b5cf6;
-            --danger: #ff0055;
-            --warning: #ffaa00;
-            --success: #00ff88;
-            --card-bg: rgba(255, 255, 255, 0.02);
-            --border: rgba(255, 255, 255, 0.1);
+            --charcoal: #1a1a1a;
+            --vanilla: #f5f5f0;
+            --accent: #0066cc;
+            --text-dark: #2a2a2a;
+            --text-light: #e0e0e0;
         }
-
-
-        html { 
-            scroll-behavior: initial;
-            cursor: none;
-        }
-
+        
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
-            background: var(--bg);
-            color: var(--text);
+            font-family: 'Inter', sans-serif;
+            color: var(--text-dark);
             overflow-x: hidden;
-            line-height: 1.6;
-            cursor: none;
+            background: var(--charcoal);
         }
-
-        /* Enhanced Cursor */
-        .cursor {
-            width: 20px;
-            height: 20px;
-            border: 2px solid var(--accent);
-            border-radius: 50%;
-            position: fixed;
-            pointer-events: none;
-            z-index: 10000;
-            transition: all 0.1s ease;
-            mix-blend-mode: screen;
+        
+        #smooth-wrapper {
+            overflow: hidden;
         }
-
-        .cursor::after {
+        
+        #smooth-content {
+            overflow: visible;
+        }
+        
+        /* Typography */
+        h1, h2, h3, h4 {
+            font-family: 'Crimson Pro', serif;
+            font-weight: 400;
+            line-height: 1.2;
+        }
+        
+        h1 {
+            font-size: clamp(2.5rem, 5vw, 4.5rem);
+            margin-bottom: clamp(1rem, 2vw, 2rem);
+        }
+        
+        h2 {
+            font-size: clamp(2rem, 4vw, 3.5rem);
+            margin-bottom: clamp(1.5rem, 3vw, 3rem);
+        }
+        
+        h3 {
+            font-size: clamp(1.5rem, 3vw, 2.5rem);
+            margin-bottom: clamp(1rem, 2vw, 1.5rem);
+        }
+        
+        .label {
+            font-family: 'Inter', sans-serif;
+            font-size: clamp(0.65rem, 1vw, 0.75rem);
+            text-transform: uppercase;
+            letter-spacing: 0.15em;
+            margin-bottom: clamp(0.5rem, 1vw, 1rem);
+            font-weight: 500;
+            opacity: 0.7;
+        }
+        
+        p, li {
+            font-family: 'Inter', sans-serif;
+            font-size: clamp(0.95rem, 1.5vw, 1.1rem);
+            line-height: 1.8;
+            font-weight: 300;
+        }
+        
+        /* Sections */
+        section {
+            min-height: 150svh;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: clamp(4rem, 10vw, 12rem) clamp(1.5rem, 5vw, 8rem);
+        }
+        
+        .content-wrapper {
+            max-width: 1200px;
+            width: 100%;
+            z-index: 2;
+            position: relative;
+        }
+        
+        /* Hero Section */
+        .hero {
+            min-height: 100svh;
+            background: url('https://images.unsplash.com/photo-1446776653964-20c1d3a81b06?w=2000') center/cover fixed;
+            position: relative;
+            color: white;
+        }
+        
+        .hero::before {
             content: '';
             position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 4px;
-            height: 4px;
-            background: var(--accent);
-            border-radius: 50%;
-        }
-
-        .cursor.hover {
-            transform: scale(2);
-            background: rgba(0, 255, 170, 0.1);
-            border-color: var(--accent);
-        }
-
-        /* Grid Background */
-        .grid-bg {
-            position: fixed;
             top: 0;
             left: 0;
-            width: 100%;
-            height: 100%;
-            background-image: 
-                linear-gradient(rgba(0, 255, 170, 0.03) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(0, 255, 170, 0.03) 1px, transparent 1px);
-            background-size: 100px 100px;
-            pointer-events: none;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
             z-index: 1;
         }
-
-        /* Hero Section Enhanced */
-        .hero {
-            height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            position: relative;
-            overflow: hidden;
-            z-index: 2;
+        
+        .hero .content-wrapper {
+            text-align: left;
         }
-
-        .hero-particles {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            overflow: hidden;
+        
+        /* Parallax Image Sections */
+        .parallax-section {
+            background-attachment: fixed;
+            background-position: center;
+            background-size: cover;
+            color: white;
         }
-
-        .particle {
-            position: absolute;
-            width: 2px;
-            height: 2px;
-            background: var(--accent);
-            border-radius: 50%;
-            opacity: 0;
-            animation: float 20s infinite;
-        }
-
-        @keyframes float {
-            0%, 100% { 
-                opacity: 0;
-                transform: translateY(100vh) scale(0);
-            }
-            10%, 90% {
-                opacity: 1;
-            }
-            50% {
-                transform: translateY(-100vh) scale(1);
-            }
-        }
-
-        .hero-bg {
-            position: absolute;
-            inset: 0;
-            background: 
-                radial-gradient(circle at 20% 50%, rgba(0, 255, 170, 0.15) 0%, transparent 50%),
-                radial-gradient(circle at 80% 50%, rgba(0, 166, 255, 0.1) 0%, transparent 50%),
-                radial-gradient(circle at 50% 50%, rgba(139, 92, 246, 0.05) 0%, transparent 70%);
-            filter: blur(100px);
-            animation: pulse-bg 10s ease-in-out infinite;
-        }
-
-        @keyframes pulse-bg {
-            0%, 100% { opacity: 0.6; }
-            50% { opacity: 1; }
-        }
-
-        .hero-content {
-            text-align: center;
-            z-index: 2;
-            position: relative;
-        }
-
-        .hero-label {
-            font-size: 0.75rem;
-            letter-spacing: 0.3em;
-            color: var(--accent);
-            margin-bottom: 2rem;
-            text-transform: uppercase;
-            opacity: 0;
-            animation: fadeInUp 1s ease forwards;
-        }
-
-        @keyframes fadeInUp {
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .hero-title {
-            font-size: clamp(3rem, 12vw, 9rem);
-            font-weight: 100;
-            letter-spacing: -0.05em;
-            line-height: 0.9;
-            margin-bottom: 2rem;
-            background: linear-gradient(135deg, var(--text) 0%, var(--accent) 50%, var(--accent-blue) 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            animation: gradient-shift 5s ease infinite;
-        }
-
-        @keyframes gradient-shift {
-            0%, 100% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-        }
-
-        .hero-stats {
-            display: flex;
-            gap: 4rem;
-            justify-content: center;
-            margin-top: 4rem;
-            flex-wrap: wrap;
-        }
-
-        .hero-stat {
-            text-align: center;
-            opacity: 0;
-            transform: translateY(30px);
-            cursor: none;
-            position: relative;
-        }
-
-        .hero-stat::before {
+        
+        .parallax-section::before {
             content: '';
-            position: absolute;
-            top: -20px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 1px;
-            height: 15px;
-            background: linear-gradient(to bottom, transparent, var(--accent));
-            opacity: 0;
-            animation: pulse-line 2s infinite;
-        }
-
-        .hero-stat-value {
-            font-size: 3rem;
-            font-weight: 600;
-            background: linear-gradient(135deg, var(--accent), var(--accent-blue));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            font-variant-numeric: tabular-nums;
-            position: relative;
-        }
-
-        .hero-stat-value::after {
-            content: attr(data-value);
             position: absolute;
             top: 0;
             left: 0;
-            z-index: -1;
-            filter: blur(10px);
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.6);
+            z-index: 1;
+        }
+        
+        .parallax-1 {
+            background-image: url('https://images.unsplash.com/photo-1559827260-dc66d52bef19?w=2000');
+        }
+        
+        .parallax-2 {
+            background-image: url('https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=2000');
+        }
+        
+        .parallax-3 {
+            background-image: url('https://images.unsplash.com/photo-1614730321146-b6fa6a46bcb4?w=2000');
+        }
+        
+        /* Color Sections */
+        .dark-section {
+            background: var(--charcoal);
+            color: var(--text-light);
+        }
+        
+        .light-section {
+            background: var(--vanilla);
+            color: var(--text-dark);
+        }
+        
+        /* Code Blocks */
+        pre {
+            background: rgba(0, 0, 0, 0.3);
+            padding: clamp(1rem, 2vw, 2rem);
+            border-radius: 8px;
+            overflow-x: auto;
+            margin: clamp(1.5rem, 3vw, 3rem) 0;
+            border-left: 3px solid var(--accent);
+        }
+        
+        code {
+            font-family: 'Monaco', 'Courier New', monospace;
+            font-size: clamp(0.75rem, 1.2vw, 0.9rem);
+            line-height: 1.6;
+            color: #e0e0e0;
+        }
+        
+        .dark-section pre {
+            background: rgba(255, 255, 255, 0.05);
+        }
+        
+        .light-section pre {
+            background: rgba(0, 0, 0, 0.05);
+        }
+        
+        .light-section code {
+            color: var(--text-dark);
+        }
+        
+        /* Lists */
+        ul {
+            list-style: none;
+            margin: clamp(1.5rem, 3vw, 3rem) 0;
+        }
+        
+        ul li {
+            padding-left: 1.5em;
+            position: relative;
+            margin-bottom: 1em;
+        }
+        
+        ul li::before {
+            content: '—';
+            position: absolute;
+            left: 0;
             opacity: 0.5;
         }
-
-        .hero-stat-label {
-            font-size: 0.875rem;
-            color: var(--text-dim);
-            margin-top: 0.5rem;
-            text-transform: uppercase;
-            letter-spacing: 0.1em;
-        }
-
-        /* Portfolio Section Enhanced */
-        .portfolio {
-            padding: 15vh 5vw;
-            position: relative;
-            z-index: 2;
-        }
-
-        .section-header {
-            text-align: center;
-            margin-bottom: 10vh;
-            opacity: 0;
-        }
-
-        .section-title {
-            font-size: clamp(2.5rem, 6vw, 5rem);
-            font-weight: 200;
-            margin-bottom: 1rem;
-            position: relative;
-            display: inline-block;
-        }
-
-        .section-title .accent {
-            background: linear-gradient(135deg, var(--accent), var(--accent-blue));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-
-        .section-subtitle {
-            font-size: 1.25rem;
-            color: var(--text-dim);
-            opacity: 0.8;
-        }
-
-        .engine-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
-            gap: 3rem;
-            margin-top: 5vh;
-        }
-
-        .engine-card {
-            background: var(--card-bg);
-            border: 1px solid var(--border);
-            border-radius: 24px;
-            padding: 3rem;
-            position: relative;
-            overflow: hidden;
-            opacity: 0;
-            transform: translateY(50px);
-            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-            cursor: none;
-            backdrop-filter: blur(10px);
-        }
-
-        .engine-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
+        
+        /* Bottom Navbar */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
             left: 0;
             right: 0;
-            height: 2px;
-            background: linear-gradient(90deg, var(--accent), var(--accent-blue), transparent);
-            transform: scaleX(0);
-            transform-origin: left;
-            transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+            background: rgba(26, 26, 26, 0.95);
+            backdrop-filter: blur(20px);
+            padding: clamp(0.75rem, 2vw, 1.5rem) clamp(1.5rem, 5vw, 4rem);
+            z-index: 1000;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
         }
-
-        .engine-card::after {
-            content: '';
-            position: absolute;
-            inset: 0;
-            background: radial-gradient(circle at var(--mouse-x) var(--mouse-y), 
-                rgba(0, 255, 170, 0.1) 0%, 
-                transparent 40%);
-            opacity: 0;
-            transition: opacity 0.3s;
-            pointer-events: none;
+        
+        .bottom-nav nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1400px;
+            margin: 0 auto;
+            flex-wrap: wrap;
+            gap: 1rem;
         }
-
-        .engine-card:hover {
-            transform: translateY(-8px);
-            border-color: rgba(0, 255, 170, 0.3);
-            background: rgba(0, 255, 170, 0.03);
-            box-shadow: 
-                0 20px 40px rgba(0, 255, 170, 0.1),
-                0 0 0 1px rgba(0, 255, 170, 0.2);
+        
+        .bottom-nav a {
+            color: var(--text-light);
+            text-decoration: none;
+            font-size: clamp(0.7rem, 1.2vw, 0.85rem);
+            font-weight: 400;
+            letter-spacing: 0.05em;
+            transition: opacity 0.3s ease;
+            opacity: 0.7;
         }
-
-        .engine-card:hover::before {
-            transform: scaleX(1);
-        }
-
-        .engine-card:hover::after {
+        
+        .bottom-nav a:hover {
             opacity: 1;
         }
-
-        .engine-icon {
-            font-size: 3rem;
-            margin-bottom: 1.5rem;
-            display: inline-block;
-            filter: drop-shadow(0 0 20px rgba(0, 255, 170, 0.5));
-            animation: icon-pulse 3s ease-in-out infinite;
+        
+        .nav-logo {
+            font-family: 'Crimson Pro', serif;
+            font-size: clamp(1rem, 1.5vw, 1.25rem);
+            font-weight: 600;
+            opacity: 1 !important;
         }
-
-        @keyframes icon-pulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.05); }
+        
+        /* Math formulas */
+        .formula-block {
+            margin: clamp(2rem, 4vw, 4rem) 0;
+            padding: clamp(1.5rem, 3vw, 2rem);
+            background: rgba(0, 102, 204, 0.05);
+            border-radius: 8px;
+            border-left: 3px solid var(--accent);
         }
-
-        .engine-name {
-            font-size: 2rem;
-            font-weight: 400;
-            margin-bottom: 0.5rem;
-        }
-
-        .engine-type {
-            color: var(--accent);
-            font-size: 0.875rem;
-            text-transform: uppercase;
-            letter-spacing: 0.1em;
-            margin-bottom: 1.5rem;
-        }
-
-        .engine-description {
-            color: var(--text-dim);
-            margin-bottom: 2rem;
-            line-height: 1.7;
-        }
-
-        .engine-metrics {
+        
+        /* Grid for multiple items */
+        .grid-2 {
             display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 1.5rem;
-            padding-top: 2rem;
-            border-top: 1px solid var(--border);
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: clamp(2rem, 4vw, 4rem);
+            margin: clamp(2rem, 4vw, 4rem) 0;
         }
-
+        
+        /* Metric Display */
         .metric {
-            text-align: center;
-            position: relative;
+            margin: clamp(1.5rem, 3vw, 2rem) 0;
         }
-
+        
         .metric-value {
-            font-size: 2rem;
-            font-weight: 600;
-            background: linear-gradient(135deg, var(--accent), var(--accent-blue));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            font-variant-numeric: tabular-nums;
-        }
-
-        .metric-label {
-            font-size: 0.75rem;
-            color: var(--text-dim);
-            margin-top: 0.5rem;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-        }
-
-        /* Interactive Data Visualizations */
-        .data-viz-container {
-            position: relative;
-            width: 100%;
-            height: 400px;
-            background: var(--card-bg);
-            border: 1px solid var(--border);
-            border-radius: 16px;
-            padding: 2rem;
-            overflow: hidden;
-            margin: 3rem 0;
-        }
-
-        .live-chart {
-            width: 100%;
-            height: 100%;
-        }
-
-        /* Network Visualization */
-        .network-container {
-            position: relative;
-            width: 100%;
-            height: 100%;
-        }
-
-        .network-node {
-            position: absolute;
-            width: 12px;
-            height: 12px;
-            background: var(--accent);
-            border-radius: 50%;
-            box-shadow: 0 0 20px rgba(0, 255, 170, 0.6);
-            cursor: pointer;
-            transition: all 0.3s ease;
-            z-index: 10;
-        }
-
-        .network-node:hover {
-            transform: scale(2);
-            box-shadow: 0 0 40px rgba(0, 255, 170, 1);
-        }
-
-        .network-edge {
-            position: absolute;
-            height: 1px;
-            background: linear-gradient(90deg, 
-                transparent, 
-                rgba(0, 255, 170, 0.3), 
-                transparent);
-            transform-origin: left center;
-            pointer-events: none;
-            animation: data-flow 3s linear infinite;
-        }
-
-        @keyframes data-flow {
-            0% { opacity: 0.1; }
-            50% { opacity: 0.6; }
-            100% { opacity: 0.1; }
-        }
-
-        /* Real-time Data Stream */
-        .data-stream {
-            height: 100%;
-            display: flex;
-            flex-direction: column;
-            gap: 0.5rem;
-            overflow: hidden;
-            padding: 1rem;
-        }
-
-        .stream-item {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-            padding: 0.75rem;
-            background: rgba(0, 255, 170, 0.05);
-            border-left: 2px solid var(--accent);
-            border-radius: 4px;
-            animation: slideIn 0.5s ease;
-            font-family: 'Monaco', 'Courier New', monospace;
-            font-size: 0.875rem;
-        }
-
-        @keyframes slideIn {
-            from {
-                transform: translateX(-100%);
-                opacity: 0;
-            }
-            to {
-                transform: translateX(0);
-                opacity: 1;
-            }
-        }
-
-        .stream-timestamp {
+            font-family: 'Crimson Pro', serif;
+            font-size: clamp(2.5rem, 5vw, 4rem);
+            font-weight: 300;
             color: var(--accent);
-            font-variant-numeric: tabular-nums;
+            line-height: 1;
         }
-
-        .stream-value {
-            color: var(--text);
-            flex: 1;
+        
+        .metric-label {
+            font-size: clamp(0.85rem, 1.2vw, 1rem);
+            margin-top: 0.5rem;
+            opacity: 0.8;
         }
-
-        .stream-indicator {
-            width: 8px;
-            height: 8px;
-            background: var(--success);
-            border-radius: 50%;
-            animation: blink 1s infinite;
-        }
-
-        @keyframes blink {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.3; }
-        }
-
-        /* Odyssey Timeline Enhanced */
-        .odyssey {
-            padding: 15vh 5vw;
-            position: relative;
-            z-index: 2;
-            background: linear-gradient(180deg, 
-                transparent, 
-                rgba(0, 255, 170, 0.02), 
-                transparent);
-        }
-
-        .timeline-line {
-            position: absolute;
-            left: 50%;
-            top: 0;
-            bottom: 0;
-            width: 2px;
-            background: linear-gradient(to bottom, 
-                transparent, 
-                var(--accent), 
-                var(--accent-blue), 
-                transparent);
-            opacity: 0.3;
-        }
-
-        .odyssey-stage {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 5rem;
-            margin-bottom: 12vh;
-            align-items: center;
+        
+        /* Animations */
+        .fade-in {
             opacity: 0;
+            transform: translateY(30px);
         }
-
-        .stage-content {
-            padding: 4rem;
-            background: var(--card-bg);
-            border: 1px solid var(--border);
-            border-radius: 24px;
-            position: relative;
-            backdrop-filter: blur(20px);
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
-        }
-
-        .stage-content::before {
-            content: '';
-            position: absolute;
-            inset: -1px;
-            background: linear-gradient(135deg, var(--accent), var(--accent-blue));
-            border-radius: 24px;
-            opacity: 0;
-            transition: opacity 0.3s;
-            z-index: -1;
-            filter: blur(10px);
-        }
-
-        .stage-content:hover::before {
-            opacity: 0.3;
-        }
-
-        /* Impact Section Enhanced */
-        .impact {
-            padding: 15vh 5vw;
-            text-align: center;
-            position: relative;
-            z-index: 2;
-        }
-
-        .impact-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 2rem;
-            margin-top: 8vh;
-        }
-
-        .impact-card {
-            padding: 3rem 2rem;
-            background: var(--card-bg);
-            border: 1px solid var(--border);
-            border-radius: 20px;
-            opacity: 0;
-            transform: scale(0.9);
-            transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
-            backdrop-filter: blur(10px);
-        }
-
-        .impact-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 3px;
-            background: linear-gradient(90deg, var(--accent), var(--accent-blue));
-            transform: scaleX(0);
-            transition: transform 0.3s ease;
-        }
-
-        .impact-card:hover {
-            transform: scale(1.05);
-            background: rgba(0, 255, 170, 0.05);
-            box-shadow: 0 20px 40px rgba(0, 255, 170, 0.1);
-        }
-
-        .impact-card:hover::before {
-            transform: scaleX(1);
-        }
-
-        .impact-number {
-            font-size: 3.5rem;
-            font-weight: 700;
-            background: linear-gradient(135deg, var(--accent), var(--accent-blue));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            margin-bottom: 0.5rem;
-            font-variant-numeric: tabular-nums;
-        }
-
-        /* CTA Enhanced */
-        .cta {
-            padding: 20vh 5vw;
-            text-align: center;
-            background: radial-gradient(circle at 50% 50%, 
-                rgba(0, 255, 170, 0.1) 0%, 
-                transparent 60%);
-            position: relative;
-            z-index: 2;
-        }
-
-        .cta-button {
-            display: inline-block;
-            padding: 1.5rem 4rem;
-            background: linear-gradient(135deg, var(--accent), var(--accent-blue));
-            color: var(--bg);
-            font-size: 1.125rem;
-            font-weight: 600;
-            text-decoration: none;
-            border-radius: 60px;
-            transition: all 0.3s ease;
-            letter-spacing: 0.05em;
-            text-transform: uppercase;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .cta-button::before {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            width: 0;
-            height: 0;
-            border-radius: 50%;
-            background: rgba(255, 255, 255, 0.3);
-            transform: translate(-50%, -50%);
-            transition: width 0.6s, height 0.6s;
-        }
-
-        .cta-button:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 20px 60px rgba(0, 255, 170, 0.4);
-        }
-
-        .cta-button:hover::before {
-            width: 300px;
-            height: 300px;
-        }
-
-        /* Enhanced Loader */
-        .loader {
-            position: fixed;
-            inset: 0;
-            background: var(--bg);
-            z-index: 9999;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex-direction: column;
-        }
-
-        .loader-content {
-            text-align: center;
-        }
-
-        .loader-text {
-            font-size: 1.5rem;
-            font-weight: 200;
-            letter-spacing: 0.3em;
-            margin-bottom: 3rem;
-            text-transform: uppercase;
-            background: linear-gradient(135deg, var(--accent), var(--accent-blue));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            animation: pulse 2s infinite;
-        }
-
-        .loader-bar {
-            width: 300px;
-            height: 2px;
-            background: rgba(255, 255, 255, 0.1);
-            position: relative;
-            overflow: hidden;
-            border-radius: 2px;
-        }
-
-        .loader-progress {
-            position: absolute;
-            top: 0;
-            left: 0;
-            height: 100%;
-            background: linear-gradient(90deg, var(--accent), var(--accent-blue));
-            width: 0;
-            transition: width 0.3s ease;
-            box-shadow: 0 0 10px rgba(0, 255, 170, 0.5);
-        }
-
-        .loader-percentage {
-            margin-top: 1rem;
-            font-size: 0.875rem;
-            color: var(--text-dim);
-            font-variant-numeric: tabular-nums;
-        }
-
+        
         @media (max-width: 768px) {
-            .engine-grid { 
-                grid-template-columns: 1fr;
-                gap: 2rem;
+            .bottom-nav nav {
+                justify-content: center;
+                text-align: center;
             }
-            .odyssey-stage { 
-                grid-template-columns: 1fr;
-                gap: 2rem;
-            }
-            .timeline-line { display: none; }
-            .hero-stats { gap: 2rem; }
-            .impact-grid {
-                grid-template-columns: 1fr;
+            
+            section {
+                min-height: 120svh;
             }
         }
     </style>
 </head>
 <body>
-    <div class="cursor"></div>
-    <div class="grid-bg"></div>
-    
-    <div class="loader">
-        <div class="loader-content">
-            <div class="loader-text">Initializing Systems</div>
-            <div class="loader-bar">
-                <div class="loader-progress"></div>
-            </div>
-            <div class="loader-percentage">0%</div>
+    <div id="smooth-wrapper">
+        <div id="smooth-content">
+            
+            <!-- HERO -->
+            <section class="hero">
+                <div class="content-wrapper">
+                    <div class="label fade-in">HAWKEYE Intelligence Platform</div>
+                    <h1 class="fade-in">Flood Intelligence</h1>
+                    <p class="fade-in" style="max-width: 800px; font-size: clamp(1rem, 2vw, 1.3rem); margin-top: clamp(1rem, 2vw, 2rem);">
+                        30‑minute, 10 m resolution flood mapping using physics‑informed machine learning
+                    </p>
+                </div>
+            </section>
+            
+            <!-- SUMMARY -->
+            <section class="dark-section">
+                <div class="content-wrapper">
+                    <div class="label fade-in">Executive Summary</div>
+                    <h2 class="fade-in">Rapid Response Intelligence</h2>
+                    <p class="fade-in">
+                        HAWKEYE Flood Intelligence delivers 30‑minute, 10 m flood maps using SegFormer‑B2‑lite with physics‑informed pseudo‑labels, achieving 0.91 mIoU over a 15,000 km² Sylhet 2022 event workflow.
+                    </p>
+                    <p class="fade-in" style="margin-top: 2rem;">
+                        The pipeline fuses Sentinel‑1 VV radar, Sentinel‑2 optical bands, and SRTM slope to produce georeferenced flood extents, overlays, and probability heatmaps suitable for rapid response and damage estimation.
+                    </p>
+                    <div class="grid-2" style="margin-top: clamp(3rem, 6vw, 6rem);">
+                        <div class="metric fade-in">
+                            <div class="metric-value">0.91</div>
+                            <div class="metric-label">mIoU Accuracy</div>
+                        </div>
+                        <div class="metric fade-in">
+                            <div class="metric-value">30min</div>
+                            <div class="metric-label">End-to-End Processing</div>
+                        </div>
+                        <div class="metric fade-in">
+                            <div class="metric-value">10m</div>
+                            <div class="metric-label">Pixel Resolution</div>
+                        </div>
+                        <div class="metric fade-in">
+                            <div class="metric-value">15,000km²</div>
+                            <div class="metric-label">Coverage Area</div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- SCOPE -->
+            <section class="light-section">
+                <div class="content-wrapper">
+                    <div class="label fade-in">Project Scope</div>
+                    <h2 class="fade-in">Operational Scale</h2>
+                    <p class="fade-in">
+                        Operationalize near–real‑time flood extent mapping that reduces a 7‑day manual workflow to 30 minutes end‑to‑end (acquisition → inference → export), with 10 m resolution suitable for building‑ and road‑level situational awareness.
+                    </p>
+                    <p class="fade-in" style="margin-top: 2rem;">
+                        Primary AOI validated on Sylhet, Bangladesh (2022 event), designed for multi‑region scaling across Bangladesh, India, and Pakistan with Google Earth Engine ingestion.
+                    </p>
+                </div>
+            </section>
+            
+            <!-- INTENTION - Parallax 1 -->
+            <section class="parallax-section parallax-1">
+                <div class="content-wrapper">
+                    <div class="label fade-in">Intention & Objectives</div>
+                    <h2 class="fade-in">Mission Critical</h2>
+                    <ul class="fade-in">
+                        <li>Replace manual digitization with automated, defensible, physics‑guided machine learning that remains robust under clouds and adverse weather via SAR.</li>
+                        <li style="margin-top: 2rem;">Deliver actionable GIS layers (extent polygons, confidence rasters) and overlays for government and insurance workflows within emergency response SLAs.</li>
+                    </ul>
+                </div>
+            </section>
+            
+            <!-- DATASETS -->
+            <section class="dark-section">
+                <div class="content-wrapper">
+                    <div class="label fade-in">Data Sources</div>
+                    <h2 class="fade-in">Multi-Modal Fusion</h2>
+                    <div class="grid-2">
+                        <div class="fade-in">
+                            <h3 style="font-size: clamp(1.2rem, 2vw, 1.5rem); margin-bottom: 1rem;">Sentinel‑1 SAR</h3>
+                            <p>VV polarization, pre/flood scenes, cloud‑penetrating, 10 m IW mode, revisit ~6 days.</p>
+                        </div>
+                        <div class="fade-in">
+                            <h3 style="font-size: clamp(1.2rem, 2vw, 1.5rem); margin-bottom: 1rem;">Sentinel‑2 Optical</h3>
+                            <p>B2/B3/B4 RGB, B5/B8 red‑edge/NIR, B11/B12 SWIR, 10–20 m resolution, revisit ~5 days.</p>
+                        </div>
+                        <div class="fade-in">
+                            <h3 style="font-size: clamp(1.2rem, 2vw, 1.5rem); margin-bottom: 1rem;">SRTM DEM</h3>
+                            <p>30 m resolution with slope derivative for terrain normalization and flood‑susceptibility cues.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- VARIABLES -->
+            <section class="light-section">
+                <div class="content-wrapper">
+                    <div class="label fade-in">Target Variables</div>
+                    <h2 class="fade-in">Output Specifications</h2>
+                    <ul class="fade-in">
+                        <li>Pixel‑wise classes: flooded vs non‑flooded, exported as binary mask and probability map.</li>
+                        <li>Confidence/probability raster for thresholding and downstream risk scoring.</li>
+                        <li>Derived polygons for total inundated area and hydrologic connectivity checks.</li>
+                    </ul>
+                </div>
+            </section>
+            
+            <!-- METHOD - Parallax 2 -->
+            <section class="parallax-section parallax-2">
+                <div class="content-wrapper">
+                    <div class="label fade-in">Methodology</div>
+                    <h2 class="fade-in">Pipeline Architecture</h2>
+                    <p class="fade-in">
+                        Multi‑modal fusion at pixel level: stack SAR VV, selected optical indices/bands, and slope, normalized to unit range.
+                    </p>
+                    <p class="fade-in" style="margin-top: 2rem;">
+                        Physics‑informed pseudo‑label generation (no human labels) followed by SegFormer‑B2‑lite training with cross‑entropy loss and early stopping.
+                    </p>
+                    <p class="fade-in" style="margin-top: 2rem;">
+                        Inference yields class map and probability heatmap; post‑processing applies confidence thresholding, small‑blob removal, and vectorization to shapefiles.
+                    </p>
+                </div>
+            </section>
+            
+            <!-- PHYSICAL RULES -->
+            <section class="dark-section">
+                <div class="content-wrapper">
+                    <div class="label fade-in">Physics-Informed Constraints</div>
+                    <h2 class="fade-in">Pseudo-Label Generation</h2>
+                    <p class="fade-in">Key physical rules guiding the automated labeling process:</p>
+                    
+                    <div class="formula-block fade-in">
+                        <h3 style="font-size: clamp(1rem, 1.5vw, 1.2rem); margin-bottom: 1rem;">SAR Backscatter Threshold</h3>
+                        <p style="margin-bottom: 1rem;">VV reflectance indicating open water:</p>
+                        <p>$$ \text{VV} < 0.2 $$</p>
+                    </div>
+                    
+                    <div class="formula-block fade-in">
+                        <h3 style="font-size: clamp(1rem, 1.5vw, 1.2rem); margin-bottom: 1rem;">Water Index Threshold</h3>
+                        <p>$$ \text{NDWI} = \frac{B3 - B8}{B3 + B8} > 0.1 $$</p>
+                    </div>
+                    
+                    <div class="formula-block fade-in">
+                        <h3 style="font-size: clamp(1rem, 1.5vw, 1.2rem); margin-bottom: 1rem;">Low‑Slope Constraint</h3>
+                        <p style="margin-bottom: 1rem;">Attenuate false positives on steep terrain:</p>
+                        <p>$$ \text{slope} < 0.05 \text{ radians} $$</p>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- MODEL ARCHITECTURE -->
+            <section class="light-section">
+                <div class="content-wrapper">
+                    <div class="label fade-in">Neural Architecture</div>
+                    <h2 class="fade-in">SegFormer‑B2‑lite</h2>
+                    <p class="fade-in">
+                        Hierarchical Transformer encoder (MiT) with lightweight all‑MLP decoder; no positional encodings; efficient multi‑scale fusion.
+                    </p>
+                    <div class="grid-2" style="margin-top: clamp(3rem, 6vw, 4rem);">
+                        <div class="fade-in">
+                            <h3 style="font-size: clamp(1rem, 1.5vw, 1.2rem); margin-bottom: 1rem;">Training Parameters</h3>
+                            <ul>
+                                <li>50 epochs</li>
+                                <li>Batch size: 16</li>
+                                <li>AdamW optimizer</li>
+                                <li>Learning rate: \(10^{-4}\)</li>
+                            </ul>
+                        </div>
+                        <div class="fade-in">
+                            <h3 style="font-size: clamp(1rem, 1.5vw, 1.2rem); margin-bottom: 1rem;">Augmentations</h3>
+                            <ul>
+                                <li>Random flip</li>
+                                <li>Random rotate</li>
+                                <li>Random crop</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- FORMULAS - Parallax 3 -->
+            <section class="parallax-section parallax-3">
+                <div class="content-wrapper">
+                    <div class="label fade-in">Core Mathematics</div>
+                    <h2 class="fade-in">Key Formulas</h2>
+                    
+                    <div class="formula-block fade-in">
+                        <h3 style="font-size: clamp(1rem, 1.5vw, 1.2rem); margin-bottom: 1rem;">Normalized Difference Water Index</h3>
+                        <p>$$ \text{NDWI} = \frac{G - NIR}{G + NIR} = \frac{B3 - B8}{B3 + B8} $$</p>
+                    </div>
+                    
+                    <div class="formula-block fade-in">
+                        <h3 style="font-size: clamp(1rem, 1.5vw, 1.2rem); margin-bottom: 1rem;">Intersection over Union</h3>
+                        <p>$$ \text{IoU} = \frac{TP}{TP + FP + FN} $$</p>
+                        <p style="margin-top: 1rem; font-size: clamp(0.85rem, 1.2vw, 0.95rem);">mIoU is mean across classes</p>
+                    </div>
+                    
+                    <div class="formula-block fade-in">
+                        <h3 style="font-size: clamp(1rem, 1.5vw, 1.2rem); margin-bottom: 1rem;">Speed Improvement</h3>
+                        <p>$$ \%\,\Delta t = \left(1 - \frac{0.5\,\text{hr}}{168\,\text{hr}}\right)\times 100 \approx 99.7\% $$</p>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- PYTHON SNIPPETS -->
+            <section class="dark-section">
+                <div class="content-wrapper">
+                    <div class="label fade-in">Implementation</div>
+                    <h2 class="fade-in">Code Snippets</h2>
+                    
+                    <div class="fade-in">
+                        <h3 style="margin-top: clamp(2rem, 4vw, 3rem);">Pseudo‑label Fusion</h3>
+                        <pre><code>mask_sar = (vv < 0.2).astype(np.uint8)  # SAR water signature
+ndwi = (b3 - b8) / (b3 + b8 + 1e-6)     # NDWI
+mask_ndwi = (ndwi > 0.1).astype(np.uint8)
+mask_slope = (slope < 0.05).astype(np.uint8)
+pseudo_mask = (mask_sar & mask_ndwi & mask_slope).astype(np.uint8)</code></pre>
+                    </div>
+                    
+                    <div class="fade-in">
+                        <h3 style="margin-top: clamp(3rem, 6vw, 4rem);">SegFormer Fine‑tuning</h3>
+                        <pre><code>model = SegFormerB2Lite(num_classes=2, in_chans=3)
+optim = torch.optim.AdamW(model.parameters(), lr=1e-4)
+for epoch in range(50):
+    for x, y in loader:
+        logits = model(x)                   # [B,2,H,W]
+        loss = F.cross_entropy(logits, y)   # pseudo-masks as targets
+        optim.zero_grad(); loss.backward(); optim.step()</code></pre>
+                    </div>
+                    
+                    <div class="fade-in">
+                        <h3 style="margin-top: clamp(3rem, 6vw, 4rem);">Inference & Thresholding</h3>
+                        <pre><code>with torch.no_grad():
+    prob = torch.softmax(model(x), dim=1)[:,1]  # flood class prob
+pred = (prob > 0.5).cpu().numpy().astype(np.uint8)</code></pre>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- RESULTS -->
+            <section class="light-section">
+                <div class="content-wrapper">
+                    <div class="label fade-in">Performance Metrics</div>
+                    <h2 class="fade-in">Results Obtained</h2>
+                    
+                    <div class="grid-2">
+                        <div class="fade-in">
+                            <h3 style="font-size: clamp(1.2rem, 2vw, 1.5rem); margin-bottom: 1rem;">Accuracy</h3>
+                            <p>mIoU = 0.91 on validation imagery spanning Sylhet 2022, confirming high overlap between predicted flood and reference masks.</p>
+                        </div>
+                        <div class="fade-in">
+                            <h3 style="font-size: clamp(1.2rem, 2vw, 1.5rem); margin-bottom: 1rem;">Processing Time</h3>
+                            <p>30 minutes total pipeline time (data pull → fused preprocessing → inference → export), replacing a 7‑day manual workflow.</p>
+                        </div>
+                        <div class="fade-in">
+                            <h3 style="font-size: clamp(1.2rem, 2vw, 1.5rem); margin-bottom: 1rem;">Coverage & Resolution</h3>
+                            <p>15,000 km² per analysis at 10 m pixel resolution, enabling dense, district‑scale operational mapping.</p>
+                        </div>
+                        <div class="fade-in">
+                            <h3 style="font-size: clamp(1.2rem, 2vw, 1.5rem); margin-bottom: 1rem;">False Positives</h3>
+                            <p>Minimal (<5%), reflecting the discriminative benefit of SAR+NDWI+slope fusion under turbid water and cloud conditions.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="fade-in" style="margin-top: clamp(3rem, 6vw, 4rem);">
+                        <h3 style="font-size: clamp(1.2rem, 2vw, 1.5rem); margin-bottom: 1rem;">Artifacts Generated</h3>
+                        <p>Probability heatmap, prediction overlay, binary mask, mIoU/loss curves, and shapefile exports for GIS systems.</p>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- MEANING -->
+            <section class="dark-section">
+                <div class="content-wrapper">
+                    <div class="label fade-in">Strategic Impact</div>
+                    <h2 class="fade-in">Decision Relevance</h2>
+                    <ul class="fade-in">
+                        <li>A 0.91 mIoU at 10 m implies reliable parcel‑ and road‑level inundation delineation, making the outputs suitable for evacuation routing, relief staging, and logistics planning.</li>
+                        <li>The <5% false‑positive profile reduces wasted dispatches while preserving recall via SAR penetration in cloud‑covered scenes, critical during monsoon events.</li>
+                        <li>30‑minute turnaround compresses the intelligence OODA loop, enabling earlier warnings and potentially thousands of lives saved in multi‑district events.</li>
+                    </ul>
+                </div>
+            </section>
+            
+            <!-- TECHNICAL BRIEFS -->
+            <section class="light-section">
+                <div class="content-wrapper">
+                    <div class="label fade-in">Technical Foundation</div>
+                    <h2 class="fade-in">What Makes It Work</h2>
+                    
+                    <div class="fade-in" style="margin-top: clamp(2rem, 4vw, 3rem);">
+                        <h3 style="font-size: clamp(1.2rem, 2vw, 1.5rem); margin-bottom: 1rem;">Physics‑Informed Pseudo‑Labeling</h3>
+                        <p>Eliminates annotation bottlenecks and aligns supervision with hydrology, improving generalization across regions and seasons.</p>
+                    </div>
+                    
+                    <div class="fade-in" style="margin-top: clamp(2rem, 4vw, 3rem);">
+                        <h3 style="font-size: clamp(1.2rem, 2vw, 1.5rem); margin-bottom: 1rem;">Hierarchical Attention</h3>
+                        <p>SegFormer's architecture captures flood textures (smooth water bodies, shorelines) and contextual cues (valley floors), which classical CNNs or index‑thresholding miss.</p>
+                    </div>
+                    
+                    <div class="fade-in" style="margin-top: clamp(2rem, 4vw, 3rem);">
+                        <h3 style="font-size: clamp(1.2rem, 2vw, 1.5rem); margin-bottom: 1rem;">Multi‑Modal Fusion</h3>
+                        <p>Mitigates single‑sensor failure modes (e.g., optical cloud cover, SAR roughness over vegetation) by enforcing consensus across SAR, optics, and topography.</p>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- OPERATIONALIZATION -->
+            <section class="dark-section">
+                <div class="content-wrapper">
+                    <div class="label fade-in">Deployment</div>
+                    <h2 class="fade-in">Operationalization & Outputs</h2>
+                    
+                    <div class="grid-2">
+                        <div class="fade-in">
+                            <h3 style="font-size: clamp(1.2rem, 2vw, 1.5rem); margin-bottom: 1rem;">Deliverables</h3>
+                            <ul>
+                                <li>GeoTIFF rasters (probability and class)</li>
+                                <li>Vector flood polygons</li>
+                                <li>Styled overlays</li>
+                                <li>Metrics JSON for dashboards and incident reports</li>
+                            </ul>
+                        </div>
+                        <div class="fade-in">
+                            <h3 style="font-size: clamp(1.2rem, 2vw, 1.5rem); margin-bottom: 1rem;">Integration</h3>
+                            <p>Google Earth Engine pull → PyTorch inference service → GIS export; API‑ready for emergency ops centers.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- LIMITATIONS -->
+            <section class="light-section">
+                <div class="content-wrapper">
+                    <div class="label fade-in">Constraints</div>
+                    <h2 class="fade-in">Limitations & Risks</h2>
+                    
+                    <div class="fade-in">
+                        <h3 style="font-size: clamp(1.2rem, 2vw, 1.5rem); margin-bottom: 1rem; margin-top: clamp(2rem, 4vw, 2rem);">Latency and Revisit</h3>
+                        <p>5–6 day satellite cadence limits truly continuous coverage, though SAR dual‑satellite constellations mitigate gaps.</p>
+                    </div>
+                    
+                    <div class="fade-in" style="margin-top: clamp(2rem, 4vw, 3rem);">
+                        <h3 style="font-size: clamp(1.2rem, 2vw, 1.5rem); margin-bottom: 1rem;">Domain Shift</h3>
+                        <p>Extreme specular returns, dense canopy, or urban canyons can bias SAR water signatures; slope/NDWI constraints reduce but do not eliminate risk.</p>
+                    </div>
+                    
+                    <div class="fade-in" style="margin-top: clamp(2rem, 4vw, 3rem);">
+                        <h3 style="font-size: clamp(1.2rem, 2vw, 1.5rem); margin-bottom: 1rem;">Compute & Storage</h3>
+                        <p>Training requires GPU; region archives can exceed 1 TB/year, necessitating lifecycle policies.</p>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- FUTURE SCOPE -->
+            <section class="dark-section">
+                <div class="content-wrapper">
+                    <div class="label fade-in">Roadmap</div>
+                    <h2 class="fade-in">Future Scope</h2>
+                    
+                    <div class="fade-in">
+                        <h3 style="font-size: clamp(1.2rem, 2vw, 1.5rem); margin-bottom: 1rem; margin-top: clamp(2rem, 4vw, 2rem);">Real‑Time Alerting</h3>
+                        <p>Hourly S1 ingestion with 30‑minute inference windows for streaming situational awareness.</p>
+                    </div>
+                    
+                    <div class="fade-in" style="margin-top: clamp(2rem, 4vw, 3rem);">
+                        <h3 style="font-size: clamp(1.2rem, 2vw, 1.5rem); margin-bottom: 1rem;">Damage Modeling</h3>
+                        <p>Fuse with building footprints and land‑use to estimate exposed value and prioritize response corridors.</p>
+                    </div>
+                    
+                    <div class="fade-in" style="margin-top: clamp(2rem, 4vw, 3rem);">
+                        <h3 style="font-size: clamp(1.2rem, 2vw, 1.5rem); margin-bottom: 1rem;">Multi‑Region Scaling</h3>
+                        <p>Bangladesh–India–Pakistan concurrent processing with parameterized AOIs and auto‑retrains on new flood seasons.</p>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- Footer spacing -->
+            <div style="height: 100px; background: var(--charcoal);"></div>
+            
         </div>
     </div>
-
-    <!-- Hero -->
-    <section class="hero">
-        <div class="hero-particles" id="particles"></div>
-        <div class="hero-bg"></div>
-        <div class="hero-content">
-            <div class="hero-label">AI Intelligence Platform</div>
-            <h1 class="hero-title">
-                Beyond<br><span class="accent">Prediction</span>
-            </h1>
-            <div class="hero-stats">
-                <div class="hero-stat">
-                    <div class="hero-stat-value" data-value="5">5</div>
-                    <div class="hero-stat-label">AI Systems</div>
-                </div>
-                <div class="hero-stat">
-                    <div class="hero-stat-value" data-value="95%+">95%+</div>
-                    <div class="hero-stat-label">Accuracy</div>
-                </div>
-                <div class="hero-stat">
-                    <div class="hero-stat-value" data-value="800K">800K</div>
-                    <div class="hero-stat-label">Lives Impacted</div>
-                </div>
-                <div class="hero-stat">
-                    <div class="hero-stat-value" data-value="3">3</div>
-                    <div class="hero-stat-label">Countries</div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Portfolio -->
-    <section class="portfolio">
-        <div class="section-header">
-            <h2 class="section-title">The <span class="accent">Arsenal</span></h2>
-            <p class="section-subtitle">Five integrated AI systems for global risk intelligence</p>
-        </div>
-
-        <!-- Live Data Visualization -->
-        <div class="data-viz-container">
-            <canvas id="portfolioChart" class="live-chart"></canvas>
-        </div>
-
-        <div class="engine-grid">
-            <!-- HawkEYE Flood -->
-            <div class="engine-card">
-                <div class="engine-icon">🌊</div>
-                <h3 class="engine-name">HawkEYE Flood</h3>
-                <div class="engine-type">Disaster Intelligence</div>
-                <p class="engine-description">
-                    Multi-modal flood detection using Sentinel-1 SAR, Vision Transformers, and physics-informed neural networks. Processes 15,000 km² in 30 minutes vs 7 days traditional methods.
-                </p>
-                <div class="engine-metrics">
-                    <div class="metric">
-                        <div class="metric-value">95%+</div>
-                        <div class="metric-label">Accuracy</div>
-                    </div>
-                    <div class="metric">
-                        <div class="metric-value">99.7%</div>
-                        <div class="metric-label">Faster</div>
-                    </div>
-                    <div class="metric">
-                        <div class="metric-value">0.91</div>
-                        <div class="metric-label">mIoU Score</div>
-                    </div>
-                    <div class="metric">
-                        <div class="metric-value">3</div>
-                        <div class="metric-label">Countries</div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- HawkEYE Omega -->
-            <div class="engine-card">
-                <div class="engine-icon">🦟</div>
-                <h3 class="engine-name">HawkEYE Omega</h3>
-                <div class="engine-type">Disease Intelligence</div>
-                <p class="engine-description">
-                    Dengue prediction with causal discovery, integrating 1,084 health reports, satellite imagery (NDWI, NDVI), live weather APIs, and economic indicators for 14-day forecasting.
-                </p>
-                <div class="engine-metrics">
-                    <div class="metric">
-                        <div class="metric-value">9.8%</div>
-                        <div class="metric-label">MAPE</div>
-                    </div>
-                    <div class="metric">
-                        <div class="metric-value">$15.2M</div>
-                        <div class="metric-label">Impact</div>
-                    </div>
-                    <div class="metric">
-                        <div class="metric-value">1,084</div>
-                        <div class="metric-label">PDF Reports</div>
-                    </div>
-                    <div class="metric">
-                        <div class="metric-value">14-day</div>
-                        <div class="metric-label">Forecast</div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- HawkEYE Crop -->
-            <div class="engine-card">
-                <div class="engine-icon">🌾</div>
-                <h3 class="engine-name">HawkEYE Crop</h3>
-                <div class="engine-type">Agricultural Intelligence</div>
-                <p class="engine-description">
-                    Self-supervised learning discovers crop stress patterns from unlabeled Sentinel-2 imagery. SimSiam feature learning with K-means clustering for unsupervised pattern detection.
-                </p>
-                <div class="engine-metrics">
-                    <div class="metric">
-                        <div class="metric-value">8.27%</div>
-                        <div class="metric-label">Stress Area</div>
-                    </div>
-                    <div class="metric">
-                        <div class="metric-value">4</div>
-                        <div class="metric-label">Clusters</div>
-                    </div>
-                    <div class="metric">
-                        <div class="metric-value">High</div>
-                        <div class="metric-label">Confidence</div>
-                    </div>
-                    <div class="metric">
-                        <div class="metric-value">10m</div>
-                        <div class="metric-label">Resolution</div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- ATLAS V2.0 -->
-            <div class="engine-card">
-                <div class="engine-icon">📊</div>
-                <h3 class="engine-name">ATLAS V2.0</h3>
-                <div class="engine-type">Trade Intelligence</div>
-                <p class="engine-description">
-                    Advanced freight forecasting with the Trade Imbalance Ratio discovery. Ensemble methods, quantile regression confidence intervals, and SHAP explainability for actionable insights.
-                </p>
-                <div class="engine-metrics">
-                    <div class="metric">
-                        <div class="metric-value">0.807</div>
-                        <div class="metric-label">7-day R²</div>
-                    </div>
-                    <div class="metric">
-                        <div class="metric-value">$611</div>
-                        <div class="metric-label">MAE USD/TEU</div>
-                    </div>
-                    <div class="metric">
-                        <div class="metric-value">2,698</div>
-                        <div class="metric-label">Data Points</div>
-                    </div>
-                    <div class="metric">
-                        <div class="metric-value">±$1,500</div>
-                        <div class="metric-label">Confidence</div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Unified Platform -->
-            <div class="engine-card">
-                <div class="engine-icon">🎯</div>
-                <h3 class="engine-name">Unified Platform</h3>
-                <div class="engine-type">Integration Layer</div>
-                <p class="engine-description">
-                    Real-time risk assessment combining satellite flood data with freight forecasting. Generates port-specific recommendations with disruption premium calculations.
-                </p>
-                <div class="engine-metrics">
-                    <div class="metric">
-                        <div class="metric-value">4</div>
-                        <div class="metric-label">Ports Analyzed</div>
-                    </div>
-                    <div class="metric">
-                        <div class="metric-value">Real-time</div>
-                        <div class="metric-label">Updates</div>
-                    </div>
-                    <div class="metric">
-                        <div class="metric-value">$800</div>
-                        <div class="metric-label">Max Premium</div>
-                    </div>
-                    <div class="metric">
-                        <div class="metric-value">Multi-modal</div>
-                        <div class="metric-label">Analysis</div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Odyssey -->
-    <section class="odyssey">
-        <div class="timeline-line"></div>
-        <div class="section-header">
-            <h2 class="section-title">The <span class="accent">Odyssey</span></h2>
-            <p class="section-subtitle">From illusion to breakthrough</p>
-        </div>
-
-        <div class="odyssey-stage">
-            <div class="stage-content">
-                <div class="stage-label">Stage 1</div>
-                <h3 class="stage-title">The Chimera</h3>
-                <p class="stage-description">
-                    We began with a seductive illusion—98% accuracy on simulated data. Beautiful metrics that would have fooled investors, but not the real world. The model's collapse was not a failure, but the first lesson.
-                </p>
-                <div class="stage-stats">
-                    <div>
-                        <div class="stage-stat-value">98%</div>
-                        <div class="stage-stat-label">Simulated R²</div>
-                    </div>
-                    <div>
-                        <div class="stage-stat-value">100%</div>
-                        <div class="stage-stat-label">Useless</div>
-                    </div>
-                </div>
-            </div>
-            <div class="data-viz-container">
-                <div class="network-container" id="network1"></div>
-            </div>
-        </div>
-
-        <div class="odyssey-stage">
-            <div class="stage-content">
-                <div class="stage-label">Stage 2</div>
-                <h3 class="stage-title">The Abyss</h3>
-                <p class="stage-description">
-                    Real data destroyed everything. Negative R² scores. Complete failure. But this wasn't a bug—it was scientific falsification saving us from deploying useless technology. Honesty over metrics.
-                </p>
-                <div class="stage-stats">
-                    <div>
-                        <div class="stage-stat-value">-0.23</div>
-                        <div class="stage-stat-label">Real R²</div>
-                    </div>
-                    <div>
-                        <div class="stage-stat-value">100%</div>
-                        <div class="stage-stat-label">Honest</div>
-                    </div>
-                </div>
-            </div>
-            <div class="data-viz-container">
-                <div class="data-stream" id="dataStream"></div>
-            </div>
-        </div>
-
-        <div class="odyssey-stage">
-            <div class="stage-content">
-                <div class="stage-label">Stage 3</div>
-                <h3 class="stage-title">The Rosetta Stone</h3>
-                <p class="stage-description">
-                    Through relentless feature engineering, we discovered it: the Trade Imbalance Ratio. Not complex algorithms, but the right insight that decoded freight behavior and created a defensible edge.
-                </p>
-                <div class="stage-stats">
-                    <div>
-                        <div class="stage-stat-value">0.807</div>
-                        <div class="stage-stat-label">Final R²</div>
-                    </div>
-                    <div>
-                        <div class="stage-stat-value">$611</div>
-                        <div class="stage-stat-label">MAE USD/TEU</div>
-                    </div>
-                </div>
-            </div>
-            <div class="data-viz-container">
-                <canvas id="successChart" class="live-chart"></canvas>
-            </div>
-        </div>
-    </section>
-
-    <!-- Impact -->
-    <section class="impact">
-        <div class="section-header">
-            <h2 class="section-title">Global <span class="accent">Impact</span></h2>
-            <p class="section-subtitle">Real-world validation across multiple domains</p>
-        </div>
-
-        <div class="data-viz-container" style="margin-bottom: 8vh;">
-            <canvas id="impactChart" class="live-chart"></canvas>
-        </div>
-        
-        <div class="impact-grid">
-            <div class="impact-card">
-                <div class="impact-number">800K</div>
-                <div class="impact-label">Lives Impacted</div>
-            </div>
-            <div class="impact-card">
-                <div class="impact-number">15,000</div>
-                <div class="impact-label">km² Analyzed</div>
-            </div>
-            <div class="impact-card">
-                <div class="impact-number">99.7%</div>
-                <div class="impact-label">Faster Processing</div>
-            </div>
-            <div class="impact-card">
-                <div class="impact-number">$15.2M</div>
-                <div class="impact-label">Economic Impact</div>
-            </div>
-            <div class="impact-card">
-                <div class="impact-number">1,084</div>
-                <div class="impact-label">Reports Analyzed</div>
-            </div>
-            <div class="impact-card">
-                <div class="impact-number">2,698</div>
-                <div class="impact-label">Trade Records</div>
-            </div>
-        </div>
-    </section>
-
-    <!-- CTA -->
-    <section class="cta">
-        <h2 class="cta-title">Ready to Deploy</h2>
-        <p class="cta-subtitle">Production-ready AI systems for global risk intelligence</p>
-        <a href="#" class="cta-button">Explore Platform</a>
-    </section>
-
+    
+    <!-- Bottom Navigation -->
+    <div class="bottom-nav">
+        <nav>
+            <a href="#" class="nav-logo">HAWKEYE</a>
+            <a href="#summary">Summary</a>
+            <a href="#scope">Scope</a>
+            <a href="#methodology">Method</a>
+            <a href="#results">Results</a>
+            <a href="#impact">Impact</a>
+            <a href="#future">Future</a>
+        </nav>
+    </div>
+    
     <script>
-        // Initialize Lenis smooth scroll with error handling
-        let lenis;
+        // Register GSAP plugins
+        gsap.registerPlugin(ScrollTrigger, ScrollSmoother, CustomEase);
         
-        function initLenis() {
-            if (typeof Lenis !== 'undefined') {
-                lenis = new Lenis({
-                    duration: 1.2,
-                    easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
-                    smooth: true
-                });
-
-                function raf(time) {
-                    lenis.raf(time);
-                    requestAnimationFrame(raf);
-                }
-                requestAnimationFrame(raf);
-            } else {
-                // Fallback: retry after a short delay
-                setTimeout(initLenis, 100);
-            }
-        }
+        // Custom ease
+        CustomEase.create("smooth", "0.25, 0.1, 0.25, 1");
         
-        // Initialize Lenis when DOM is ready
-        if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', initLenis);
-        } else {
-            initLenis();
-        }
-
-        // Enhanced Custom Cursor
-        const cursor = document.querySelector('.cursor');
-        let mouseX = 0, mouseY = 0;
-        let cursorX = 0, cursorY = 0;
-
-        document.addEventListener('mousemove', (e) => {
-            mouseX = e.clientX;
-            mouseY = e.clientY;
+        // Initialize ScrollSmoother
+        let smoother = ScrollSmoother.create({
+            wrapper: '#smooth-wrapper',
+            content: '#smooth-content',
+            smooth: 2,
+            effects: true,
+            smoothTouch: 0.1,
         });
-
-        function animateCursor() {
-            const dx = mouseX - cursorX;
-            const dy = mouseY - cursorY;
-            
-            cursorX += dx * 0.2;
-            cursorY += dy * 0.2;
-            
-            cursor.style.left = cursorX + 'px';
-            cursor.style.top = cursorY + 'px';
-            
-            requestAnimationFrame(animateCursor);
-        }
-        animateCursor();
-
-        // Hover effects for interactive elements
-        document.querySelectorAll('a, button, .engine-card, .impact-card').forEach(el => {
-            el.addEventListener('mouseenter', () => cursor.classList.add('hover'));
-            el.addEventListener('mouseleave', () => cursor.classList.remove('hover'));
-            
-            // Track mouse position for gradient effect
-            el.addEventListener('mousemove', (e) => {
-                const rect = el.getBoundingClientRect();
-                const x = e.clientX - rect.left;
-                const y = e.clientY - rect.top;
-                el.style.setProperty('--mouse-x', `${x}px`);
-                el.style.setProperty('--mouse-y', `${y}px`);
+        
+        // Parallax effect for fixed backgrounds
+        gsap.utils.toArray('.parallax-section').forEach((section) => {
+            gsap.to(section, {
+                backgroundPosition: `50% ${window.innerHeight / 2}px`,
+                ease: "none",
+                scrollTrigger: {
+                    trigger: section,
+                    start: "top bottom",
+                    end: "bottom top",
+                    scrub: true
+                }
             });
         });
-
-        // Particle System
-        function createParticles() {
-            const container = document.getElementById('particles');
-            for (let i = 0; i < 50; i++) {
-                const particle = document.createElement('div');
-                particle.className = 'particle';
-                particle.style.left = Math.random() * 100 + '%';
-                particle.style.animationDelay = Math.random() * 20 + 's';
-                particle.style.animationDuration = (15 + Math.random() * 10) + 's';
-                container.appendChild(particle);
-            }
-        }
-        createParticles();
-
-        // Enhanced Loader
-        const loader = document.querySelector('.loader');
-        const loaderProgress = document.querySelector('.loader-progress');
-        const loaderPercentage = document.querySelector('.loader-percentage');
-        let progress = 0;
-
-        const loaderInterval = setInterval(() => {
-            progress += Math.random() * 15;
-            if (progress > 100) progress = 100;
-            
-            loaderProgress.style.width = progress + '%';
-            loaderPercentage.textContent = Math.floor(progress) + '%';
-            
-            if (progress === 100) {
-                clearInterval(loaderInterval);
-                setTimeout(() => {
-                    gsap.to(loader, {
-                        opacity: 0,
-                        duration: 0.5,
-                        onComplete: () => {
-                            loader.style.display = 'none';
-                            initAnimations();
-                            initCharts();
-                            initNetworkVisualization();
-                            initDataStream();
-                        }
-                    });
-                }, 500);
-            }
-        }, 100);
-
-        // Initialize Animations
-        function initAnimations() {
-            // Hero Stats Animation
-            gsap.to('.hero-stat', {
-                opacity: 1,
-                y: 0,
-                duration: 1,
-                stagger: 0.2,
-                ease: 'power3.out'
+        
+        // Fade in animations
+        gsap.utils.toArray('.fade-in').forEach((element) => {
+            gsap.from(element, {
+                scrollTrigger: {
+                    trigger: element,
+                    start: "top 85%",
+                    end: "top 60%",
+                    toggleActions: "play none none reverse"
+                },
+                y: 60,
+                opacity: 0,
+                duration: 1.2,
+                ease: "smooth"
             });
-
-            // Section Headers
-            gsap.utils.toArray('.section-header').forEach(header => {
-                gsap.to(header, {
-                    opacity: 1,
-                    y: 0,
-                    duration: 1,
-                    scrollTrigger: {
-                        trigger: header,
-                        start: 'top 80%'
-                    }
-                });
-            });
-
-            // Engine Cards
-            gsap.utils.toArray('.engine-card').forEach((card, i) => {
-                gsap.to(card, {
-                    opacity: 1,
-                    y: 0,
-                    duration: 1,
-                    delay: i * 0.1,
-                    scrollTrigger: {
-                        trigger: card,
-                        start: 'top 85%'
-                    }
-                });
-            });
-
-            // Odyssey Stages
-            gsap.utils.toArray('.odyssey-stage').forEach(stage => {
-                gsap.to(stage, {
-                    opacity: 1,
-                    y: 0,
-                    duration: 1.2,
-                    scrollTrigger: {
-                        trigger: stage,
-                        start: 'top 75%'
-                    }
-                });
-            });
-
-            // Impact Cards
-            gsap.utils.toArray('.impact-card').forEach((card, i) => {
-                gsap.to(card, {
-                    opacity: 1,
-                    scale: 1,
-                    duration: 0.8,
-                    delay: i * 0.1,
-                    scrollTrigger: {
-                        trigger: card,
-                        start: 'top 85%'
-                    }
-                });
-            });
-        }
-
-        // Initialize Charts
-        function initCharts() {
-            // Portfolio Performance Chart
-            const portfolioCtx = document.getElementById('portfolioChart');
-            if (portfolioCtx) {
-                new Chart(portfolioCtx, {
-                    type: 'line',
-                    data: {
-                        labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
-                        datasets: [{
-                            label: 'Accuracy',
-                            data: [88, 90, 92, 93, 94, 95],
-                            borderColor: '#00ffaa',
-                            backgroundColor: 'rgba(0, 255, 170, 0.1)',
-                            tension: 0.4,
-                            fill: true
-                        }, {
-                            label: 'Coverage',
-                            data: [75, 78, 82, 85, 88, 91],
-                            borderColor: '#00a6ff',
-                            backgroundColor: 'rgba(0, 166, 255, 0.1)',
-                            tension: 0.4,
-                            fill: true
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        plugins: {
-                            legend: {
-                                display: true,
-                                position: 'top',
-                                labels: { color: '#8b8b8b' }
-                            }
-                        },
-                        scales: {
-                            x: {
-                                grid: { color: 'rgba(255, 255, 255, 0.05)' },
-                                ticks: { color: '#8b8b8b' }
-                            },
-                            y: {
-                                grid: { color: 'rgba(255, 255, 255, 0.05)' },
-                                ticks: { color: '#8b8b8b' }
-                            }
-                        }
-                    }
-                });
-            }
-
-            // Success Metrics Chart
-            const successCtx = document.getElementById('successChart');
-            if (successCtx) {
-                new Chart(successCtx, {
-                    type: 'bar',
-                    data: {
-                        labels: ['Initial', 'Refined', 'Optimized', 'Final'],
-                        datasets: [{
-                            label: 'Model R²',
-                            data: [-0.23, 0.35, 0.67, 0.807],
-                            backgroundColor: [
-                                'rgba(255, 0, 85, 0.5)',
-                                'rgba(255, 170, 0, 0.5)',
-                                'rgba(0, 166, 255, 0.5)',
-                                'rgba(0, 255, 170, 0.5)'
-                            ],
-                            borderColor: [
-                                '#ff0055',
-                                '#ffaa00',
-                                '#00a6ff',
-                                '#00ffaa'
-                            ],
-                            borderWidth: 2
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        plugins: {
-                            legend: { display: false }
-                        },
-                        scales: {
-                            x: {
-                                grid: { display: false },
-                                ticks: { color: '#8b8b8b' }
-                            },
-                            y: {
-                                grid: { color: 'rgba(255, 255, 255, 0.05)' },
-                                ticks: { color: '#8b8b8b' }
-                            }
-                        }
-                    }
-                });
-            }
-
-            // Impact Distribution Chart
-            const impactCtx = document.getElementById('impactChart');
-            if (impactCtx) {
-                new Chart(impactCtx, {
-                    type: 'doughnut',
-                    data: {
-                        labels: ['Bangladesh', 'Pakistan', 'India', 'Other'],
-                        datasets: [{
-                            data: [45, 25, 20, 10],
-                            backgroundColor: [
-                                'rgba(0, 255, 170, 0.8)',
-                                'rgba(0, 166, 255, 0.8)',
-                                'rgba(139, 92, 246, 0.8)',
-                                'rgba(255, 170, 0, 0.8)'
-                            ],
-                            borderWidth: 0
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        plugins: {
-                            legend: {
-                                position: 'right',
-                                labels: { color: '#8b8b8b' }
-                            }
-                        }
-                    }
-                });
-            }
-        }
-
-        // Network Visualization
-        function initNetworkVisualization() {
-            const container = document.getElementById('network1');
-            if (!container) return;
-
-            const nodes = 12;
-            const centerX = container.offsetWidth / 2;
-            const centerY = container.offsetHeight / 2;
-            const radius = Math.min(centerX, centerY) * 0.7;
-
-            for (let i = 0; i < nodes; i++) {
-                const angle = (i / nodes) * 2 * Math.PI;
-                const x = centerX + radius * Math.cos(angle);
-                const y = centerY + radius * Math.sin(angle);
-
-                const node = document.createElement('div');
-                node.className = 'network-node';
-                node.style.left = x + 'px';
-                node.style.top = y + 'px';
-                container.appendChild(node);
-
-                // Create edges
-                for (let j = i + 1; j < Math.min(i + 3, nodes); j++) {
-                    const angle2 = (j / nodes) * 2 * Math.PI;
-                    const x2 = centerX + radius * Math.cos(angle2);
-                    const y2 = centerY + radius * Math.sin(angle2);
-
-                    const edge = document.createElement('div');
-                    edge.className = 'network-edge';
-                    
-                    const dx = x2 - x;
-                    const dy = y2 - y;
-                    const length = Math.sqrt(dx * dx + dy * dy);
-                    const angleRad = Math.atan2(dy, dx);
-
-                    edge.style.width = length + 'px';
-                    edge.style.left = x + 'px';
-                    edge.style.top = y + 'px';
-                    edge.style.transform = `rotate(${angleRad}rad)`;
-                    
-                    container.appendChild(edge);
-                }
-            }
-        }
-
-        // Data Stream Simulation
-        function initDataStream() {
-            const stream = document.getElementById('dataStream');
-            if (!stream) return;
-
-            const dataTypes = [
-                { type: 'FLOOD_DETECT', value: 'Sentinel-1 SAR scan complete' },
-                { type: 'TRADE_UPDATE', value: 'Freight rate: $2,847/TEU' },
-                { type: 'DISEASE_ALERT', value: 'Dengue risk: 67% (↑12%)' },
-                { type: 'CROP_STATUS', value: 'Stress detected: 8.27% area' },
-                { type: 'PORT_STATUS', value: 'Chennai congestion: HIGH' }
-            ];
-
-            setInterval(() => {
-                if (stream.children.length > 6) {
-                    stream.removeChild(stream.firstChild);
-                }
-
-                const data = dataTypes[Math.floor(Math.random() * dataTypes.length)];
-                const item = document.createElement('div');
-                item.className = 'stream-item';
+        });
+        
+        // Split text animation for headings
+        if (typeof SplitText !== 'undefined') {
+            gsap.utils.toArray('h1, h2').forEach((heading) => {
+                const split = new SplitText(heading, { type: "lines,words" });
                 
-                const timestamp = new Date().toLocaleTimeString('en-US', { 
-                    hour12: false, 
-                    hour: '2-digit', 
-                    minute: '2-digit', 
-                    second: '2-digit' 
-                });
-
-                item.innerHTML = `
-                    <div class="stream-indicator"></div>
-                    <div class="stream-timestamp">${timestamp}</div>
-                    <div class="stream-value">${data.value}</div>
-                `;
-
-                stream.appendChild(item);
-            }, 2000);
-        }
-
-        // Animate numbers on scroll
-        function animateValue(element, start, end, duration) {
-            const range = end - start;
-            const increment = range / (duration / 16);
-            let current = start;
-            
-            const timer = setInterval(() => {
-                current += increment;
-                if ((increment > 0 && current >= end) || (increment < 0 && current <= end)) {
-                    current = end;
-                    clearInterval(timer);
-                }
-                element.textContent = Math.floor(current).toLocaleString();
-            }, 16);
-        }
-
-        // Initialize counter animations
-        document.querySelectorAll('.impact-number').forEach(el => {
-            const observer = new IntersectionObserver(entries => {
-                entries.forEach(entry => {
-                    if (entry.isIntersecting) {
-                        const text = el.textContent;
-                        const value = parseFloat(text.replace(/[^0-9.-]/g, ''));
-                        if (!isNaN(value)) {
-                            animateValue(el, 0, value, 2000);
-                        }
-                        observer.unobserve(el);
-                    }
+                gsap.from(split.words, {
+                    scrollTrigger: {
+                        trigger: heading,
+                        start: "top 85%",
+                        end: "top 60%",
+                        toggleActions: "play none none reverse"
+                    },
+                    opacity: 0,
+                    y: 30,
+                    rotationX: -45,
+                    stagger: 0.02,
+                    duration: 0.8,
+                    ease: "smooth"
                 });
             });
-            observer.observe(el);
+        }
+        
+        // Bottom nav scroll indicator
+        let lastScroll = 0;
+        const nav = document.querySelector('.bottom-nav');
+        
+        window.addEventListener('scroll', () => {
+            const currentScroll = window.pageYOffset;
+            
+            if (currentScroll <= 0) {
+                nav.style.transform = 'translateY(0)';
+                return;
+            }
+            
+            if (currentScroll > lastScroll && currentScroll > 500) {
+                // Scrolling down
+                nav.style.transform = 'translateY(100%)';
+            } else {
+                // Scrolling up
+                nav.style.transform = 'translateY(0)';
+            }
+            
+            lastScroll = currentScroll;
         });
+        
+        // Smooth scroll for nav links
+        document.querySelectorAll('.bottom-nav a').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                if (this.getAttribute('href').startsWith('#')) {
+                    e.preventDefault();
+                    const target = this.getAttribute('href');
+                    if (target !== '#') {
+                        smoother.scrollTo(target, true, "top 100px");
+                    }
+                }
+            });
+        });
+        
+        // Update MathJax after render
+        if (window.MathJax) {
+            MathJax.typesetPromise().then(() => {
+                ScrollTrigger.refresh();
+            });
+        }
     </script>
 </body>
 </html>
