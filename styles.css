@@ -14,6 +14,112 @@
     --text-muted: #888888;
 }
 
+/* Full Screen Navigation Menu */
+.fullscreen-menu {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100vh;
+    background: rgba(10, 10, 10, 0.98);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    visibility: hidden;
+    pointer-events: none;
+}
+
+.fullscreen-menu.active {
+    visibility: visible;
+    pointer-events: all;
+}
+
+.fullscreen-menu-content {
+    text-align: center;
+}
+
+.fullscreen-menu nav {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+.fullscreen-menu a {
+    color: var(--text-light);
+    text-decoration: none;
+    font-size: clamp(2rem, 5vw, 4rem);
+    font-family: 'Crimson Pro', serif;
+    font-weight: 200;
+    letter-spacing: -0.02em;
+    opacity: 0;
+    transform: translateY(20px);
+    display: block;
+    transition: color 0.3s ease;
+}
+
+.fullscreen-menu a:hover {
+    color: var(--accent-bright);
+}
+
+.menu-close {
+    position: absolute;
+    top: 40px;
+    right: 40px;
+    width: 50px;
+    height: 50px;
+    cursor: pointer;
+    background: none;
+    border: none;
+    padding: 0;
+}
+
+.menu-close span {
+    display: block;
+    width: 30px;
+    height: 2px;
+    background: var(--text-light);
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform-origin: center;
+}
+
+.menu-close span:first-child {
+    transform: translate(-50%, -50%) rotate(45deg);
+}
+
+.menu-close span:last-child {
+    transform: translate(-50%, -50%) rotate(-45deg);
+}
+
+/* Hamburger Menu Button (for fullscreen trigger) */
+.menu-trigger {
+    background: none;
+    border: none;
+    color: var(--text-light);
+    cursor: pointer;
+    padding: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: opacity 0.3s ease;
+}
+
+.menu-trigger:hover {
+    opacity: 0.7;
+}
+
+.menu-trigger svg {
+    width: 24px;
+    height: 24px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.5;
+}
+
 /* CRITICAL FIX: Lenis smooth scroll optimization */
 html {
     overflow-x: hidden;
@@ -759,4 +865,18 @@ ul li::before {
     body {
         text-rendering: optimizeSpeed;
     }
+}
+
+/* Ensure no transform on hover states */
+pre:hover,
+.metric:hover,
+.formula-block:hover,
+.demo-card:hover,
+.cta-button:hover {
+    transform: none;
+}
+
+/* Override any remaining transforms */
+* {
+    transform: translateZ(0);
 }
