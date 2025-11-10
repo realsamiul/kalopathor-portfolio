@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HAWKEYE Crop Intelligence - Technical Report</title>
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:wght@200;300;400;600&family=Inter:wght@200;300;400;500;600&display=swap" rel="stylesheet">
+    
+    <!-- CSS -->
+    <link rel="stylesheet" href="../styles.css">
+    
+    <!-- MathJax -->
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+</head>
+<body>
+            
+    <!-- HERO -->
+    <section class="hero">
+        <div class="content-wrapper">
+            <div class="label fade-in">HAWKEYE Intelligence Platform</div>
+            <h1 class="fade-in">Crop Intelligence</h1>
+            <p class="fade-in" style="max-width: 900px; font-size: clamp(0.9rem, 1.5vw, 1.2rem); margin-top: clamp(1.5rem, 3vw, 3rem); line-height: 1.6;">
+                Zero-label crop-stress discovery using self-supervised learning at 30m resolution
+            </p>
+        </div>
+    </section>
+    
+    <!-- SUMMARY -->
+    <section class="dark-section">
+        <div class="content-wrapper">
+            <div class="label fade-in">Executive Summary</div>
+            <h2 class="fade-in">Stress Discovery</h2>
+            <p class="fade-in">
+                HAWKEYE Crop Intelligence performs zero‑label crop‑stress discovery by combining SimSiam self‑supervised representation learning with K‑Means clustering, identifying 8.27% stressed area in the Jessore AOI and separating four distinct land‑cover clusters.
+            </p>
+            <p class="fade-in" style="margin-top: 1.5rem;">
+                The pipeline ingests Sentinel‑2 multispectral bands with DEM/slope, learns 512‑dim embeddings, clusters them without human labels, and exports a georeferenced stress map and overlays for agronomic triage.
+            </p>
+            <div class="grid-2" style="margin-top: clamp(4rem, 8vw, 6rem);">
+                <div class="metric fade-in">
+                    <div class="metric-value">8.27%</div>
+                    <div class="metric-label">Stressed Area</div>
+                </div>
+                <div class="metric fade-in">
+                    <div class="metric-value">4</div>
+                    <div class="metric-label">Clusters</div>
+                </div>
+                <div class="metric fade-in">
+                    <div class="metric-value">512-dim</div>
+                    <div class="metric-label">Embeddings</div>
+                </div>
+                <div class="metric fade-in">
+                    <div class="metric-value">30m</div>
+                    <div class="metric-label">Resolution</div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- SCOPE -->
+    <section class="light-section">
+        <div class="content-wrapper">
+            <div class="label fade-in">Project Scope</div>
+            <h2 class="fade-in">Operational Scale</h2>
+            <p class="fade-in">
+                Operationalize near–real‑time crop‑stress mapping that turns unlabeled satellite scenes into actionable field‑level guidance, emphasizing unsupervised discovery where ground truth is scarce.
+            </p>
+            <p class="fade-in" style="margin-top: 2rem;">
+                Primary AOI is the Jessore agricultural region in Bangladesh; the demo operates at 30 m processing scale for Earth Engine throughput while preserving Sentinel‑2 spectral fidelity for reliable vegetation indices.
+            </p>
+        </div>
+    </section>
+    
+    <!-- INTENTION -->
+    <section class="parallax-section parallax-1">
+        <div class="content-wrapper">
+            <div class="label fade-in">Intention & Objectives</div>
+            <h2 class="fade-in">Mission Critical</h2>
+            <ul class="fade-in">
+                <li>Replace manual scouting with automated, statistically validated stress discovery that requires zero human labels while remaining interpretable via vegetation/water indices.</li>
+                <li style="margin-top: 1.5rem;">Deliver binary stress rasters, confidence overlays, and cluster breakdowns that agronomists and insurers can use for targeted interventions and early claims triage.</li>
+            </ul>
+        </div>
+    </section>
+    
+    <!-- DATASETS -->
+    <section class="dark-section">
+        <div class="content-wrapper">
+            <div class="label fade-in">Data Sources</div>
+            <h2 class="fade-in">Multi-Modal Fusion</h2>
+            <div class="grid-2">
+                <div class="fade-in">
+                    <h3 style="font-size: clamp(1.1rem, 2vw, 1.6rem); margin-bottom: 1.2rem;">Sentinel‑2 Optical</h3>
+                    <p>B2/B3/B4 (RGB), B5/B8 (red‑edge/NIR), B11/B12 (SWIR) for robust index computation and spectral separability.</p>
+                </div>
+                <div class="fade-in">
+                    <h3 style="font-size: clamp(1.1rem, 2vw, 1.6rem); margin-bottom: 1.2rem;">SRTM DEM</h3>
+                    <p>Terrain normalization and context for waterlogging and drainage effects.</p>
+                </div>
+                <div class="fade-in">
+                    <h3 style="font-size: clamp(1.1rem, 2vw, 1.6rem); margin-bottom: 1.2rem;">AOI Window</h3>
+                    <p>Jessore bounding box [89.2, 23.2, 89.35, 23.35], 2023‑11‑01 to 2024‑02‑28, cloud cover <15%.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- VARIABLES -->
+    <section class="light-section">
+        <div class="content-wrapper">
+            <div class="label fade-in">Target Variables</div>
+            <h2 class="fade-in">Output Specifications</h2>
+            <ul class="fade-in">
+                <li>Pixel‑wise classes: stressed vs non‑stressed vegetation exported as binary $$0/1$$ rasters and probability overlays.</li>
+                <li>Unsupervised clusters: four land‑surface categories—Healthy, Water, Bare Soil, Stressed—derived from embedding space.</li>
+            </ul>
+        </div>
+    </section>
+    
+    <!-- METHOD -->
+    <section class="parallax-section parallax-2">
+        <div class="content-wrapper">
+            <div class="label fade-in">Methodology</div>
+            <h2 class="fade-in">Pipeline Architecture</h2>
+            <p class="fade-in">
+                Multi‑modal feature stack: normalized Sentinel‑2 bands plus derived NDVI/NDWI/moisture and slope features in a common grid for representation learning.
+            </p>
+            <p class="fade-in" style="margin-top: 1.5rem;">
+                Self‑supervised stage: SimSiam trains on unlabeled tiles to produce 512‑dim embeddings that encode vegetation condition and context.
+            </p>
+            <p class="fade-in" style="margin-top: 1.5rem;">
+                Clustering stage: K‑Means $$k=4$$ partitions embeddings; the stress cluster is selected via minimum mean NDVI and confirmed by low NIR/high SWIR signatures.
+            </p>
+        </div>
+    </section>
+    
+    <!-- INDEX RULES -->
+    <section class="dark-section">
+        <div class="content-wrapper">
+            <div class="label fade-in">Index Rules & Thresholds</div>
+            <h2 class="fade-in">Scientific Validation</h2>
+            <p class="fade-in">Key index rules guiding the stress detection:</p>
+            
+            <div class="formula-block fade-in">
+                <h3 style="font-size: clamp(1rem, 1.6vw, 1.3rem); margin-bottom: 1.2rem; font-weight: 300;">NDVI</h3>
+                <p style="margin-bottom: 1.2rem;">Normalized Difference Vegetation Index:</p>
+                <p>$$ \text{NDVI} = \frac{\text{NIR} - \text{Red}}{\text{NIR} + \text{Red}} $$</p>
+            </div>
+            
+            <div class="formula-block fade-in">
+                <h3 style="font-size: clamp(1rem, 1.6vw, 1.3rem); margin-bottom: 1.2rem; font-weight: 300;">NDWI</h3>
+                <p>$$ \text{NDWI} = \frac{G - \text{NIR}}{G + \text{NIR}} $$</p>
+                <p style="margin-top: 1.2rem; font-size: clamp(0.8rem, 1.2vw, 0.9rem); opacity: 0.8;">Indicating surface water and leaf water content</p>
+            </div>
+            
+            <div class="formula-block fade-in">
+                <h3 style="font-size: clamp(1rem, 1.6vw, 1.3rem); margin-bottom: 1.2rem; font-weight: 300;">Moisture Index</h3>
+                <p style="margin-bottom: 1.2rem;">Capturing canopy water-content:</p>
+                <p>$$ \text{MI} = \frac{\text{NIR} - \text{SWIR}_{1}}{\text{NIR} + \text{SWIR}_{1}} $$</p>
+            </div>
+        </div>
+    </section>
+    
+    <!-- MODEL ARCHITECTURE -->
+    <section class="light-section">
+        <div class="content-wrapper">
+            <div class="label fade-in">Model Architecture</div>
+            <h2 class="fade-in">SimSiam + K-Means</h2>
+            <p class="fade-in">
+                Representation learner: SimSiam with shared encoder, projector, and predictor; stop‑gradient on the target branch prevents collapse without negatives.
+            </p>
+            <div class="grid-2" style="margin-top: clamp(4rem, 8vw, 6rem);">
+                <div class="fade-in">
+                    <h3 style="font-size: clamp(1.1rem, 2vw, 1.6rem); margin-bottom: 1.2rem;">Backbone</h3>
+                    <ul>
+                        <li>SimpleBackbone CNN</li>
+                        <li>512‑dim global descriptors</li>
+                        <li>SGD/AdamW training</li>
+                    </ul>
+                </div>
+                <div class="fade-in">
+                    <h3 style="font-size: clamp(1.1rem, 2vw, 1.6rem); margin-bottom: 1.2rem;">Clustering</h3>
+                    <p>scikit‑learn K‑Means $$k=4$$ over per‑pixel feature vectors; centroid assignment yields the per‑pixel cluster map.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- FORMULAS -->
+    <section class="parallax-section parallax-3">
+        <div class="content-wrapper">
+            <div class="label fade-in">Core Mathematics</div>
+            <h2 class="fade-in">Key Formulas</h2>
+            
+            <div class="formula-block fade-in">
+                <h3 style="font-size: clamp(1rem, 1.6vw, 1.3rem); margin-bottom: 1.2rem; font-weight: 300;">SimSiam Loss</h3>
+                <p>$$ L = -\frac{1}{2}\big(\cos(p_{1}, \text{sg}(z_{2})) + \cos(p_{2}, \text{sg}(z_{1}))\big) $$</p>
+                <p style="margin-top: 1.2rem; font-size: clamp(0.8rem, 1.2vw, 0.9rem); opacity: 0.8;">Where sg denotes stop-gradient</p>
+            </div>
+            
+            <div class="formula-block fade-in">
+                <h3 style="font-size: clamp(1rem, 1.6vw, 1.3rem); margin-bottom: 1.2rem; font-weight: 300;">K‑Means Objective</h3>
+                <p>$$ \min_{\{\mu_{j}\}} \sum_{j=1}^{k} \sum_{x_{i}\in C_{j}} \lVert x_{i} - \mu_{j} \rVert^{2} $$</p>
+                <p style="margin-top: 1.2rem; font-size: clamp(0.8rem, 1.2vw, 0.9rem); opacity: 0.8;">With K‑Means++ initialization for stability</p>
+            </div>
+            
+            <div class="formula-block fade-in">
+                <h3 style="font-size: clamp(1rem, 1.6vw, 1.3rem); margin-bottom: 1.2rem; font-weight: 300;">Stress Percent</h3>
+                <p>$$ \%\text{Stress} = 100 \cdot \frac{\sum \mathbf{1}[c(x)=\text{stress}]}{\text{pixels}} $$</p>
+                <p style="margin-top: 1.2rem; font-size: clamp(0.8rem, 1.2vw, 0.9rem); opacity: 0.8;">Quantifying stressed area</p>
+            </div>
+        </div>
+    </section>
+    
+    <!-- PYTHON SNIPPETS -->
+    <section class="dark-section">
+        <div class="content-wrapper">
+            <div class="label fade-in">Implementation</div>
+            <h2 class="fade-in">Code Snippets</h2>
+            
+            <div class="fade-in">
+                <h3 style="margin-top: clamp(2rem, 4vw, 4rem); font-size: clamp(1.1rem, 2vw, 1.6rem);">Index Computation</h3>
+                <pre><code>nir, red, green, swir1 = data[:,:,4], data[:,:,0], data[:,:,1], data[:,:,5]
+ndvi = (nir - red) / (nir + red + 1e-6)
+ndwi = (green - nir) / (green + nir + 1e-6)
+moisture = (nir - swir1) / (nir + swir1 + 1e-6)
+feature_stack = np.stack([ndvi, ndwi, moisture, *[data[:,:,i] for i in range(min(7, data.shape[-1]))]], axis=-1)</code></pre>
+            </div>
+            
+            <div class="fade-in">
+                <h3 style="margin-top: clamp(3rem, 6vw, 5rem); font-size: clamp(1.1rem, 2vw, 1.6rem);">SimSiam Training Loop</h3>
+                <pre><code>z1 = projector(backbone(x1)); z2 = projector(backbone(x2))
+p1, p2 = predictor(z1), predictor(z2)
+loss = -0.5 * (F.cosine_similarity(p1, z2.detach(), dim=-1).mean()
+             +  F.cosine_similarity(p2, z1.detach(), dim=-1).mean())</code></pre>
+            </div>
+            
+            <div class="fade-in">
+                <h3 style="margin-top: clamp(3rem, 6vw, 5rem); font-size: clamp(1.1rem, 2vw, 1.6rem);">Stress Cluster Selection</h3>
+                <pre><code>means = [ndvi[cluster_map==k].mean() for k in range(4)]
+stress_idx = int(np.argmin(means))
+stress_map = (cluster_map == stress_idx).astype(np.uint8)</code></pre>
+            </div>
+        </div>
+    </section>
+    
+    <!-- RESULTS -->
+    <section class="light-section">
+        <div class="content-wrapper">
+            <div class="label fade-in">Performance Metrics</div>
+            <h2 class="fade-in">Results Obtained</h2>
+            
+            <div class="grid-2">
+                <div class="fade-in">
+                    <h3 style="font-size: clamp(1.1rem, 2vw, 1.6rem); margin-bottom: 1.2rem;">Discovery Metrics</h3>
+                    <p>8.27% stressed area over the Jessore AOI with four clusters automatically identified from unlabeled scenes.</p>
+                </div>
+                <div class="fade-in">
+                    <h3 style="font-size: clamp(1.1rem, 2vw, 1.6rem); margin-bottom: 1.2rem;">Spectral Validation</h3>
+                    <p>Stressed cluster shows $$ \mu_{\text{NDVI}}=0.42 $$, $$ \sigma_{\text{NDVI}}=0.08 $$, and $$ \mu_{\text{NDWI}}=0.22 $$, consistent with lower vigor and water content.</p>
+                </div>
+                <div class="fade-in">
+                    <h3 style="font-size: clamp(1.1rem, 2vw, 1.6rem); margin-bottom: 1.2rem;">Resolution & Scale</h3>
+                    <p>30 m processing scale for the demo’s Earth Engine constraints while retaining Sentinel‑2 spectral bands for reliable differentiation.</p>
+                </div>
+                <div class="fade-in">
+                    <h3 style="font-size: clamp(1.1rem, 2vw, 1.6rem); margin-bottom: 1.2rem;">Confidence</h3>
+                    <p>High—patterns are consistent across independent indices and robust under alternative tilings/augmentations.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- MEANING -->
+    <section class="dark-section">
+        <div class="content-wrapper">
+            <div class="label fade-in">Strategic Impact</div>
+            <h2 class="fade-in">Decision Relevance</h2>
+            <ul class="fade-in">
+                <li>Zero‑label discovery surfaces emergent agronomic risk without ground surveys, enabling earlier scouting, irrigation checks, and targeted agronomy at sub‑field resolution.</li>
+                <li>Quantified stress percent provides a planning KPI for procurement, logistics, and insurance partners to anticipate yield shortfalls and trigger interventions.</li>
+                <li>Embedding‑driven clusters enrich monitoring beyond a single index, isolating water bodies and bare soil to reduce false alerts and focus attention.</li>
+            </ul>
+        </div>
+    </section>
+    
+    <!-- TECHNICAL BRIEFS -->
+    <section class="light-section">
+        <div class="content-wrapper">
+            <div class="label fade-in">Technical Foundation</div>
+            <h2 class="fade-in">What Makes It Work</h2>
+            
+            <div class="fade-in" style="margin-top: clamp(2rem, 4vw, 4rem);">
+                <h3 style="font-size: clamp(1.1rem, 2vw, 1.6rem); margin-bottom: 1.2rem;">Self‑Supervised Invariances</h3>
+                <p>Learned from augmented tiles transfer to unseen parcels, improving separability of subtle stress states with minimal compute.</p>
+            </div>
+            
+            <div class="fade-in" style="margin-top: clamp(2rem, 4vw, 4rem);">
+                <h3 style="font-size: clamp(1.1rem, 2vw, 1.6rem); margin-bottom: 1.2rem;">Multi‑Index Feature Construction</h3>
+                <p>Injects plant physiology priors that stabilize clustering under illumination and soil‑background changes.</p>
+            </div>
+            
+            <div class="fade-in" style="margin-top: clamp(2rem, 4vw, 4rem);">
+                <h3 style="font-size: clamp(1.1rem, 2vw, 1.6rem); margin-bottom: 1.2rem;">Post‑Hoc Statistical Labeling</h3>
+                <p>Of clusters via NDVI minima yields an interpretable, auditable stress selection criterion.</p>
+            </div>
+        </div>
+    </section>
+    
+    <!-- OPERATIONALIZATION -->
+    <section class="dark-section">
+        <div class="content-wrapper">
+            <div class="label fade-in">Deployment</div>
+            <h2 class="fade-in">Operationalization & Outputs</h2>
+            
+            <div class="grid-2">
+                <div class="fade-in">
+                    <h3 style="font-size: clamp(1.1rem, 2vw, 1.6rem); margin-bottom: 1.2rem;">Deliverables</h3>
+                    <ul>
+                        <li>GeoTIFF stress masks</li>
+                        <li>Cluster rasters</li>
+                        <li>Styled overlays</li>
+                        <li>JSON report with stressed‑area %, cluster counts</li>
+                    </ul>
+                </div>
+                <div class="fade-in">
+                    <h3 style="font-size: clamp(1.1rem, 2vw, 1.6rem); margin-bottom: 1.2rem;">Integration</h3>
+                    <p>Earth Engine data pull → PyTorch SimSiam training → K‑Means clustering → vector/raster export with minimal manual supervision.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- LIMITATIONS -->
+    <section class="light-section">
+        <div class="content-wrapper">
+            <div class="label fade-in">Constraints</div>
+            <h2 class="fade-in">Limitations & Risks</h2>
+            
+            <div class="fade-in">
+                <h3 style="font-size: clamp(1.1rem, 2vw, 1.6rem); margin-bottom: 1.2rem; margin-top: clamp(2rem, 4vw, 3rem);">Cloud and Phenology</h3>
+                <p>Optical reliance requires date windows with <15% cloud and comparable phenological stages for fair clustering.</p>
+            </div>
+            
+            <div class="fade-in" style="margin-top: clamp(2rem, 4vw, 4rem);">
+                <h3 style="font-size: clamp(1.1rem, 2vw, 1.6rem); margin-bottom: 1.2rem;">Domain Shift</h3>
+                <p>Crop rotations, varietal differences, and soil backgrounds can shift spectra; periodic re‑tiling and retraining mitigate drift.</p>
+            </div>
+            
+            <div class="fade-in" style="margin-top: clamp(2rem, 4vw, 4rem);">
+                <h3 style="font-size: clamp(1.1rem, 2vw, 1.6rem); margin-bottom: 1.2rem;">Scale Trade‑Off</h3>
+                <p>30 m demo scale reduces I/O cost but limits smallest detectable patches; production can revert to 10–20 m when quotas allow.</p>
+            </div>
+        </div>
+    </section>
+    
+    <!-- FUTURE SCOPE -->
+    <section class="dark-section">
+        <div class="content-wrapper">
+            <div class="label fade-in">Roadmap</div>
+            <h2 class="fade-in">Future Scope</h2>
+            
+            <div class="fade-in">
+                <h3 style="font-size: clamp(1.1rem, 2vw, 1.6rem); margin-bottom: 1.2rem; margin-top: clamp(2rem, 4vw, 3rem);">Temporal Tracking</h3>
+                <p>Monthly embeddings and delta‑clustering to measure stress trajectories and intervention effects.</p>
+            </div>
+            
+            <div class="fade-in" style="margin-top: clamp(2rem, 4vw, 4rem);">
+                <h3 style="font-size: clamp(1.1rem, 2vw, 1.6rem); margin-bottom: 1.2rem;">Yield Linkage</h3>
+                <p>Calibrate stress percent against harvest outcomes to estimate expected tonnes at risk per block.</p>
+            </div>
+            
+            <div class="fade-in" style="margin-top: clamp(2rem, 4vw, 4rem);">
+                <h3 style="font-size: clamp(1.1rem, 2vw, 1.6rem); margin-bottom: 1.2rem;">Alerts and APIs</h3>
+                <p>Push notifications when stress share exceeds 10% or when stressed clusters expand week‑over‑week.</p>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Footer spacing -->
+    <div style="height: 120px; background: var(--charcoal);"></div>
+    
+    <!-- Bottom Navigation -->
+    <div class="bottom-nav">
+        <nav>
+            <a href="#" class="nav-logo">HAWKEYE</a>
+            <a href="#summary">Summary</a>
+            <a href="#scope">Scope</a>
+            <a href="#methodology">Method</a>
+            <a href="#results">Results</a>
+            <a href="#impact">Impact</a>
+            <a href="#future">Future</a>
+        </nav>
+    </div>
+    
+    <!-- GSAP -->
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/gsap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/ScrollTrigger.min.js"></script>
+    <script src="../script.js"></script>
+</body>
+</html>
