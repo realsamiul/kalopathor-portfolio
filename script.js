@@ -1,19 +1,39 @@
 // Wait for DOM to be fully loaded
 document.addEventListener('DOMContentLoaded', function() {
     
-    // Register GSAP plugins including ScrollSmoother
-    gsap.registerPlugin(ScrollTrigger, ScrollSmoother);
+    // Register GSAP plugins
+    gsap.registerPlugin(ScrollTrigger, SplitText);
     
-    // Initialize ScrollSmoother for smooth scrolling
-    initSmoothScrolling();
+    // Initialize Lenis for buttery smooth, uninterrupted scrolling
+    const lenis = new Lenis({
+        duration: 1,
+        easing: (t) => t, // Linear easing for pure inertia feel
+        orientation: 'vertical',
+        gestureOrientation: 'vertical',
+        smoothWheel: true,
+        wheelMultiplier: 1,
+        smoothTouch: false, // Don't interfere with touch scrolling
+        touchMultiplier: 2,
+        infinite: false,
+        autoResize: true
+    });
     
-    // Initialize animations
+    // Connect Lenis to GSAP ScrollTrigger (read-only connection)
+    lenis.on('scroll', ScrollTrigger.update);
+    
+    // Run Lenis raf
+    function raf(time) {
+        lenis.raf(time);
+        requestAnimationFrame(raf);
+    }
+    requestAnimationFrame(raf);
+    
+    // Initialize animations (one-way, non-blocking)
     initScrollAnimations();
     initParallaxEffects();
     initNavbarBehavior();
     initMathJaxRefresh();
-    
-    // Additional initialization
+    initRollingText();
     initMetricAnimations();
     initCodeBlockAnimations();
     
@@ -23,41 +43,63 @@ document.addEventListener('DOMContentLoaded', function() {
         clearTimeout(resizeTimer);
         resizeTimer = setTimeout(() => {
             ScrollTrigger.refresh();
+            lenis.resize();
         }, 250);
     });
 });
 
-// Initialize ScrollSmoother for smooth scrolling
-function initSmoothScrolling() {
-    // Create ScrollSmoother instance
-    const smoother = ScrollSmoother.create({
-        wrapper: '#smooth-wrapper',
-        content: '#smooth-content',
-        smooth: 1.5, // Adjust for your preferred smoothness
-        effects: true,
-        smoothTouch: 0.1,
-        ease: 'power2.inOut'
-    });
-    
-    // Wrap content if not already wrapped
-    if (!document.querySelector('#smooth-wrapper')) {
-        const wrapper = document.createElement('div');
-        wrapper.id = 'smooth-wrapper';
-        wrapper.style.overflow = 'hidden';
-        document.body.appendChild(wrapper);
+// Rolling Text Animation (non-blocking)
+function initRollingText() {
+    document.querySelectorAll('.rolling-text').forEach(element => {
+        const repeatCount = parseInt(element.dataset.repeat) || 8;
+        const duration = parseFloat(element.dataset.duration) || 4;
+        const ease = element.dataset.ease || "power4.inOut";
+        const trigger = element.dataset.trigger || "scroll";
         
-        const content = document.createElement('div');
-        content.id = 'smooth-content';
-        while (document.body.firstChild) {
-            content.appendChild(document.body.firstChild);
+        const tl = gsap.timeline({ paused: true });
+        const split = new SplitText(element, { type: "chars" });
+        
+        split.chars.forEach((obj, i) => {
+            let txt = obj.innerText;
+            let clone = `<div class="cloneText">${txt}</div>`;
+            let newHTML = `<div class="originalText">${txt}</div>${clone}`;
+            obj.innerHTML = newHTML;
+            gsap.set(obj.childNodes[1], {
+                yPercent: i % 2 === 0 ? -100 : 100
+            });
+            let tween = gsap.to(obj.childNodes, {
+                repeat: repeatCount,
+                ease: "none",
+                yPercent: i % 2 === 0 ? "+=100" : "-=100"
+            });
+            tl.add(tween, 0);
+        });
+        
+        const mainAnimation = gsap.to(tl, { 
+            progress: 1, 
+            duration: duration, 
+            ease: ease,
+            paused: true
+        });
+        
+        // Set up trigger based on data attribute
+        if (trigger === "scroll") {
+            ScrollTrigger.create({
+                trigger: element,
+                start: "top 80%",
+                onEnter: () => mainAnimation.play(),
+                once: true
+            });
+        } else if (trigger === "hover") {
+            element.addEventListener('mouseenter', () => mainAnimation.play());
+            element.addEventListener('mouseleave', () => mainAnimation.reverse());
+        } else if (trigger === "load") {
+            mainAnimation.play();
         }
-        wrapper.appendChild(content);
-    }
-    
-    return smoother;
+    });
 }
 
-// Scroll-triggered fade-in animations
+// Scroll-triggered fade-in animations (non-blocking)
 function initScrollAnimations() {
     gsap.utils.toArray('.fade-in').forEach((element, index) => {
         gsap.fromTo(element, 
@@ -71,7 +113,8 @@ function initScrollAnimations() {
                     trigger: element,
                     start: "top 85%",
                     end: "top 55%",
-                    toggleActions: "play none none reverse"
+                    toggleActions: "play none none reverse",
+                    // No scrub - animations play independently of scroll
                 },
                 y: 0,
                 opacity: 1,
@@ -83,8 +126,8 @@ function initScrollAnimations() {
         );
     });
     
-    // Special animation for h1 and h2 elements
-    gsap.utils.toArray('h1, h2').forEach((heading, index) => {
+    // Special animation for h1 and h2 elements (skip rolling-text elements)
+    gsap.utils.toArray('h1:not(.rolling-text), h2:not(.rolling-text)').forEach((heading, index) => {
         gsap.fromTo(heading,
             {
                 y: 100,
@@ -96,7 +139,8 @@ function initScrollAnimations() {
                     trigger: heading,
                     start: "top 90%",
                     end: "top 60%",
-                    toggleActions: "play none none reverse"
+                    toggleActions: "play none none reverse",
+                    // No scrub - animations play independently
                 },
                 y: 0,
                 opacity: 1,
@@ -109,71 +153,69 @@ function initScrollAnimations() {
     });
 }
 
-// Parallax effect for hero and parallax sections
+// Parallax effect - using transform instead of background-position for performance
 function initParallaxEffects() {
     const parallaxSections = document.querySelectorAll('.hero, .parallax-section');
     
     parallaxSections.forEach(section => {
-        gsap.to(section, {
-            backgroundPosition: `50% ${window.innerHeight * 0.5}px`,
-            ease: "none",
-            scrollTrigger: {
+        // Create a separate parallax layer if needed
+        const parallaxBg = section.querySelector('.parallax-bg');
+        if (parallaxBg) {
+            gsap.to(parallaxBg, {
+                yPercent: 50,
+                ease: "none",
+                scrollTrigger: {
+                    trigger: section,
+                    start: "top top",
+                    end: "bottom top",
+                    scrub: true // True for parallax, but won't affect scroll smoothness
+                }
+            });
+        }
+        
+        // Subtle fade effect on content (non-blocking)
+        const content = section.querySelector('.content-wrapper');
+        if (content) {
+            ScrollTrigger.create({
                 trigger: section,
                 start: "top top",
                 end: "bottom top",
-                scrub: 1
-            }
-        });
-        
-        // Add subtle zoom effect on scroll
-        const content = section.querySelector('.content-wrapper');
-        if (content) {
-            gsap.fromTo(content,
-                {
-                    scale: 1,
-                    opacity: 1
-                },
-                {
-                    scale: 0.95,
-                    opacity: 0.8,
-                    ease: "none",
-                    scrollTrigger: {
-                        trigger: section,
-                        start: "top top",
-                        end: "bottom top",
-                        scrub: 1
-                    }
+                onUpdate: self => {
+                    const progress = self.progress;
+                    gsap.set(content, {
+                        opacity: 1 - (progress * 0.2),
+                        scale: 1 - (progress * 0.05)
+                    });
                 }
-            );
+            });
         }
     });
 }
 
-// Bottom navigation auto-hide behavior
+// Bottom navigation auto-hide behavior (passive observation)
 function initNavbarBehavior() {
     let lastScroll = 0;
     const nav = document.querySelector('.bottom-nav');
     
     if (!nav) return;
     
-    ScrollTrigger.create({
-        onUpdate: (self) => {
-            const currentScroll = self.scroll();
-            
-            if (currentScroll <= 100) {
-                nav.classList.remove('hidden');
-                return;
-            }
-            
-            if (currentScroll > lastScroll && currentScroll > 500) {
-                nav.classList.add('hidden');
-            } else if (currentScroll < lastScroll - 5) {
-                nav.classList.remove('hidden');
-            }
-            
-            lastScroll = currentScroll;
+    // Use passive scroll observation
+    window.addEventListener('scroll', () => {
+        const currentScroll = window.pageYOffset;
+        
+        if (currentScroll <= 100) {
+            nav.classList.remove('hidden');
+            return;
         }
-    });
+        
+        if (currentScroll > lastScroll && currentScroll > 500) {
+            nav.classList.add('hidden');
+        } else if (currentScroll < lastScroll - 5) {
+            nav.classList.remove('hidden');
+        }
+        
+        lastScroll = currentScroll;
+    }, { passive: true }); // Passive listener for better performance
     
     // Add active state to current section
     const navLinks = nav.querySelectorAll('a[href^="#"]');
@@ -194,42 +236,6 @@ function initNavbarBehavior() {
                         }
                     });
                 }
-            }
-        });
-    });
-}
-
-// Smooth scrolling for navigation links (now works with ScrollSmoother)
-function initSmoothScrollingLinks() {
-    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-        anchor.addEventListener('click', function (e) {
-            const href = this.getAttribute('href');
-            
-            if (href === '#') {
-                e.preventDefault();
-                gsap.to(window, {
-                    scrollTo: 0,
-                    duration: 1.5,
-                    ease: "power2.inOut"
-                });
-                return;
-            }
-            
-            const target = document.querySelector(href);
-            if (target) {
-                e.preventDefault();
-                
-                const navHeight = document.querySelector('.bottom-nav')?.offsetHeight || 0;
-                const offset = 100;
-                
-                gsap.to(window, {
-                    scrollTo: {
-                        y: target,
-                        offsetY: offset
-                    },
-                    duration: 1.5,
-                    ease: "power2.inOut"
-                });
             }
         });
     });
@@ -256,7 +262,7 @@ function initMathJaxRefresh() {
     }
 }
 
-// Animate metrics on scroll
+// Animate metrics on scroll (non-blocking)
 function initMetricAnimations() {
     gsap.utils.toArray('.metric').forEach((metric, index) => {
         const value = metric.querySelector('.metric-value');
@@ -285,6 +291,7 @@ function initMetricAnimations() {
                             trigger: metric,
                             start: "top 80%",
                             toggleActions: "play none none reverse"
+                            // No scrub - plays independently
                         },
                         onUpdate: function() {
                             const current = this.targets()[0].textContent;
@@ -317,6 +324,7 @@ function initMetricAnimations() {
                     trigger: metric,
                     start: "top 85%",
                     toggleActions: "play none none reverse"
+                    // No scrub
                 },
                 delay: index * 0.15
             }
@@ -324,11 +332,12 @@ function initMetricAnimations() {
     });
 }
 
-// Enhance code block interactions
+// Enhance code block interactions (non-blocking)
 function initCodeBlockAnimations() {
     const codeBlocks = document.querySelectorAll('pre');
     
     codeBlocks.forEach((block, index) => {
+        // Use CSS transitions for hover instead of JS
         block.addEventListener('mouseenter', function() {
             this.style.transform = 'translateX(12px) translateY(-4px)';
         });
@@ -351,6 +360,7 @@ function initCodeBlockAnimations() {
                     trigger: block,
                     start: "top 90%",
                     toggleActions: "play none none reverse"
+                    // No scrub
                 },
                 delay: index * 0.1
             }
