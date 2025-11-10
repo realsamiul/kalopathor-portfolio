@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HYPERION LPG Demand Forecasting - Technical Report</title>
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:wght@200;300;400;600&family=Inter:wght@200;300;400;500;600&display=swap" rel="stylesheet">
+    
+    <!-- CSS -->
+    <link rel="stylesheet" href="../styles.css">
+    
+    <!-- MathJax -->
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+</head>
+<body>
+            
+    <!-- HERO -->
+    <section class="hero">
+        <div class="content-wrapper">
+            <div class="label fade-in">HYPERION Data Analysis Engine</div>
+            <h1 class="fade-in">LPG Demand Forecasting</h1>
+            <p class="fade-in" style="max-width: 900px; font-size: clamp(0.9rem, 1.5vw, 1.2rem); margin-top: clamp(1.5rem, 3vw, 3rem); line-height: 1.6;">
+                Monthly forecasts with seasonal and trend decomposition using XGBoost
+            </p>
+        </div>
+    </section>
+    
+    <!-- SUMMARY -->
+    <section class="dark-section">
+        <div class="content-wrapper">
+            <div class="label fade-in">Executive Summary</div>
+            <h2 class="fade-in">Demand Intelligence</h2>
+            <p class="fade-in">
+                HYPERION LPG Demand Forecasting converts monthly national consumption data into accurate, seasonality‑aware forecasts using XGBoost, capturing long‑term upward trend and predictable annual cycles for planning and inventory optimization.
+            </p>
+            <p class="fade-in" style="margin-top: 1.5rem;">
+                The pipeline standardizes inputs, engineers temporal/seasonal features, validates via time‑series CV and holdout evaluation, and outputs monthly demand with confidence bands for production and logistics scheduling.
+            </p>
+            <div class="grid-2" style="margin-top: clamp(4rem, 8vw, 6rem);">
+                <div class="metric fade-in">
+                    <div class="metric-value">XGBoost</div>
+                    <div class="metric-label">Model Type</div>
+                </div>
+                <div class="metric fade-in">
+                    <div class="metric-value">Monthly</div>
+                    <div class="metric-label">Cadence</div>
+                </div>
+                <div class="metric fade-in">
+                    <div class="metric-value">Seasonal</div>
+                    <div class="metric-label">Features</div>
+                </div>
+                <div class="metric fade-in">
+                    <div class="metric-value">Confidence</div>
+                    <div class="metric-label">Intervals</div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- SCOPE -->
+    <section class="light-section">
+        <div class="content-wrapper">
+            <div class="label fade-in">Project Scope</div>
+            <h2 class="fade-in">Operational Scale</h2>
+            <p class="fade-in">
+                Provide repeatable, reliable monthly LPG demand forecasts at national scale, optimized for annual budgeting, inventory right‑sizing, and refinery run‑planning with minimal maintenance overhead.
+            </p>
+            <p class="fade-in" style="margin-top: 2rem;">
+                The workflow targets clean ingestion, robust feature design (trend, seasonality, lags), and operational artifacts (CSV forecasts, model configs, feature importance, and monitoring hooks).
+            </p>
+        </div>
+    </section>
+    
+    <!-- INTENTION -->
+    <section class="parallax-section parallax-1">
+        <div class="content-wrapper">
+            <div class="label fade-in">Intention & Objectives</div>
+            <h2 class="fade-in">Mission Critical</h2>
+            <ul class="fade-in">
+                <li>Deliver defensible monthly forecasts that resolve trend and seasonal structure for production, pricing, and stock decisions.</li>
+                <li style="margin-top: 1.5rem;">Reduce waste and stockouts by aligning inbound supply and storage with anticipated demand cycles across the year.</li>
+            </ul>
+        </div>
+    </section>
+    
+    <!-- DATASETS -->
+    <section class="dark-section">
+        <div class="content-wrapper">
+            <div class="label fade-in">Data Sources</div>
+            <h2 class="fade-in">Multi-Modal Fusion</h2>
+            <div class="grid-2">
+                <div class="fade-in">
+                    <h3 style="font-size: clamp(1.1rem, 2vw, 1.6rem); margin-bottom: 1.2rem;">Monthly LPG Consumption</h3>
+                    <p>Series from national energy statistics agencies, with validation and outlier screening prior to modeling.</p>
+                </div>
+                <div class="fade-in">
+                    <h3 style="font-size: clamp(1.1rem, 2vw, 1.6rem); margin-bottom: 1.2rem;">Temporal Covariates</h3>
+                    <p>Derived from calendar metadata, including month, quarter, and Fourier seasonal terms; optional weather proxies where available.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- VARIABLES -->
+    <section class="light-section">
+        <div class="content-wrapper">
+            <div class="label fade-in">Target Variables</div>
+            <h2 class="fade-in">Output Specifications</h2>
+            <ul class="fade-in">
+                <li>Target: Monthly LPG volume (national aggregate), optionally normalized per‑capita for structural comparability.</li>
+                <li>Predictors: Time index, seasonal Fourier bases, trend terms, and lagged consumption features at 1, 3, 6, and 12 months.</li>
+            </ul>
+        </div>
+    </section>
+    
+    <!-- METHOD -->
+    <section class="parallax-section parallax-2">
+        <div class="content-wrapper">
+            <div class="label fade-in">Methodology</div>
+            <h2 class="fade-in">Pipeline Architecture</h2>
+            <p class="fade-in">
+                Preprocessing: Normalize, align, and validate monthly series; apply outlier detection and imputation rules only under tight thresholds.
+            </p>
+            <p class="fade-in" style="margin-top: 1.5rem;">
+                Feature engineering: Concatenate trend, seasonal, and lagged terms to expose multi‑scale dynamics to tree‑based learners.
+            </p>
+            <p class="fade-in" style="margin-top: 1.5rem;">
+                Modeling: XGBoost trained with time‑series CV and final evaluation on a recent holdout to confirm generalization prior to deployment.
+            </p>
+        </div>
+    </section>
+    
+    <!-- FORMULAS -->
+    <section class="dark-section">
+        <div class="content-wrapper">
+            <div class="label fade-in">Core Mathematics</div>
+            <h2 class="fade-in">Key Formulas</h2>
+            <p class="fade-in">Key formulas guiding the forecasting system:</p>
+            
+            <div class="formula-block fade-in">
+                <h3 style="font-size: clamp(1rem, 1.6vw, 1.3rem); margin-bottom: 1.2rem; font-weight: 300;">Fourier Seasonality</h3>
+                <p style="margin-bottom: 1.2rem;">Annual seasonal components:</p>
+                <p>$$ s_{k}(t) = a_{k}\sin\left(\frac{2\pi kt}{12}\right) + b_{k}\cos\left(\frac{2\pi kt}{12}\right) $$</p>
+            </div>
+            
+            <div class="formula-block fade-in">
+                <h3 style="font-size: clamp(1rem, 1.6vw, 1.3rem); margin-bottom: 1.2rem; font-weight: 300;">MAPE</h3>
+                <p>$$ \text{MAPE} = \frac{100}{N}\sum_{t=1}^{N}\left|\frac{y_{t}-\hat{y}_{t}}{y_{t}}\right| $$</p>
+                <p style="margin-top: 1.2rem; font-size: clamp(0.8rem, 1.2vw, 0.9rem); opacity: 0.8;">As a primary interpretability metric</p>
+            </div>
+            
+            <div class="formula-block fade-in">
+                <h3 style="font-size: clamp(1rem, 1.6vw, 1.3rem); margin-bottom: 1.2rem; font-weight: 300;">RMSE</h3>
+                <p style="margin-bottom: 1.2rem;">For absolute error benchmarking:</p>
+                <p>$$ \text{RMSE} = \sqrt{\frac{1}{N}\sum_{t=1}^{N}(y_{t}-\hat{y}_{t})^{2}} $$</p>
+            </div>
+        </div>
+    </section>
+    
+    <!-- MODEL ARCHITECTURE -->
+    <section class="light-section">
+        <div class="content-wrapper">
+            <div class="label fade-in">Model Architecture</div>
+            <h2 class="fade-in">XGBoost Time Series</h2>
+            <p class="fade-in">
+                XGBoost’s non‑linear splits capture interactions between lags and seasonal bases that linear models often miss, while remaining controllable via regularization.
+            </p>
+            <div class="grid-2" style="margin-top: clamp(4rem, 8vw, 6rem);">
+                <div class="fade-in">
+                    <h3 style="font-size: clamp(1.1rem, 2vw, 1.6rem); margin-bottom: 1.2rem;">Time‑Series CV</h3>
+                    <ul>
+                        <li>Protects against regime-specific overfitting</li>
+                        <li>Holdout evaluation</li>
+                        <li>Generalization confirmation</li>
+                    </ul>
+                </div>
+                <div class="fade-in">
+                    <h3 style="font-size: clamp(1.1rem, 2vw, 1.6rem); margin-bottom: 1.2rem;">Feature Engineering</h3>
+                    <p>Concatenate trend, seasonal, and lagged terms to expose multi‑scale dynamics.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- PYTHON SNIPPETS -->
+    <section class="parallax-section parallax-3">
+        <div class="content-wrapper">
+            <div class="label fade-in">Implementation</div>
+            <h2 class="fade-in">Code Snippets</h2>
+            
+            <div class="fade-in">
+                <h3 style="margin-top: clamp(2rem, 4vw, 4rem); font-size: clamp(1.1rem, 2vw, 1.6rem);">Feature Construction</h3>
+                <pre><code>t = np.arange(len(y))
+month = pd.Series(index=y.index, data=y.index.month)
+# Fourier seasonality
+k = 2
+S = []
+for j in range(1, k+1):
+    S.append(np.sin(2*np.pi*j*t/12))
+    S.append(np.cos(2*np.pi*j*t/12))
+fourier = np.vstack(S).T
+# Lags
+X = pd.DataFrame({"t": t, "month": month})
+for L in [1,3,6,12]:
+    X[f"y_lag_{L}"] = y.shift(L)
+X = X.join(pd.DataFrame(fourier, index=y.index).add_prefix("f"))
+X_train, y_train = X.dropna(), y.loc[X.dropna().index]
+model = xgb.XGBRegressor(max_depth=6, n_estimators=200, learning_rate=0.05)
+model.fit(X_train, y_train)</code></pre>
+            </div>
+        </div>
+    </section>
+    
+    <!-- RESULTS -->
+    <section class="dark-section">
+        <div class="content-wrapper">
+            <div class="label fade-in">Performance Metrics</div>
+            <h2 class="fade-in">Results Obtained</h2>
+            
+            <div class="grid-2">
+                <div class="fade-in">
+                    <h3 style="font-size: clamp(1.1rem, 2vw, 1.6rem); margin-bottom: 1.2rem;">Fit Quality</h3>
+                    <p>Strong correlation between actual and predicted consumption with robust holdout performance and consistent annual seasonality captured.</p>
+                </div>
+                <div class="fade-in">
+                    <h3 style="font-size: clamp(1.1rem, 2vw, 1.6rem); margin-bottom: 1.2rem;">Business Readiness</h3>
+                    <p>Forecasts ship with confidence intervals, feature importance, and configuration for retraining and monitoring.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- MEANING -->
+    <section class="light-section">
+        <div class="content-wrapper">
+            <div class="label fade-in">Strategic Impact</div>
+            <h2 class="fade-in">Decision Relevance</h2>
+            <ul class="fade-in">
+                <li>Translating seasonality and trend into forward signals allows right‑sizing inventory, smoothing refinery schedules, and stabilizing cash‑flow planning.</li>
+                <li>Operational visibility reduces overstock/stockout risk during peak‑demand months and supports price and promotion calendars.</li>
+            </ul>
+        </div>
+    </section>
+    
+    <!-- TECHNICAL BRIEFS -->
+    <section class="dark-section">
+        <div class="content-wrapper">
+            <div class="label fade-in">Technical Foundation</div>
+            <h2 class="fade-in">What Makes It Work</h2>
+            
+            <div class="fade-in" style="margin-top: clamp(2rem, 4vw, 4rem);">
+                <h3 style="font-size: clamp(1.1rem, 2vw, 1.6rem); margin-bottom: 1.2rem;">XGBoost’s Non‑Linear Splits</h3>
+                <p>Capture interactions between lags and seasonal bases that linear models often miss, while remaining controllable via regularization.</p>
+            </div>
+            
+            <div class="fade-in" style="margin-top: clamp(2rem, 4vw, 4rem);">
+                <h3 style="font-size: clamp(1.1rem, 2vw, 1.6rem); margin-bottom: 1.2rem;">Time‑Series Validation</h3>
+                <p>Cross-validation and holdout evaluation protect against regime‑specific overfitting before monthly production release.</p>
+            </div>
+        </div>
+    </section>
+    
+    <!-- OPERATIONALIZATION -->
+    <section class="light-section">
+        <div class="content-wrapper">
+            <div class="label fade-in">Deployment</div>
+            <h2 class="fade-in">Operationalization & Outputs</h2>
+            
+            <div class="grid-2">
+                <div class="fade-in">
+                    <h3 style="font-size: clamp(1.1rem, 2vw, 1.6rem); margin-bottom: 1.2rem;">Deliverables</h3>
+                    <ul>
+                        <li>Monthly forecast CSV/Parquet with intervals</li>
+                        <li>Model artifacts</li>
+                        <li>Feature importance</li>
+                        <li>Validation reports</li>
+                    </ul>
+                </div>
+                <div class="fade-in">
+                    <h3 style="font-size: clamp(1.1rem, 2vw, 1.6rem); margin-bottom: 1.2rem;">Integration</h3>
+                    <p>Batch retrain and monthly publish to dashboard/API with monitoring hooks for drift and error thresholds.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- LIMITATIONS -->
+    <section class="dark-section">
+        <div class="content-wrapper">
+            <div class="label fade-in">Constraints</div>
+            <h2 class="fade-in">Limitations & Risks</h2>
+            
+            <div class="fade-in">
+                <h3 style="font-size: clamp(1.1rem, 2vw, 1.6rem); margin-bottom: 1.2rem; margin-top: clamp(2rem, 4vw, 3rem);">Structural Shifts</h3>
+                <p>Policy, subsidies, or shocks can change elasticities; monitoring and rapid recalibration are mandatory.</p>
+            </div>
+            
+            <div class="fade-in" style="margin-top: clamp(2rem, 4vw, 4rem);">
+                <h3 style="font-size: clamp(1.1rem, 2vw, 1.6rem); margin-bottom: 1.2rem;">Data Quality</h3>
+                <p>Latency limits horizon extension; uncertainty bands expand meaningfully beyond a few quarters.</p>
+            </div>
+        </div>
+    </section>
+    
+    <!-- FUTURE SCOPE -->
+    <section class="light-section">
+        <div class="content-wrapper">
+            <div class="label fade-in">Roadmap</div>
+            <h2 class="fade-in">Future Scope</h2>
+            
+            <div class="fade-in">
+                <h3 style="font-size: clamp(1.1rem, 2vw, 1.6rem); margin-bottom: 1.2rem; margin-top: clamp(2rem, 4vw, 3rem);">Regional Disaggregation</h3>
+                <p>Price elasticity modeling and weather‑sensitive variants for cold‑snap scenarios.</p>
+            </div>
+            
+            <div class="fade-in" style="margin-top: clamp(2rem, 4vw, 4rem);">
+                <h3 style="font-size: clamp(1.1rem, 2vw, 1.6rem); margin-bottom: 1.2rem;">Multi‑Product Extension</h3>
+                <p>CNG/diesel/gasoline on the same feature scaffolding and production pipeline.</p>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Footer spacing -->
+    <div style="height: 120px; background: var(--charcoal);"></div>
+    
+    <!-- Bottom Navigation -->
+    <div class="bottom-nav">
+        <nav>
+            <a href="#" class="nav-logo">HYPERION</a>
+            <a href="#summary">Summary</a>
+            <a href="#scope">Scope</a>
+            <a href="#methodology">Method</a>
+            <a href="#results">Results</a>
+            <a href="#impact">Impact</a>
+            <a href="#future">Future</a>
+        </nav>
+    </div>
+    
+    <!-- GSAP -->
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/gsap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/ScrollTrigger.min.js"></script>
+    <script src="../script.js"></script>
+</body>
+</html>
