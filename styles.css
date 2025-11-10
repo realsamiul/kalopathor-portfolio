@@ -165,12 +165,13 @@ section {
 /* Hero Section */
 .hero {
     min-height: 140vh;
+    /* background-attachment: fixed;  Removed to avoid rasterization issues */
     background-position: center;
     background-size: cover;
-    background-attachment: fixed;
     position: relative;
     color: var(--text-light);
     padding: clamp(14rem, 26vw, 32rem) clamp(3rem, 10vw, 16rem);
+    overflow: hidden;
 }
 
 .hero h1 {
@@ -198,10 +199,12 @@ section {
 
 /* Parallax Sections */
 .parallax-section {
-    background-attachment: fixed;
+    /* background-attachment: fixed;  Removed to avoid rasterization issues */
     background-position: center;
     background-size: cover;
     color: var(--text-light);
+    position: relative;
+    overflow: hidden;
 }
 
 .parallax-section::before {
@@ -210,6 +213,17 @@ section {
     inset: 0;
     background: linear-gradient(155deg, rgba(0, 0, 0, 0.78) 0%, rgba(0, 0, 0, 0.4) 100%);
     z-index: 1;
+}
+
+/* Parallax background layer (transform-based) */
+.parallax-bg {
+    position: absolute;
+    inset: -20% 0 -20% 0; /* extra height to avoid edges while moving */
+    background-size: cover;
+    background-position: center;
+    will-change: transform;
+    transform: translateZ(0);
+    z-index: 0;
 }
 
 /* Color Sections */
@@ -301,12 +315,13 @@ ul li::before {
     left: 0;
     right: 0;
     background: rgba(10, 10, 10, 0.96);
-    backdrop-filter: blur(40px);
-    -webkit-backdrop-filter: blur(40px);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
     padding: clamp(1.2rem, 2.8vw, 2.5rem) clamp(2.5rem, 7vw, 6rem);
     z-index: 1000;
     border-top: 1px solid rgba(255, 255, 255, 0.06);
     transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    will-change: transform;
 }
 
 .bottom-nav.hidden {
@@ -481,12 +496,12 @@ ul li::before {
         justify-content: center;
         text-align: center;
     }
-    
+
     .parallax-section,
     .hero {
         background-attachment: scroll;
     }
-    
+
     section {
         padding: clamp(8rem, 16vw, 14rem) clamp(2rem, 6vw, 4rem);
     }
