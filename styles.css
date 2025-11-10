@@ -1,3 +1,31 @@
+/* Add at the top of your CSS */
+html {
+    overflow: hidden;  /* Let Lenis handle scroll */
+    position: fixed;
+    width: 100%;
+    height: 100%;
+}
+
+body {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    position: fixed;
+}
+
+/* Create a scroll container */
+.scroll-container {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+}
+
+/* Main content wrapper */
+main, .main-content {
+    width: 100%;
+    position: relative;
+}
+
 * {
     margin: 0;
     padding: 0;
