@@ -522,6 +522,185 @@ ul li::before {
     transform: translateY(-5px) rotate(-45deg);
 }
 
+/* Video Background Support */
+.video-bg {
+    position: relative;
+    overflow: hidden;
+}
+
+.bg-video,
+.bg-fallback {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    z-index: 0;
+}
+
+.bg-video {
+    display: block;
+}
+
+.bg-fallback {
+    display: none;
+}
+
+/* Fallback for browsers that don't support video */
+.no-video .bg-video {
+    display: none;
+}
+
+.no-video .bg-fallback {
+    display: block;
+}
+
+/* Ensure no blur on background images */
+.hero,
+.parallax-section {
+    background-attachment: scroll; /* Prevents fixed attachment issues */
+    image-rendering: -webkit-optimize-contrast;
+    image-rendering: crisp-edges;
+    transform: translateZ(0); /* GPU acceleration without blur */
+    backface-visibility: hidden;
+}
+
+/* Demo Cards - Glassmorphism */
+.demo-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 2rem;
+    margin-top: 4rem;
+}
+
+.demo-card {
+    background: rgba(0, 0, 0, 0.65);
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    padding: 2rem;
+    border-radius: 16px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.demo-card:hover {
+    transform: translateY(-4px);
+    background: rgba(0, 0, 0, 0.75);
+    border-color: rgba(96, 165, 250, 0.3);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+}
+
+.demo-label {
+    color: #60a5fa;
+    font-size: 0.75rem;
+    letter-spacing: 0.2em;
+    margin-bottom: 1rem;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.demo-card h3 {
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+    color: #ffffff;
+}
+
+.demo-metric {
+    font-size: 1.1rem;
+    color: #60a5fa;
+    margin-bottom: 1.5rem;
+    font-weight: 500;
+}
+
+.demo-card p {
+    line-height: 1.6;
+    color: rgba(255, 255, 255, 0.85);
+    margin-bottom: 1.5rem;
+    font-size: 0.95rem;
+}
+
+.demo-link {
+    color: #60a5fa;
+    text-decoration: none;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.demo-link:hover {
+    color: #93c5fd;
+    transform: translateX(4px);
+}
+
+/* Funding Cards */
+.funding-grid {
+    display: grid;
+    gap: 2rem;
+    margin-top: 3rem;
+}
+
+.funding-card {
+    background: rgba(0, 0, 0, 0.65);
+    backdrop-filter: blur(20px);
+    padding: 2rem;
+    border-radius: 16px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.funding-card h3,
+.funding-card h4 {
+    color: #60a5fa;
+    margin-bottom: 1.5rem;
+}
+
+.priority-item {
+    margin-bottom: 2rem;
+    padding-bottom: 2rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.priority-item:last-child {
+    border-bottom: none;
+}
+
+.priority-item h4 {
+    color: #60a5fa;
+    margin-bottom: 0.5rem;
+    font-size: 1.1rem;
+}
+
+/* CTA Button */
+.cta-button {
+    display: inline-block;
+    padding: 1rem 2.5rem;
+    background: rgba(255, 255, 255, 0.95);
+    color: #000;
+    text-decoration: none;
+    border-radius: 100px;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    font-weight: 500;
+    font-size: 1rem;
+}
+
+.cta-button:hover {
+    transform: translateY(-2px);
+    background: #ffffff;
+    box-shadow: 0 10px 30px rgba(255, 255, 255, 0.2);
+}
+
+.light-section .cta-button {
+    background: #000;
+    color: #fff;
+}
+
+.light-section .cta-button:hover {
+    background: #1a1a1a;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+}
+
 /* Media queries for video/webm support */
 @media (prefers-reduced-motion: no-preference) {
     video, .video-container {
