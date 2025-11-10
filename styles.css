@@ -50,6 +50,30 @@ body {
     letter-spacing: -0.011em;
     min-height: 100vh;
     overflow-x: hidden;
+    text-rendering: optimizeSpeed; 
+}
+
+/* CRITICAL: Prevent transform conflicts during scroll */
+* {
+    will-change: auto !important;
+}
+
+/* Only use will-change on specific animations */
+.fade-in {
+    will-change: opacity;
+}
+
+/* Remove any transform from sections during scroll */
+section {
+    transform: none !important;
+    will-change: auto !important;
+}
+
+/* Ensure smooth rendering */
+body {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeSpeed;
 }
 
 /* Typography */
