@@ -4,21 +4,17 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>HYPERION Freight Forecasting - Technical Report</title>
-    
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:wght@200;300;400;600&family=Inter:wght@200;300;400;500;600&display=swap" rel="stylesheet">
-    
     <!-- CSS -->
     <link rel="stylesheet" href="../styles.css">
-    
     <!-- MathJax -->
     <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
     <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
 </head>
 <body>
-            
     <!-- HERO -->
     <section class="hero">
         <div class="content-wrapper">
@@ -29,7 +25,6 @@
             </p>
         </div>
     </section>
-    
     <!-- SUMMARY -->
     <section class="dark-section">
         <div class="content-wrapper">
@@ -61,7 +56,6 @@
             </div>
         </div>
     </section>
-    
     <!-- SCOPE -->
     <section class="light-section">
         <div class="content-wrapper">
@@ -75,9 +69,9 @@
             </p>
         </div>
     </section>
-    
     <!-- INTENTION -->
-    <section class="parallax-section parallax-1">
+    <section class="parallax-section video-bg" data-video="images/freights-1">
+        <img src="images/freights-1.webp" class="bg-fallback" alt="" loading="lazy">
         <div class="content-wrapper">
             <div class="label fade-in">Intention & Objectives</div>
             <h2 class="fade-in">Mission Critical</h2>
@@ -87,7 +81,6 @@
             </ul>
         </div>
     </section>
-    
     <!-- DATASETS -->
     <section class="dark-section">
         <div class="content-wrapper">
@@ -105,7 +98,6 @@
             </div>
         </div>
     </section>
-    
     <!-- VARIABLES -->
     <section class="light-section">
         <div class="content-wrapper">
@@ -117,9 +109,9 @@
             </ul>
         </div>
     </section>
-    
     <!-- METHOD -->
-    <section class="parallax-section parallax-2">
+    <section class="parallax-section video-bg" data-video="images/freights-2">
+        <img src="images/freights-2.webp" class="bg-fallback" alt="" loading="lazy">
         <div class="content-wrapper">
             <div class="label fade-in">Methodology</div>
             <h2 class="fade-in">Pipeline Architecture</h2>
@@ -134,27 +126,23 @@
             </p>
         </div>
     </section>
-    
     <!-- KEY SIGNALS -->
     <section class="dark-section">
         <div class="content-wrapper">
             <div class="label fade-in">Key Signals</div>
             <h2 class="fade-in">Leading Indicators</h2>
             <p class="fade-in">Key signals guiding the forecasting system:</p>
-            
             <div class="formula-block fade-in">
                 <h3 style="font-size: clamp(1rem, 1.6vw, 1.3rem); margin-bottom: 1.2rem; font-weight: 300;">Trade Imbalance Ratio</h3>
                 <p style="margin-bottom: 1.2rem;">Higher values precede rate spikes:</p>
                 <p>$$ \text{TIR} = \frac{\text{FEUW}}{\text{UWFE}} $$</p>
             </div>
-            
             <div class="formula-block fade-in">
                 <h3 style="font-size: clamp(1rem, 1.6vw, 1.3rem); margin-bottom: 1.2rem; font-weight: 300;">Market Dynamics</h3>
                 <p>Market and fuel lags transmit macro and cost pressures; lane‑specific lags capture momentum and mean‑reversion.</p>
             </div>
         </div>
     </section>
-    
     <!-- MODEL ARCHITECTURE -->
     <section class="light-section">
         <div class="content-wrapper">
@@ -179,25 +167,22 @@
             </div>
         </div>
     </section>
-    
     <!-- FORMULAS -->
-    <section class="parallax-section parallax-3">
+    <section class="parallax-section video-bg" data-video="images/freights-3">
+        <img src="images/freights-3.webp" class="bg-fallback" alt="" loading="lazy">
         <div class="content-wrapper">
             <div class="label fade-in">Core Mathematics</div>
             <h2 class="fade-in">Key Formulas</h2>
-            
             <div class="formula-block fade-in">
                 <h3 style="font-size: clamp(1rem, 1.6vw, 1.3rem); margin-bottom: 1.2rem; font-weight: 300;">R²</h3>
                 <p>$$ R^{2} = 1 - \frac{\sum (y-\hat{y})^{2}}{\sum (y-\bar{y})^{2}} $$</p>
                 <p style="margin-top: 1.2rem; font-size: clamp(0.8rem, 1.2vw, 0.9rem); opacity: 0.8;">Primary variance‑explanation metric</p>
             </div>
-            
             <div class="formula-block fade-in">
                 <h3 style="font-size: clamp(1rem, 1.6vw, 1.3rem); margin-bottom: 1.2rem; font-weight: 300;">MAE</h3>
                 <p>$$ \text{MAE} = \frac{1}{N}\sum |y-\hat{y}| $$</p>
                 <p style="margin-top: 1.2rem; font-size: clamp(0.8rem, 1.2vw, 0.9rem); opacity: 0.8;">Procurement‑aligned error in USD/TEU</p>
             </div>
-            
             <div class="formula-block fade-in">
                 <h3 style="font-size: clamp(1rem, 1.6vw, 1.3rem); margin-bottom: 1.2rem; font-weight: 300;">Trade Imbalance Ratio</h3>
                 <p style="margin-bottom: 1.2rem;">With lag features:</p>
@@ -205,13 +190,11 @@
             </div>
         </div>
     </section>
-    
     <!-- PYTHON SNIPPETS -->
     <section class="dark-section">
         <div class="content-wrapper">
             <div class="label fade-in">Implementation</div>
             <h2 class="fade-in">Code Snippets</h2>
-            
             <div class="fade-in">
                 <h3 style="margin-top: clamp(2rem, 4vw, 4rem); font-size: clamp(1.1rem, 2vw, 1.6rem);">Feature Assembly</h3>
                 <pre><code>df["tir"] = df["feuw"]/df["uwfe"]
@@ -221,7 +204,6 @@ for col in ["feuw","uwfe","bdi_proxy","brent","tir"]:
         df[f"{col}_lag_{L}"] = df[col].shift(L)
 features = [c for c in df.columns if "lag_" in c]</code></pre>
             </div>
-            
             <div class="fade-in">
                 <h3 style="margin-top: clamp(3rem, 6vw, 5rem); font-size: clamp(1.1rem, 2vw, 1.6rem);">XGBoost Training</h3>
                 <pre><code>X = df[features].iloc[:-7].dropna()
@@ -233,13 +215,11 @@ r2 = r2_score(y_test, yhat); mae = mean_absolute_error(y_test, yhat)</code></pre
             </div>
         </div>
     </section>
-    
     <!-- RESULTS -->
     <section class="light-section">
         <div class="content-wrapper">
             <div class="label fade-in">Performance Metrics</div>
             <h2 class="fade-in">Results Obtained</h2>
-            
             <div class="grid-2">
                 <div class="fade-in">
                     <h3 style="font-size: clamp(1.1rem, 2vw, 1.6rem); margin-bottom: 1.2rem;">7-Day Performance</h3>
@@ -252,7 +232,6 @@ r2 = r2_score(y_test, yhat); mae = mean_absolute_error(y_test, yhat)</code></pre
             </div>
         </div>
     </section>
-    
     <!-- MEANING -->
     <section class="dark-section">
         <div class="content-wrapper">
@@ -264,31 +243,26 @@ r2 = r2_score(y_test, yhat); mae = mean_absolute_error(y_test, yhat)</code></pre
             </ul>
         </div>
     </section>
-    
     <!-- TECHNICAL BRIEFS -->
     <section class="light-section">
         <div class="content-wrapper">
             <div class="label fade-in">Technical Foundation</div>
             <h2 class="fade-in">What Makes It Work</h2>
-            
             <div class="fade-in" style="margin-top: clamp(2rem, 4vw, 4rem);">
                 <h3 style="font-size: clamp(1.1rem, 2vw, 1.6rem); margin-bottom: 1.2rem;">Time‑Series Splits</h3>
                 <p>Leakage controls are enforced; horizon‑specific champions avoid one‑size‑fits‑all degradation.</p>
             </div>
-            
             <div class="fade-in" style="margin-top: clamp(2rem, 4vw, 4rem);">
                 <h3 style="font-size: clamp(1.1rem, 2vw, 1.6rem); margin-bottom: 1.2rem;">Tree Ensembles</h3>
                 <p>Capture nonlinear interactions among fuel, macro proxies, and lane imbalances while retaining feature attributions.</p>
             </div>
         </div>
     </section>
-    
     <!-- OPERATIONALIZATION -->
     <section class="dark-section">
         <div class="content-wrapper">
             <div class="label fade-in">Deployment</div>
             <h2 class="fade-in">Operationalization & Outputs</h2>
-            
             <div class="grid-2">
                 <div class="fade-in">
                     <h3 style="font-size: clamp(1.1rem, 2vw, 1.6rem); margin-bottom: 1.2rem;">Deliverables</h3>
@@ -306,62 +280,57 @@ r2 = r2_score(y_test, yhat); mae = mean_absolute_error(y_test, yhat)</code></pre
             </div>
         </div>
     </section>
-    
     <!-- LIMITATIONS -->
     <section class="light-section">
         <div class="content-wrapper">
             <div class="label fade-in">Constraints</div>
             <h2 class="fade-in">Limitations & Risks</h2>
-            
             <div class="fade-in">
                 <h3 style="font-size: clamp(1.1rem, 2vw, 1.6rem); margin-bottom: 1.2rem; margin-top: clamp(2rem, 4vw, 3rem);">Structural Regime Shifts</h3>
                 <p>Data feed issues require prompt recalibration; accuracy diminishes beyond 30‑day horizons.</p>
             </div>
-            
             <div class="fade-in" style="margin-top: clamp(2rem, 4vw, 4rem);">
                 <h3 style="font-size: clamp(1.1rem, 2vw, 1.6rem); margin-bottom: 1.2rem;">Market Microstructure</h3>
                 <p>Changes can modify TIR elasticities; periodic re‑estimation preserves edge.</p>
             </div>
         </div>
     </section>
-    
     <!-- FUTURE SCOPE -->
     <section class="dark-section">
         <div class="content-wrapper">
             <div class="label fade-in">Roadmap</div>
             <h2 class="fade-in">Future Scope</h2>
-            
             <div class="fade-in">
                 <h3 style="font-size: clamp(1.1rem, 2vw, 1.6rem); margin-bottom: 1.2rem; margin-top: clamp(2rem, 4vw, 3rem);">Multi‑Lane Expansion</h3>
                 <p>EU–Asia, Trans‑Pacific variants, real‑time API, and contract optimization decision support.</p>
             </div>
-            
             <div class="fade-in" style="margin-top: clamp(2rem, 4vw, 4rem);">
                 <h3 style="font-size: clamp(1.1rem, 2vw, 1.6rem); margin-bottom: 1.2rem;">Alerting & Simulators</h3>
                 <p>What‑if simulators for fuel shock or capacity‑shock scenarios using stress‑tested ensembles.</p>
             </div>
         </div>
     </section>
-    
     <!-- Footer spacing -->
     <div style="height: 120px; background: var(--charcoal);"></div>
-    
     <!-- Bottom Navigation -->
     <div class="bottom-nav">
         <nav>
-            <a href="#" class="nav-logo">HYPERION</a>
-            <a href="#summary">Summary</a>
-            <a href="#scope">Scope</a>
-            <a href="#methodology">Method</a>
-            <a href="#results">Results</a>
-            <a href="#impact">Impact</a>
-            <a href="#future">Future</a>
+            <a href="/" class="nav-logo">HYPERION</a>
+            <button class="menu-trigger" id="menuTrigger">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                    <line x1="3" y1="12" x2="21" y2="12" stroke="currentColor" stroke-width="2"></line>
+                    <line x1="3" y1="6" x2="21" y2="6" stroke="currentColor" stroke-width="2"></line>
+                    <line x1="3" y1="18" x2="21" y2="18" stroke="currentColor" stroke-width="2"></line>
+                </svg>
+            </button>
         </nav>
     </div>
-    
-    <!-- GSAP -->
+    <!-- GSAP Core -->
     <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/gsap.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/ScrollTrigger.min.js"></script>
+    <!-- Smooth Scroll -->
+    <script src="https://cdn.jsdelivr.net/gh/studio-freight/lenis@latest/bundled/lenis.min.js"></script>
+    <!-- Main Script -->
     <script src="../script.js"></script>
 </body>
 </html>
