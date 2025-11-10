@@ -14,14 +14,14 @@
     --text-muted: #888888;
 }
 
+/* No scroll-behavior to avoid conflicts with ScrollSmoother */
 html {
-    scroll-behavior: smooth;
+    overflow-x: hidden;
 }
 
 body {
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     color: var(--text-light);
-    overflow-x: hidden;
     background: var(--charcoal);
     line-height: 1.65;
     -webkit-font-smoothing: antialiased;
@@ -85,14 +85,14 @@ p, li {
     letter-spacing: -0.015em;
 }
 
-/* Sections */
+/* Sections - Taller with more breathing space */
 section {
-    min-height: 120vh;
+    min-height: 140vh; /* Increased from 120vh */
     position: relative;
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: clamp(10rem, 20vw, 24rem) clamp(3rem, 9vw, 14rem);
+    padding: clamp(12rem, 24vw, 30rem) clamp(3rem, 9vw, 14rem); /* Increased vertical padding */
 }
 
 .content-wrapper {
@@ -102,15 +102,15 @@ section {
     position: relative;
 }
 
-/* Hero Section - images will be defined inline in HTML */
+/* Hero Section */
 .hero {
-    min-height: 120vh;
+    min-height: 140vh; /* Increased from 120vh */
     background-position: center;
     background-size: cover;
     background-attachment: fixed;
     position: relative;
     color: var(--text-light);
-    padding: clamp(12rem, 22vw, 28rem) clamp(3rem, 10vw, 16rem);
+    padding: clamp(14rem, 26vw, 32rem) clamp(3rem, 10vw, 16rem); /* Increased vertical padding */
 }
 
 .hero h1 {
@@ -136,7 +136,7 @@ section {
     z-index: 1;
 }
 
-/* Parallax Sections - images will be defined inline in HTML */
+/* Parallax Sections */
 .parallax-section {
     background-attachment: fixed;
     background-position: center;
@@ -409,6 +409,13 @@ ul li::before {
     transform: translateY(0);
 }
 
+/* Media queries for video/webm support */
+@media (prefers-reduced-motion: no-preference) {
+    video, .video-container {
+        contain: paint;
+    }
+}
+
 @media (max-width: 768px) {
     .bottom-nav nav {
         justify-content: center;
@@ -421,6 +428,6 @@ ul li::before {
     }
     
     section {
-        padding: clamp(6rem, 14vw, 12rem) clamp(2rem, 6vw, 4rem);
+        padding: clamp(8rem, 16vw, 14rem) clamp(2rem, 6vw, 4rem); /* Adjusted for mobile */
     }
 }
