@@ -29,6 +29,7 @@ document.addEventListener('DOMContentLoaded', function() {
     requestAnimationFrame(raf);
 
     // Initialize animations (non-blocking)
+    initVideoBackgrounds();
     initScrollAnimations();
     initNavbarBehavior();
     initMathJaxRefresh();
@@ -49,6 +50,134 @@ document.addEventListener('DOMContentLoaded', function() {
         }, 250);
     });
 });
+
+// Video background support detection and initialization
+function initVideoBackgrounds() {
+    const videoSections = document.querySelectorAll('.video-bg');
+    
+    // Check if browser supports video
+    const supportsVideo = !!document.createElement('video').canPlayType;
+    if (!supportsVideo) {
+        document.body.classList.add('no-video');
+        return;
+    }
+    
+    videoSections.forEach(section => {
+        const videoPath = section.dataset.video;
+        if (!videoPath) return;
+        
+        const video = section.querySelector('.bg-video');
+        const fallback = section.querySelector('.bg-fallback');
+        
+        if (video) {
+            // Try to load video
+            video.addEventListener('error', () => {
+                // If video fails, use fallback image
+                video.style.display = 'none';
+                if (fallback) fallback.style.display = 'block';
+            });
+            
+            // Ensure smooth playback
+            video.addEventListener('loadeddata', () => {
+                video.play().catch(() => {
+                    // If autoplay fails, show fallback
+                    video.style.display = 'none';
+                    if (fallback) fallback.style.display = 'block';
+                });
+            });
+        }
+    });
+}
+
+// Enhanced metric counter animation
+function initMetricAnimations() {
+    document.querySelectorAll('.metric-value').forEach(el => {
+        const endValue = parseFloat(el.getAttribute('data-count'));
+        const suffix = el.getAttribute('data-suffix') || '';
+        const hasDecimal = el.getAttribute('data-decimal') === 'true';
+        
+        gsap.to(el, {
+            innerText: endValue,
+            duration: 2.5,
+            ease: "power2.out",
+            scrollTrigger: {
+                trigger: el,
+                start: "top 80%",
+                once: true
+            },
+            snap: {innerText: hasDecimal ? 0.1 : 1},
+            onUpdate: function() {
+                const value = hasDecimal ? 
+                    parseFloat(this.targets()[0].innerText).toFixed(1) : 
+                    Math.round(this.targets()[0].innerText);
+                el.textContent = value + suffix;
+            }
+        });
+    });
+    
+    // Existing metric animations (for non-data-count elements)
+    gsap.utils.toArray('.metric').forEach((metric, index) => {
+        const value = metric.querySelector('.metric-value');
+
+        if (value && !value.hasAttribute('data-count')) {
+            const finalText = value.textContent;
+            const hasDecimal = finalText.includes('.');
+            const numericValue = parseFloat(finalText.replace(/[^\d.-]/g, ''));
+
+            if (!isNaN(numericValue)) {
+                gsap.fromTo(value,
+                    {
+                        textContent: 0,
+                        opacity: 0
+                    },
+                    {
+                        textContent: numericValue,
+                        opacity: 1,
+                        duration: 2,
+                        ease: "power2.out",
+                        snap: { textContent: hasDecimal ? 0.01 : 1 },
+                        scrollTrigger: {
+                            trigger: metric,
+                            start: "top 80%",
+                            toggleActions: "play none none none",
+                            once: true
+                        },
+                        onUpdate: function() {
+                            const current = this.targets()[0].textContent;
+                            const formatted = hasDecimal ? 
+                                parseFloat(current).toFixed(2) : 
+                                Math.round(current);
+
+                            const suffix = finalText.replace(/[\d.-]/g, '');
+                            this.targets()[0].textContent = formatted + suffix;
+                        },
+                        delay: index * 0.1
+                    }
+                );
+            }
+        }
+
+        gsap.fromTo(metric,
+            {
+                y: 50,
+                opacity: 0
+            },
+            {
+                y: 0,
+                opacity: 1,
+                duration: 0.9,
+                ease: "power3.out",
+                scrollTrigger: {
+                    trigger: metric,
+                    start: "top 85%",
+                    toggleActions: "play none none none",
+                    once: true
+                },
+                delay: index * 0.12
+            }
+        );
+    });
+}
 
 // Rolling Text Animation (non-blocking)
 function initRollingText() {
@@ -227,71 +356,6 @@ function initMathJaxRefresh() {
             });
         }
     }
-}
-
-// Animate metrics on scroll (non-blocking)
-function initMetricAnimations() {
-    gsap.utils.toArray('.metric').forEach((metric, index) => {
-        const value = metric.querySelector('.metric-value');
-
-        if (value) {
-            const finalText = value.textContent;
-            const hasDecimal = finalText.includes('.');
-            const numericValue = parseFloat(finalText.replace(/[^\d.-]/g, ''));
-
-            if (!isNaN(numericValue)) {
-                gsap.fromTo(value,
-                    {
-                        textContent: 0,
-                        opacity: 0
-                    },
-                    {
-                        textContent: numericValue,
-                        opacity: 1,
-                        duration: 2,
-                        ease: "power2.out",
-                        snap: { textContent: hasDecimal ? 0.01 : 1 },
-                        scrollTrigger: {
-                            trigger: metric,
-                            start: "top 80%",
-                            toggleActions: "play none none none",
-                            once: true
-                        },
-                        onUpdate: function() {
-                            const current = this.targets()[0].textContent;
-                            const formatted = hasDecimal ? 
-                                parseFloat(current).toFixed(2) : 
-                                Math.round(current);
-
-                            const suffix = finalText.replace(/[\d.-]/g, '');
-                            this.targets()[0].textContent = formatted + suffix;
-                        },
-                        delay: index * 0.1
-                    }
-                );
-            }
-        }
-
-        gsap.fromTo(metric,
-            {
-                y: 50,
-                opacity: 0
-            },
-            {
-                y: 0,
-                opacity: 1,
-                duration: 0.9,
-                ease: "power3.out",
-                scrollTrigger: {
-                    trigger: metric,
-                    start: "top 85%",
-                    toggleActions: "play none none none",
-                    once: true
-                },
-                delay: index * 0.12
-            }
-        );
-    });
 }
 
 // Enhance code block interactions (non-blocking)
