@@ -3,762 +3,126 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HAWKEYE Flood Intelligence - Technical Report</title>
+    <title>HAWKEYE & HYPERION Intelligence Platforms</title>
     
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:wght@200;300;400;600&family=Inter:wght@200;300;400;500;600&display=swap" rel="stylesheet">
     
-    <!-- GSAP -->
-    <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/gsap.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/ScrollTrigger.min.js"></script>
-    
-    <!-- MathJax -->
-    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
-    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
-    
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
-        :root {
-            --charcoal: #0a0a0a;
-            --vanilla: #fafaf8;
-            --accent: #3b82f6;
-            --accent-bright: #60a5fa;
-            --text-dark: #0a0a0a;
-            --text-light: #ffffff;
-            --text-muted: #888888;
-        }
-        
-        html {
-            scroll-behavior: smooth;
-        }
-        
-        body {
-            font-family: 'Inter', sans-serif;
-            color: var(--text-light);
-            overflow-x: hidden;
-            background: var(--charcoal);
-            line-height: 1.7;
-            -webkit-font-smoothing: antialiased;
-            -moz-osx-font-smoothing: grayscale;
-        }
-        
-        /* Typography */
-        h1, h2, h3, h4 {
-            font-family: 'Crimson Pro', serif;
-            line-height: 1.1;
-        }
-        
-        h1 {
-            font-size: clamp(3.5rem, 10vw, 8rem);
-            margin-bottom: clamp(2rem, 4vw, 4rem);
-            color: inherit;
-            font-weight: 200;
-            letter-spacing: -0.03em;
-        }
-        
-        h2 {
-            font-size: clamp(2.5rem, 7vw, 6rem);
-            margin-bottom: clamp(2.5rem, 5vw, 5rem);
-            color: inherit;
-            font-weight: 200;
-            letter-spacing: -0.02em;
-        }
-        
-        h3 {
-            font-size: clamp(1.75rem, 4vw, 3.5rem);
-            margin-bottom: clamp(1.5rem, 3vw, 2.5rem);
-            color: inherit;
-            font-weight: 300;
-        }
-        
-        .label {
-            font-family: 'Inter', sans-serif;
-            font-size: clamp(0.75rem, 1.3vw, 0.95rem);
-            text-transform: uppercase;
-            letter-spacing: 0.3em;
-            margin-bottom: clamp(1.5rem, 3vw, 2rem);
-            font-weight: 500;
-            opacity: 0.4;
-            color: inherit;
-        }
-        
-        p, li {
-            font-family: 'Inter', sans-serif;
-            font-size: clamp(1.05rem, 2vw, 1.35rem);
-            line-height: 1.9;
-            font-weight: 300;
-            color: inherit;
-        }
-        
-        /* Sections */
-        section {
-            min-height: 100vh;
-            position: relative;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: clamp(8rem, 18vw, 20rem) clamp(2.5rem, 8vw, 12rem);
-        }
-        
-        .content-wrapper {
-            max-width: 1400px;
-            width: 100%;
-            z-index: 2;
-            position: relative;
-        }
-        
-        /* Hero Section */
-        .hero {
-            min-height: 100vh;
-            background-image: url('https://images.unsplash.com/photo-1446776653964-20c1d3a81b06?q=90&w=2400&fit=crop');
-            background-position: center;
-            background-size: cover;
-            background-attachment: fixed;
-            position: relative;
-            color: var(--text-light);
-        }
-        
-        .hero::before {
-            content: '';
-            position: absolute;
-            inset: 0;
-            background: linear-gradient(160deg, rgba(0, 0, 0, 0.85) 0%, rgba(0, 0, 0, 0.4) 100%);
-            z-index: 1;
-        }
-        
-        /* Parallax Sections */
-        .parallax-section {
-            background-attachment: fixed;
-            background-position: center;
-            background-size: cover;
-            color: var(--text-light);
-        }
-        
-        .parallax-section::before {
-            content: '';
-            position: absolute;
-            inset: 0;
-            background: linear-gradient(160deg, rgba(0, 0, 0, 0.75) 0%, rgba(0, 0, 0, 0.45) 100%);
-            z-index: 1;
-        }
-        
-        .parallax-1 {
-            background-image: url('https://images.unsplash.com/photo-1559827260-dc66d52bef19?q=90&w=2400&fit=crop');
-        }
-        
-        .parallax-2 {
-            background-image: url('https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=90&w=2400&fit=crop');
-        }
-        
-        .parallax-3 {
-            background-image: url('https://images.unsplash.com/photo-1614730321146-b6fa6a46bcb4?q=90&w=2400&fit=crop');
-        }
-        
-        /* Color Sections */
-        .dark-section {
-            background: var(--charcoal);
-            color: var(--text-light);
-        }
-        
-        .light-section {
-            background: var(--vanilla);
-            color: var(--text-dark);
-        }
-        
-        /* Code Blocks */
-        pre {
-            background: rgba(0, 0, 0, 0.7);
-            padding: clamp(1.5rem, 3vw, 3rem);
-            border-radius: 16px;
-            overflow-x: auto;
-            margin: clamp(2.5rem, 5vw, 4rem) 0;
-            border-left: 4px solid var(--accent);
-            transition: transform 0.3s ease;
-        }
-        
-        pre:hover {
-            transform: translateX(4px);
-        }
-        
-        code {
-            font-family: 'Monaco', 'Courier New', monospace;
-            font-size: clamp(0.8rem, 1.4vw, 1rem);
-            line-height: 1.7;
-            color: #e8e8e8;
-        }
-        
-        .light-section pre {
-            background: rgba(0, 0, 0, 0.06);
-        }
-        
-        .light-section code {
-            color: var(--text-dark);
-        }
-        
-        /* Lists */
-        ul {
-            list-style: none;
-            margin: clamp(2.5rem, 5vw, 4rem) 0;
-        }
-        
-        ul li {
-            padding-left: 2em;
-            position: relative;
-            margin-bottom: 1.5em;
-            color: inherit;
-        }
-        
-        ul li::before {
-            content: '—';
-            position: absolute;
-            left: 0;
-            opacity: 0.4;
-            color: var(--accent);
-        }
-        
-        /* Bottom Navbar */
-        .bottom-nav {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background: rgba(10, 10, 10, 0.98);
-            backdrop-filter: blur(30px);
-            -webkit-backdrop-filter: blur(30px);
-            padding: clamp(1rem, 2.5vw, 2rem) clamp(2rem, 6vw, 5rem);
-            z-index: 1000;
-            border-top: 1px solid rgba(255, 255, 255, 0.08);
-            transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-        
-        .bottom-nav.hidden {
-            transform: translateY(100%);
-        }
-        
-        .bottom-nav nav {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            max-width: 1600px;
-            margin: 0 auto;
-            flex-wrap: wrap;
-            gap: clamp(1rem, 2vw, 2rem);
-        }
-        
-        .bottom-nav a {
-            color: #ffffff;
-            text-decoration: none;
-            font-size: clamp(0.75rem, 1.3vw, 0.95rem);
-            font-weight: 400;
-            letter-spacing: 0.08em;
-            transition: all 0.3s ease;
-            opacity: 0.6;
-            position: relative;
-        }
-        
-        .bottom-nav a::after {
-            content: '';
-            position: absolute;
-            bottom: -4px;
-            left: 0;
-            width: 0;
-            height: 1px;
-            background: var(--accent);
-            transition: width 0.3s ease;
-        }
-        
-        .bottom-nav a:hover {
-            opacity: 1;
-        }
-        
-        .bottom-nav a:hover::after {
-            width: 100%;
-        }
-        
-        .nav-logo {
-            font-family: 'Crimson Pro', serif;
-            font-size: clamp(1.1rem, 1.8vw, 1.5rem);
-            font-weight: 400;
-            opacity: 1 !important;
-            letter-spacing: 0.02em;
-        }
-        
-        /* Formula Blocks */
-        .formula-block {
-            margin: clamp(3rem, 6vw, 6rem) 0;
-            padding: clamp(2.5rem, 5vw, 4rem);
-            background: linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, rgba(96, 165, 250, 0.05) 100%);
-            border-radius: 20px;
-            border-left: 5px solid var(--accent);
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-        
-        .formula-block:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 20px 60px rgba(59, 130, 246, 0.2);
-        }
-        
-        .light-section .formula-block {
-            background: linear-gradient(135deg, rgba(59, 130, 246, 0.07) 0%, rgba(96, 165, 250, 0.03) 100%);
-        }
-        
-        /* Grid */
-        .grid-2 {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: clamp(3rem, 6vw, 5rem);
-            margin: clamp(3rem, 6vw, 6rem) 0;
-        }
-        
-        /* Metrics */
-        .metric {
-            margin: clamp(2.5rem, 5vw, 4rem) 0;
-            padding: clamp(2.5rem, 4vw, 3.5rem);
-            background: rgba(255, 255, 255, 0.02);
-            border-radius: 20px;
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-        
-        .metric:hover {
-            background: rgba(255, 255, 255, 0.05);
-            border-color: var(--accent);
-            transform: translateY(-8px);
-            box-shadow: 0 20px 60px rgba(59, 130, 246, 0.15);
-        }
-        
-        .metric-value {
-            font-family: 'Crimson Pro', serif;
-            font-size: clamp(3.5rem, 8vw, 6rem);
-            font-weight: 200;
-            background: linear-gradient(135deg, var(--accent-bright) 0%, var(--accent) 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            line-height: 1;
-            margin-bottom: 1rem;
-        }
-        
-        .metric-label {
-            font-size: clamp(0.95rem, 1.5vw, 1.2rem);
-            opacity: 0.6;
-            color: inherit;
-            letter-spacing: 0.08em;
-            font-weight: 400;
-        }
-        
-        /* Animations */
-        .fade-in {
-            opacity: 1; /* Changed from 0 to 1 */
-            transform: translateY(0); /* Changed from 80px to 0 */
-        }
-        
-        @media (max-width: 768px) {
-            .bottom-nav nav {
-                justify-content: center;
-                text-align: center;
-            }
-            
-            .parallax-section,
-            .hero {
-                background-attachment: scroll;
-            }
-            
-            section {
-                padding: clamp(5rem, 12vw, 10rem) clamp(1.5rem, 5vw, 3rem);
-            }
-        }
-    </style>
+    <!-- CSS -->
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
             
-    <!-- HERO -->
-    <section class="hero">
+    <!-- INTRO SECTION -->
+    <section class="hero" style="background-image: url('flood/images/flood-1.webp');">
         <div class="content-wrapper">
-            <div class="label fade-in">HAWKEYE Intelligence Platform</div>
-            <h1 class="fade-in">Flood Intelligence</h1>
-            <p class="fade-in" style="max-width: 900px; font-size: clamp(1.15rem, 2.5vw, 1.75rem); margin-top: clamp(2rem, 4vw, 4rem); line-height: 1.6;">
-                30‑minute, 10 m resolution flood mapping using physics‑informed machine learning
+            <div class="label fade-in">INTELLIGENCE PLATFORMS</div>
+            <h1 class="fade-in">HAWKEYE & HYPERION</h1>
+            <p class="fade-in" style="max-width: 900px; font-size: clamp(0.9rem, 1.5vw, 1.2rem); margin-top: clamp(1.5rem, 3vw, 3rem); line-height: 1.6;">
+                Satellite & Data Analysis Solutions for Urban, Agricultural, and Economic Intelligence
             </p>
-        </div>
-    </section>
-    
-    <!-- SUMMARY -->
-    <section class="dark-section">
-        <div class="content-wrapper">
-            <div class="label fade-in">Executive Summary</div>
-            <h2 class="fade-in">Rapid Response Intelligence</h2>
-            <p class="fade-in">
-                HAWKEYE Flood Intelligence delivers 30‑minute, 10 m flood maps using SegFormer‑B2‑lite with physics‑informed pseudo‑labels, achieving 0.91 mIoU over a 15,000 km² Sylhet 2022 event workflow.
-            </p>
-            <p class="fade-in" style="margin-top: 2.5rem;">
-                The pipeline fuses Sentinel‑1 VV radar, Sentinel‑2 optical bands, and SRTM slope to produce georeferenced flood extents, overlays, and probability heatmaps suitable for rapid response and damage estimation.
-            </p>
-            <div class="grid-2" style="margin-top: clamp(5rem, 10vw, 8rem);">
-                <div class="metric fade-in">
-                    <div class="metric-value">0.91</div>
-                    <div class="metric-label">mIoU Accuracy</div>
-                </div>
-                <div class="metric fade-in">
-                    <div class="metric-value">30min</div>
-                    <div class="metric-label">End-to-End Processing</div>
-                </div>
-                <div class="metric fade-in">
-                    <div class="metric-value">10m</div>
-                    <div class="metric-label">Pixel Resolution</div>
-                </div>
-                <div class="metric fade-in">
-                    <div class="metric-value">15,000km²</div>
-                    <div class="metric-label">Coverage Area</div>
-                </div>
-            </div>
-        </div>
-    </section>
-    
-    <!-- SCOPE -->
-    <section class="light-section">
-        <div class="content-wrapper">
-            <div class="label fade-in">Project Scope</div>
-            <h2 class="fade-in">Operational Scale</h2>
-            <p class="fade-in">
-                Operationalize near–real‑time flood extent mapping that reduces a 7‑day manual workflow to 30 minutes end‑to‑end (acquisition → inference → export), with 10 m resolution suitable for building‑ and road‑level situational awareness.
-            </p>
-            <p class="fade-in" style="margin-top: 3rem;">
-                Primary AOI validated on Sylhet, Bangladesh (2022 event), designed for multi‑region scaling across Bangladesh, India, and Pakistan with Google Earth Engine ingestion.
-            </p>
-        </div>
-    </section>
-    
-    <!-- INTENTION -->
-    <section class="parallax-section parallax-1">
-        <div class="content-wrapper">
-            <div class="label fade-in">Intention & Objectives</div>
-            <h2 class="fade-in">Mission Critical</h2>
-            <ul class="fade-in">
-                <li>Replace manual digitization with automated, defensible, physics‑guided machine learning that remains robust under clouds and adverse weather via SAR.</li>
-                <li style="margin-top: 2.5rem;">Deliver actionable GIS layers (extent polygons, confidence rasters) and overlays for government and insurance workflows within emergency response SLAs.</li>
-            </ul>
-        </div>
-    </section>
-    
-    <!-- DATASETS -->
-    <section class="dark-section">
-        <div class="content-wrapper">
-            <div class="label fade-in">Data Sources</div>
-            <h2 class="fade-in">Multi-Modal Fusion</h2>
-            <div class="grid-2">
-                <div class="fade-in">
-                    <h3 style="font-size: clamp(1.4rem, 2.5vw, 2rem); margin-bottom: 1.5rem;">Sentinel‑1 SAR</h3>
-                    <p>VV polarization, pre/flood scenes, cloud‑penetrating, 10 m IW mode, revisit ~6 days.</p>
-                </div>
-                <div class="fade-in">
-                    <h3 style="font-size: clamp(1.4rem, 2.5vw, 2rem); margin-bottom: 1.5rem;">Sentinel‑2 Optical</h3>
-                    <p>B2/B3/B4 RGB, B5/B8 red‑edge/NIR, B11/B12 SWIR, 10–20 m resolution, revisit ~5 days.</p>
-                </div>
-                <div class="fade-in">
-                    <h3 style="font-size: clamp(1.4rem, 2.5vw, 2rem); margin-bottom: 1.5rem;">SRTM DEM</h3>
-                    <p>30 m resolution with slope derivative for terrain normalization and flood‑susceptibility cues.</p>
-                </div>
-            </div>
-            
-            <div class="fade-in" style="margin-top: clamp(5rem, 10vw, 7rem);">
-                <h3 style="font-size: clamp(1.4rem, 2.5vw, 2rem); margin-bottom: 1.5rem;">Coverage & Resolution</h3>
-                <p>15,000 km² per analysis at 10 m pixel resolution, enabling dense, district‑scale operational mapping.</p>
-            </div>
-            
             <div class="fade-in" style="margin-top: clamp(3rem, 6vw, 5rem);">
-                <h3 style="font-size: clamp(1.4rem, 2.5vw, 2rem); margin-bottom: 1.5rem;">False Positives</h3>
-                <p>Minimal (<5%), reflecting the discriminative benefit of SAR+NDWI+slope fusion under turbid water and cloud conditions.</p>
-            </div>
-            
-            <div class="fade-in" style="margin-top: clamp(5rem, 10vw, 7rem);">
-                <h3 style="font-size: clamp(1.4rem, 2.5vw, 2rem); margin-bottom: 1.5rem;">Artifacts Generated</h3>
-                <p>Probability heatmap, prediction overlay, binary mask, mIoU/loss curves, and shapefile exports for GIS systems.</p>
+                <a href="#flood" style="display: inline-block; padding: 1rem 2rem; background: rgba(59, 130, 246, 0.2); color: white; text-decoration: none; border-radius: 8px; transition: all 0.3s ease; backdrop-filter: blur(10px);">
+                    Explore All Demos
+                </a>
             </div>
         </div>
     </section>
     
-    <!-- VARIABLES -->
-    <section class="light-section">
+    <!-- FLOOD SECTION -->
+    <section class="parallax-section parallax-1" style="background-image: url('flood/images/flood-2.webp');">
         <div class="content-wrapper">
-            <div class="label fade-in">Target Variables</div>
-            <h2 class="fade-in">Output Specifications</h2>
-            <ul class="fade-in">
-                <li>Pixel‑wise classes: flooded vs non‑flooded, exported as binary mask and probability map.</li>
-                <li>Confidence/probability raster for thresholding and downstream risk scoring.</li>
-                <li>Derived polygons for total inundated area and hydrologic connectivity checks.</li>
-            </ul>
-        </div>
-    </section>
-    
-    <!-- METHOD -->
-    <section class="parallax-section parallax-2">
-        <div class="content-wrapper">
-            <div class="label fade-in">Methodology</div>
-            <h2 class="fade-in">Pipeline Architecture</h2>
-            <p class="fade-in">
-                Multi‑modal fusion at pixel level: stack SAR VV, selected optical indices/bands, and slope, normalized to unit range.
+            <div class="label fade-in">HAWKEYE</div>
+            <h2 class="fade-in">FLOOD INTELLIGENCE</h2>
+            <p class="fade-in" style="max-width: 900px; font-size: clamp(0.9rem, 1.5vw, 1.2rem); margin-top: clamp(1.5rem, 3vw, 3rem); line-height: 1.6;">
+                30-minute, 10m resolution flood mapping using physics-informed machine learning
             </p>
-            <p class="fade-in" style="margin-top: 2.5rem;">
-                Physics‑informed pseudo‑label generation (no human labels) followed by SegFormer‑B2‑lite training with cross‑entropy loss and early stopping.
+            <div class="fade-in" style="margin-top: clamp(3rem, 6vw, 5rem);">
+                <a href="flood/" style="display: inline-block; padding: 1rem 2rem; background: rgba(59, 130, 246, 0.2); color: white; text-decoration: none; border-radius: 8px; transition: all 0.3s ease; backdrop-filter: blur(10px);">
+                    View Demo
+                </a>
+            </div>
+        </div>
+    </section>
+    
+    <!-- DISEASE SECTION -->
+    <section class="parallax-section parallax-2" style="background-image: url('disease/images/disease-1.webp');">
+        <div class="content-wrapper">
+            <div class="label fade-in">HAWKEYE</div>
+            <h2 class="fade-in">DISEASE INTELLIGENCE</h2>
+            <p class="fade-in" style="max-width: 900px; font-size: clamp(0.9rem, 1.5vw, 1.2rem); margin-top: clamp(1.5rem, 3vw, 3rem); line-height: 1.6;">
+                7-day dengue forecasts with 9.8% MAPE using epidemiology-guided machine learning
             </p>
-            <p class="fade-in" style="margin-top: 2.5rem;">
-                Inference yields class map and probability heatmap; post‑processing applies confidence thresholding, small‑blob removal, and vectorization to shapefiles.
+            <div class="fade-in" style="margin-top: clamp(3rem, 6vw, 5rem);">
+                <a href="disease/" style="display: inline-block; padding: 1rem 2rem; background: rgba(59, 130, 246, 0.2); color: white; text-decoration: none; border-radius: 8px; transition: all 0.3s ease; backdrop-filter: blur(10px);">
+                    View Demo
+                </a>
+            </div>
+        </div>
+    </section>
+    
+    <!-- NIGHTLIGHTS SECTION -->
+    <section class="parallax-section parallax-3" style="background-image: url('nightlights/images/nightlights-1.webp');">
+        <div class="content-wrapper">
+            <div class="label fade-in">HAWKEYE</div>
+            <h2 class="fade-in">NIGHTLIGHTS INTELLIGENCE</h2>
+            <p class="fade-in" style="max-width: 900px; font-size: clamp(0.9rem, 1.5vw, 1.2rem); margin-top: clamp(1.5rem, 3vw, 3rem); line-height: 1.6;">
+                Real-time economic nowcasting using satellite nightlights with 0.88 GDP correlation
             </p>
-        </div>
-    </section>
-    
-    <!-- PHYSICAL RULES -->
-    <section class="dark-section">
-        <div class="content-wrapper">
-            <div class="label fade-in">Physics-Informed Constraints</div>
-            <h2 class="fade-in">Pseudo-Label Generation</h2>
-            <p class="fade-in">Key physical rules guiding the automated labeling process:</p>
-            
-            <div class="formula-block fade-in">
-                <h3 style="font-size: clamp(1.2rem, 2vw, 1.6rem); margin-bottom: 1.5rem; font-weight: 300;">SAR Backscatter Threshold</h3>
-                <p style="margin-bottom: 1.5rem;">VV reflectance indicating open water:</p>
-                <p>$$ \text{VV} < 0.2 $$</p>
-            </div>
-            
-            <div class="formula-block fade-in">
-                <h3 style="font-size: clamp(1.2rem, 2vw, 1.6rem); margin-bottom: 1.5rem; font-weight: 300;">Water Index Threshold</h3>
-                <p>$$ \text{NDWI} = \frac{B3 - B8}{B3 + B8} > 0.1 $$</p>
-            </div>
-            
-            <div class="formula-block fade-in">
-                <h3 style="font-size: clamp(1.2rem, 2vw, 1.6rem); margin-bottom: 1.5rem; font-weight: 300;">Low‑Slope Constraint</h3>
-                <p style="margin-bottom: 1.5rem;">Attenuate false positives on steep terrain:</p>
-                <p>$$ \text{slope} < 0.05 \text{ radians} $$</p>
+            <div class="fade-in" style="margin-top: clamp(3rem, 6vw, 5rem);">
+                <a href="nightlights/" style="display: inline-block; padding: 1rem 2rem; background: rgba(59, 130, 246, 0.2); color: white; text-decoration: none; border-radius: 8px; transition: all 0.3s ease; backdrop-filter: blur(10px);">
+                    View Demo
+                </a>
             </div>
         </div>
     </section>
     
-    <!-- MODEL ARCHITECTURE -->
-    <section class="light-section">
+    <!-- CROPS SECTION -->
+    <section class="parallax-section parallax-1" style="background-image: url('crops/images/crops-1.webp');">
         <div class="content-wrapper">
-            <div class="label fade-in">Neural Architecture</div>
-            <h2 class="fade-in">SegFormer‑B2‑lite</h2>
-            <p class="fade-in">
-                Hierarchical Transformer encoder (MiT) with lightweight all‑MLP decoder; no positional encodings; efficient multi‑scale fusion.
+            <div class="label fade-in">HAWKEYE</div>
+            <h2 class="fade-in">CROPS INTELLIGENCE</h2>
+            <p class="fade-in" style="max-width: 900px; font-size: clamp(0.9rem, 1.5vw, 1.2rem); margin-top: clamp(1.5rem, 3vw, 3rem); line-height: 1.6;">
+                Zero-label crop-stress discovery using self-supervised learning at 30m resolution
             </p>
-            <div class="grid-2" style="margin-top: clamp(5rem, 10vw, 7rem);">
-                <div class="fade-in">
-                    <h3 style="font-size: clamp(1.4rem, 2.5vw, 2rem); margin-bottom: 1.5rem;">Training Parameters</h3>
-                    <ul>
-                        <li>50 epochs</li>
-                        <li>Batch size: 16</li>
-                        <li>AdamW optimizer</li>
-                        <li>Learning rate: \(10^{-4}\)</li>
-                    </ul>
-                </div>
-                <div class="fade-in">
-                    <h3 style="font-size: clamp(1.4rem, 2.5vw, 2rem); margin-bottom: 1.5rem;">Augmentations</h3>
-                    <ul>
-                        <li>Random flip</li>
-                        <li>Random rotate</li>
-                        <li>Random crop</li>
-                    </ul>
-                </div>
-            </div>
-        </div>
-    </section>
-    
-    <!-- FORMULAS -->
-    <section class="parallax-section parallax-3">
-        <div class="content-wrapper">
-            <div class="label fade-in">Core Mathematics</div>
-            <h2 class="fade-in">Key Formulas</h2>
-            
-            <div class="formula-block fade-in">
-                <h3 style="font-size: clamp(1.2rem, 2vw, 1.6rem); margin-bottom: 1.5rem; font-weight: 300;">Normalized Difference Water Index</h3>
-                <p>$$ \text{NDWI} = \frac{G - NIR}{G + NIR} = \frac{B3 - B8}{B3 + B8} $$</p>
-            </div>
-            
-            <div class="formula-block fade-in">
-                <h3 style="font-size: clamp(1.2rem, 2vw, 1.6rem); margin-bottom: 1.5rem; font-weight: 300;">Intersection over Union</h3>
-                <p>$$ \text{IoU} = \frac{TP}{TP + FP + FN} $$</p>
-                <p style="margin-top: 1.5rem; font-size: clamp(0.95rem, 1.5vw, 1.1rem); opacity: 0.8;">mIoU is mean across classes</p>
-            </div>
-            
-            <div class="formula-block fade-in">
-                <h3 style="font-size: clamp(1.2rem, 2vw, 1.6rem); margin-bottom: 1.5rem; font-weight: 300;">Speed Improvement</h3>
-                <p>$$ \%\,\Delta t = \left(1 - \frac{0.5\,\text{hr}}{168\,\text{hr}}\right)\times 100 \approx 99.7\% $$</p>
-            </div>
-        </div>
-    </section>
-    
-    <!-- PYTHON SNIPPETS -->
-    <section class="dark-section">
-        <div class="content-wrapper">
-            <div class="label fade-in">Implementation</div>
-            <h2 class="fade-in">Code Snippets</h2>
-            
-            <div class="fade-in">
-                <h3 style="margin-top: clamp(3rem, 6vw, 5rem);">Pseudo‑label Fusion</h3>
-                <pre><code>mask_sar = (vv < 0.2).astype(np.uint8)  # SAR water signature
-ndwi = (b3 - b8) / (b3 + b8 + 1e-6)     # NDWI
-mask_ndwi = (ndwi > 0.1).astype(np.uint8)
-mask_slope = (slope < 0.05).astype(np.uint8)
-pseudo_mask = (mask_sar &amp; mask_ndwi &amp; mask_slope).astype(np.uint8)</code></pre>
-            </div>
-            
-            <div class="fade-in">
-                <h3 style="margin-top: clamp(4rem, 8vw, 6rem);">SegFormer Fine‑tuning</h3>
-                <pre><code>model = SegFormerB2Lite(num_classes=2, in_chans=3)
-optim = torch.optim.AdamW(model.parameters(), lr=1e-4)
-for epoch in range(50):
-    for x, y in loader:
-        logits = model(x)                   # [B,2,H,W]
-        loss = F.cross_entropy(logits, y)   # pseudo-masks as targets
-        optim.zero_grad(); loss.backward(); optim.step()</code></pre>
-            </div>
-            
-            <div class="fade-in">
-                <h3 style="margin-top: clamp(4rem, 8vw, 6rem);">Inference & Thresholding</h3>
-                <pre><code>with torch.no_grad():
-    prob = torch.softmax(model(x), dim=1)[:,1]  # flood class prob
-pred = (prob > 0.5).cpu().numpy().astype(np.uint8)</code></pre>
-            </div>
-        </div>
-    </section>
-    
-    <!-- RESULTS -->
-    <section class="light-section">
-        <div class="content-wrapper">
-            <div class="label fade-in">Performance Metrics</div>
-            <h2 class="fade-in">Results Obtained</h2>
-            
-            <div class="grid-2">
-                <div class="fade-in">
-                    <h3 style="font-size: clamp(1.4rem, 2.5vw, 2rem); margin-bottom: 1.5rem;">Accuracy</h3>
-                    <p>mIoU = 0.91 on validation imagery spanning Sylhet 2022, confirming high overlap between predicted flood and reference masks.</p>
-                </div>
-                <div class="fade-in">
-                    <h3 style="font-size: clamp(1.4rem, 2.5vw, 2rem); margin-bottom: 1.5rem;">Processing Time</h3>
-                    <p>30 minutes total pipeline time (data pull → fused preprocessing → inference → export), replacing a 7‑day manual workflow.</p>
-                </div>
-                <div class="fade-in">
-                    <h3 style="font-size: clamp(1.4rem, 2.5vw, 2rem); margin-bottom: 1.5rem;">False Positive Rate</h3>
-                    <p><5% on validation scenes, significantly lower than traditional index-based methods.</p>
-                </div>
-                <div class="fade-in">
-                    <h3 style="font-size: clamp(1.4rem, 2.5vw, 2rem); margin-bottom: 1.5rem;">Coverage</h3>
-                    <p>15,000 km² per analysis at 10 m resolution, enabling district-level situational awareness.</p>
-                </div>
-            </div>
-        </div>
-    </section>
-    
-    <!-- MEANING -->
-    <section class="dark-section">
-        <div class="content-wrapper">
-            <div class="label fade-in">Strategic Impact</div>
-            <h2 class="fade-in">Decision Relevance</h2>
-            <ul class="fade-in">
-                <li>A 0.91 mIoU at 10 m implies reliable parcel‑ and road‑level inundation delineation, making the outputs suitable for evacuation routing, relief staging, and logistics planning.</li>
-                <li>The <5% false‑positive profile reduces wasted dispatches while preserving recall via SAR penetration in cloud‑covered scenes, critical during monsoon events.</li>
-                <li>30‑minute turnaround compresses the intelligence OODA loop, enabling earlier warnings and potentially thousands of lives saved in multi‑district events.</li>
-            </ul>
-        </div>
-    </section>
-    
-    <!-- TECHNICAL BRIEFS -->
-    <section class="light-section">
-        <div class="content-wrapper">
-            <div class="label fade-in">Technical Foundation</div>
-            <h2 class="fade-in">What Makes It Work</h2>
-            
             <div class="fade-in" style="margin-top: clamp(3rem, 6vw, 5rem);">
-                <h3 style="font-size: clamp(1.4rem, 2.5vw, 2rem); margin-bottom: 1.5rem;">Physics‑Informed Pseudo‑Labeling</h3>
-                <p>Eliminates annotation bottlenecks and aligns supervision with hydrology, improving generalization across regions and seasons.</p>
-            </div>
-            
-            <div class="fade-in" style="margin-top: clamp(3rem, 6vw, 5rem);">
-                <h3 style="font-size: clamp(1.4rem, 2.5vw, 2rem); margin-bottom: 1.5rem;">Hierarchical Attention</h3>
-                <p>SegFormer's architecture captures flood textures (smooth water bodies, shorelines) and contextual cues (valley floors), which classical CNNs or index‑thresholding miss.</p>
-            </div>
-            
-            <div class="fade-in" style="margin-top: clamp(3rem, 6vw, 5rem);">
-                <h3 style="font-size: clamp(1.4rem, 2.5vw, 2rem); margin-bottom: 1.5rem;">Multi‑Modal Fusion</h3>
-                <p>Mitigates single‑sensor failure modes (e.g., optical cloud cover, SAR roughness over vegetation) by enforcing consensus across SAR, optics, and topography.</p>
+                <a href="crops/" style="display: inline-block; padding: 1rem 2rem; background: rgba(59, 130, 246, 0.2); color: white; text-decoration: none; border-radius: 8px; transition: all 0.3s ease; backdrop-filter: blur(10px);">
+                    View Demo
+                </a>
             </div>
         </div>
     </section>
     
-    <!-- OPERATIONALIZATION -->
-    <section class="dark-section">
+    <!-- LPG SECTION -->
+    <section class="parallax-section parallax-2" style="background-image: url('lpg/images/lpg-1.webp');">
         <div class="content-wrapper">
-            <div class="label fade-in">Deployment</div>
-            <h2 class="fade-in">Operationalization & Outputs</h2>
-            
-            <div class="grid-2">
-                <div class="fade-in">
-                    <h3 style="font-size: clamp(1.4rem, 2.5vw, 2rem); margin-bottom: 1.5rem;">Deliverables</h3>
-                    <ul>
-                        <li>GeoTIFF rasters (probability and class)</li>
-                        <li>Vector flood polygons</li>
-                        <li>Styled overlays</li>
-                        <li>Metrics JSON for dashboards and incident reports</li>
-                    </ul>
-                </div>
-                <div class="fade-in">
-                    <h3 style="font-size: clamp(1.4rem, 2.5vw, 2rem); margin-bottom: 1.5rem;">Integration</h3>
-                    <p>Google Earth Engine pull → PyTorch inference service → GIS export; API‑ready for emergency ops centers.</p>
-                </div>
+            <div class="label fade-in">HYPERION</div>
+            <h2 class="fade-in">LPG DEMAND FORECASTING</h2>
+            <p class="fade-in" style="max-width: 900px; font-size: clamp(0.9rem, 1.5vw, 1.2rem); margin-top: clamp(1.5rem, 3vw, 3rem); line-height: 1.6;">
+                Monthly forecasts with seasonal and trend decomposition using XGBoost
+            </p>
+            <div class="fade-in" style="margin-top: clamp(3rem, 6vw, 5rem);">
+                <a href="lpg/" style="display: inline-block; padding: 1rem 2rem; background: rgba(59, 130, 246, 0.2); color: white; text-decoration: none; border-radius: 8px; transition: all 0.3s ease; backdrop-filter: blur(10px);">
+                    View Demo
+                </a>
             </div>
         </div>
     </section>
     
-    <!-- LIMITATIONS -->
-    <section class="light-section">
+    <!-- FREIGHTS SECTION -->
+    <section class="parallax-section parallax-3" style="background-image: url('freights/images/freights-1.webp');">
         <div class="content-wrapper">
-            <div class="label fade-in">Constraints</div>
-            <h2 class="fade-in">Limitations & Risks</h2>
-            
-            <div class="fade-in">
-                <h3 style="font-size: clamp(1.4rem, 2.5vw, 2rem); margin-bottom: 1.5rem; margin-top: clamp(3rem, 6vw, 4rem);">Latency and Revisit</h3>
-                <p>5–6 day satellite cadence limits truly continuous coverage, though SAR dual‑satellite constellations mitigate gaps.</p>
-            </div>
-            
+            <div class="label fade-in">HYPERION</div>
+            <h2 class="fade-in">FREIGHT FORECASTING</h2>
+            <p class="fade-in" style="max-width: 900px; font-size: clamp(0.9rem, 1.5vw, 1.2rem); margin-top: clamp(1.5rem, 3vw, 3rem); line-height: 1.6;">
+                7-day R² of 0.70 using Trade Imbalance Ratio and gradient-boosted models
+            </p>
             <div class="fade-in" style="margin-top: clamp(3rem, 6vw, 5rem);">
-                <h3 style="font-size: clamp(1.4rem, 2.5vw, 2rem); margin-bottom: 1.5rem;">Domain Shift</h3>
-                <p>Extreme specular returns, dense canopy, or urban canyons can bias SAR water signatures; slope/NDWI constraints reduce but do not eliminate risk.</p>
-            </div>
-            
-            <div class="fade-in" style="margin-top: clamp(3rem, 6vw, 5rem);">
-                <h3 style="font-size: clamp(1.4rem, 2.5vw, 2rem); margin-bottom: 1.5rem;">Compute & Storage</h3>
-                <p>Training requires GPU; region archives can exceed 1 TB/year, necessitating lifecycle policies.</p>
-            </div>
-        </div>
-    </section>
-    
-    <!-- FUTURE SCOPE -->
-    <section class="dark-section">
-        <div class="content-wrapper">
-            <div class="label fade-in">Roadmap</div>
-            <h2 class="fade-in">Future Scope</h2>
-            
-            <div class="fade-in">
-                <h3 style="font-size: clamp(1.4rem, 2.5vw, 2rem); margin-bottom: 1.5rem; margin-top: clamp(3rem, 6vw, 4rem);">Real‑Time Alerting</h3>
-                <p>Hourly S1 ingestion with 30‑minute inference windows for streaming situational awareness.</p>
-            </div>
-            
-            <div class="fade-in" style="margin-top: clamp(3rem, 6vw, 5rem);">
-                <h3 style="font-size: clamp(1.4rem, 2.5vw, 2rem); margin-bottom: 1.5rem;">Damage Modeling</h3>
-                <p>Fuse with building footprints and land‑use to estimate exposed value and prioritize response corridors.</p>
-            </div>
-            
-            <div class="fade-in" style="margin-top: clamp(3rem, 6vw, 5rem);">
-                <h3 style="font-size: clamp(1.4rem, 2.5vw, 2rem); margin-bottom: 1.5rem;">Multi‑Region Scaling</h3>
-                <p>Bangladesh–India–Pakistan concurrent processing with parameterized AOIs and auto‑retrains on new flood seasons.</p>
+                <a href="freights/" style="display: inline-block; padding: 1rem 2rem; background: rgba(59, 130, 246, 0.2); color: white; text-decoration: none; border-radius: 8px; transition: all 0.3s ease; backdrop-filter: blur(10px);">
+                    View Demo
+                </a>
             </div>
         </div>
     </section>
@@ -769,107 +133,20 @@ pred = (prob > 0.5).cpu().numpy().astype(np.uint8)</code></pre>
     <!-- Bottom Navigation -->
     <div class="bottom-nav">
         <nav>
-            <a href="#" class="nav-logo">HAWKEYE</a>
-            <a href="#summary">Summary</a>
-            <a href="#scope">Scope</a>
-            <a href="#methodology">Method</a>
-            <a href="#results">Results</a>
-            <a href="#impact">Impact</a>
-            <a href="#future">Future</a>
+            <a href="#" class="nav-logo">HAWKEYE/HYPERION</a>
+            <a href="#intro">Intro</a>
+            <a href="#flood">Flood</a>
+            <a href="#disease">Disease</a>
+            <a href="#nightlights">Nightlights</a>
+            <a href="#crops">Crops</a>
+            <a href="#lpg">LPG</a>
+            <a href="#freights">Freight</a>
         </nav>
     </div>
     
-    <script>
-        // Register GSAP plugins
-        gsap.registerPlugin(ScrollTrigger);
-        
-        // Scroll-triggered fade-in animations
-        gsap.utils.toArray('.fade-in').forEach((element, index) => {
-            gsap.fromTo(element, 
-                {
-                    y: 100,
-                    opacity: 0, // Changed back to 0 for animation
-                },
-                {
-                    scrollTrigger: {
-                        trigger: element,
-                        start: "top 90%",
-                        end: "top 60%",
-                        toggleActions: "play none none reverse",
-                    },
-                    y: 0, // Changed from 100 to 0
-                    opacity: 1, // Changed from 0 to 1
-                    duration: 1.2,
-                    ease: "power3.out",
-                    delay: index * 0.05
-                }
-            );
-        });
-        
-        // Parallax effect for hero and parallax sections
-        const parallaxSections = document.querySelectorAll('.hero, .parallax-section');
-        
-        parallaxSections.forEach(section => {
-            gsap.to(section, {
-                backgroundPosition: `50% ${window.innerHeight * 0.5}px`,
-                ease: "none",
-                scrollTrigger: {
-                    trigger: section,
-                    start: "top top",
-                    end: "bottom top",
-                    scrub: 1
-                }
-            });
-        });
-        
-        // Bottom nav auto-hide on scroll down
-        let lastScroll = 0;
-        const nav = document.querySelector('.bottom-nav');
-        
-        ScrollTrigger.create({
-            onUpdate: (self) => {
-                const currentScroll = self.scroll();
-                
-                if (currentScroll <= 100) {
-                    nav.classList.remove('hidden');
-                    return;
-                }
-                
-                if (currentScroll > lastScroll && currentScroll > 500) {
-                    nav.classList.add('hidden');
-                } else if (currentScroll < lastScroll) {
-                    nav.classList.remove('hidden');
-                }
-                
-                lastScroll = currentScroll;
-            }
-        });
-        
-        // Smooth scroll for navigation
-        document.querySelectorAll('.bottom-nav a[href^="#"]').forEach(anchor => {
-            anchor.addEventListener('click', function (e) {
-                const href = this.getAttribute('href');
-                if (href !== '#') {
-                    e.preventDefault();
-                    const target = document.querySelector(href);
-                    if (target) {
-                        window.scrollTo({
-                            top: target.offsetTop - 100,
-                            behavior: 'smooth'
-                        });
-                    }
-                }
-            });
-        });
-        
-        // Refresh ScrollTrigger after MathJax renders
-        if (window.MathJax) {
-            window.addEventListener('load', () => {
-                setTimeout(() => {
-                    ScrollTrigger.refresh();
-                }, 1500);
-            });
-        }
-    </script>
+    <!-- GSAP -->
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/gsap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/ScrollTrigger.min.js"></script>
+    <script src="script.js"></script>
 </body>
 </html>
