@@ -4,21 +4,17 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>HAWKEYE Disease Intelligence - Technical Report</title>
-    
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:wght@200;300;400;600&family=Inter:wght@200;300;400;500;600&display=swap" rel="stylesheet">
-    
     <!-- CSS -->
     <link rel="stylesheet" href="../styles.css">
-    
     <!-- MathJax -->
     <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
     <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
 </head>
 <body>
-            
     <!-- HERO -->
     <section class="hero">
         <div class="content-wrapper">
@@ -29,7 +25,6 @@
             </p>
         </div>
     </section>
-    
     <!-- SUMMARY -->
     <section class="dark-section">
         <div class="content-wrapper">
@@ -61,7 +56,6 @@
             </div>
         </div>
     </section>
-    
     <!-- SCOPE -->
     <section class="light-section">
         <div class="content-wrapper">
@@ -75,9 +69,9 @@
             </p>
         </div>
     </section>
-    
     <!-- INTENTION -->
-    <section class="parallax-section parallax-1">
+    <section class="parallax-section video-bg" data-video="images/disease-1">
+        <img src="images/disease-1.webp" class="bg-fallback" alt="" loading="lazy">
         <div class="content-wrapper">
             <div class="label fade-in">Intention & Objectives</div>
             <h2 class="fade-in">Mission Critical</h2>
@@ -87,7 +81,6 @@
             </ul>
         </div>
     </section>
-    
     <!-- DATASETS -->
     <section class="dark-section">
         <div class="content-wrapper">
@@ -107,19 +100,16 @@
                     <p>VIIRS nightlights radiance as an urban activity proxy and mobility surrogate; satellite basemaps for optional cartographic context.</p>
                 </div>
             </div>
-            
             <div class="fade-in" style="margin-top: clamp(4rem, 8vw, 6rem);">
                 <h3 style="font-size: clamp(1.1rem, 2vw, 1.6rem); margin-bottom: 1.2rem;">Administrative & Demographics</h3>
                 <p>Ward boundaries and population density layers for normalization and targeting.</p>
             </div>
-            
             <div class="fade-in" style="margin-top: clamp(2rem, 4vw, 4rem);">
                 <h3 style="font-size: clamp(1.1rem, 2vw, 1.6rem); margin-bottom: 1.2rem;">Data Coverage & Quality</h3>
                 <p>1,105 temporal records, 36 fused features, 0.16% missing data after harmonization.</p>
             </div>
         </div>
     </section>
-    
     <!-- VARIABLES -->
     <section class="light-section">
         <div class="content-wrapper">
@@ -131,9 +121,9 @@
             </ul>
         </div>
     </section>
-    
     <!-- METHOD -->
-    <section class="parallax-section parallax-2">
+    <section class="parallax-section video-bg" data-video="images/disease-2">
+        <img src="images/disease-2.webp" class="bg-fallback" alt="" loading="lazy">
         <div class="content-wrapper">
             <div class="label fade-in">Methodology</div>
             <h2 class="fade-in">Pipeline Architecture</h2>
@@ -148,25 +138,21 @@
             </p>
         </div>
     </section>
-    
     <!-- SIGNALS -->
     <section class="dark-section">
         <div class="content-wrapper">
             <div class="label fade-in">Key Signals & Lags</div>
             <h2 class="fade-in">Leading Indicators</h2>
             <p class="fade-in">Key causal relationships guiding the forecasting system:</p>
-            
             <div class="formula-block fade-in">
                 <h3 style="font-size: clamp(1rem, 1.6vw, 1.3rem); margin-bottom: 1.2rem; font-weight: 300;">Temperature→Dengue</h3>
                 <p style="margin-bottom: 1.2rem;">Pearson correlation with 14-day lag:</p>
                 <p>$$ \text{Corr}\big(T_{t-14},\,\text{Dengue}_{t}\big)=0.324 $$</p>
             </div>
-            
             <div class="formula-block fade-in">
                 <h3 style="font-size: clamp(1rem, 1.6vw, 1.3rem); margin-bottom: 1.2rem; font-weight: 300;">Socio‑Economic Modulation</h3>
                 <p>$$ r=0.88 \text{ between nightlights and GDP, informing contact patterns} $$</p>
             </div>
-            
             <div class="formula-block fade-in">
                 <h3 style="font-size: clamp(1rem, 1.6vw, 1.3rem); margin-bottom: 1.2rem; font-weight: 300;">Data Sufficiency</h3>
                 <p style="margin-bottom: 1.2rem;">36 features with low missingness enable robust analysis:</p>
@@ -174,7 +160,6 @@
             </div>
         </div>
     </section>
-    
     <!-- MODEL ARCHITECTURE -->
     <section class="light-section">
         <div class="content-wrapper">
@@ -199,25 +184,22 @@
             </div>
         </div>
     </section>
-    
     <!-- FORMULAS -->
-    <section class="parallax-section parallax-3">
+    <section class="parallax-section video-bg" data-video="images/disease-3">
+        <img src="images/disease-3.webp" class="bg-fallback" alt="" loading="lazy">
         <div class="content-wrapper">
             <div class="label fade-in">Core Mathematics</div>
             <h2 class="fade-in">Key Formulas</h2>
-            
             <div class="formula-block fade-in">
                 <h3 style="font-size: clamp(1rem, 1.6vw, 1.3rem); margin-bottom: 1.2rem; font-weight: 300;">Mean Absolute Percentage Error</h3>
                 <p>$$ \text{MAPE} = \frac{100}{N}\sum_{t=1}^{N}\left|\frac{y_{t}-\hat{y}_{t}}{y_{t}}\right| $$</p>
                 <p style="margin-top: 1.2rem; font-size: clamp(0.8rem, 1.2vw, 0.9rem); opacity: 0.8;">Primary evaluation at 7-day horizon</p>
             </div>
-            
             <div class="formula-block fade-in">
                 <h3 style="font-size: clamp(1rem, 1.6vw, 1.3rem); margin-bottom: 1.2rem; font-weight: 300;">Lagged Covariance Check</h3>
                 <p>$$ \text{Corr}\big(T_{t-14},\,\text{Dengue}_{t}\big)=0.324 $$</p>
                 <p style="margin-top: 1.2rem; font-size: clamp(0.8rem, 1.2vw, 0.9rem); opacity: 0.8;">Validating thermal lead against cases</p>
             </div>
-            
             <div class="formula-block fade-in">
                 <h3 style="font-size: clamp(1rem, 1.6vw, 1.3rem); margin-bottom: 1.2rem; font-weight: 300;">Growth Rate Week‑Over‑Week</h3>
                 <p>$$ g_{t} = \frac{y_{t}-y_{t-1}}{y_{t-1}} $$</p>
@@ -225,13 +207,11 @@
             </div>
         </div>
     </section>
-    
     <!-- PYTHON SNIPPETS -->
     <section class="dark-section">
         <div class="content-wrapper">
             <div class="label fade-in">Implementation</div>
             <h2 class="fade-in">Code Snippets</h2>
-            
             <div class="fade-in">
                 <h3 style="margin-top: clamp(2rem, 4vw, 4rem); font-size: clamp(1.1rem, 2vw, 1.6rem);">Lag Feature Construction</h3>
                 <pre><code>df["temp_lag_14"] = df["temp"].shift(14)
@@ -240,7 +220,6 @@ df["rain_lag_14"] = df["rain"].shift(14)
 df["nl_month"]    = nightlights.resample("W").mean().reindex(df.index, method="ffill")
 features = ["temp_lag_14","hum_lag_14","rain_lag_14","nl_month"]</code></pre>
             </div>
-            
             <div class="fade-in">
                 <h3 style="margin-top: clamp(3rem, 6vw, 5rem); font-size: clamp(1.1rem, 2vw, 1.6rem);">Prophet with Weekly Seasonality</h3>
                 <pre><code>m = Prophet(weekly_seasonality=True, yearly_seasonality=True)
@@ -249,7 +228,6 @@ for col in features:
 fit = m.fit(df.rename(columns={"cases":"y","date":"ds"}))
 forecast = m.predict(df_future)  # 7-day horizon</code></pre>
             </div>
-            
             <div class="fade-in">
                 <h3 style="margin-top: clamp(3rem, 6vw, 5rem); font-size: clamp(1.1rem, 2vw, 1.6rem);">Gradient Boosting Benchmark</h3>
                 <pre><code>X = df[features].shift(1).dropna()
@@ -260,13 +238,11 @@ yhat = model.predict(df_future[features])</code></pre>
             </div>
         </div>
     </section>
-    
     <!-- RESULTS -->
     <section class="light-section">
         <div class="content-wrapper">
             <div class="label fade-in">Performance Metrics</div>
             <h2 class="fade-in">Results Obtained</h2>
-            
             <div class="grid-2">
                 <div class="fade-in">
                     <h3 style="font-size: clamp(1.1rem, 2vw, 1.6rem); margin-bottom: 1.2rem;">Forecast Accuracy</h3>
@@ -287,7 +263,6 @@ yhat = model.predict(df_future[features])</code></pre>
             </div>
         </div>
     </section>
-    
     <!-- MEANING -->
     <section class="dark-section">
         <div class="content-wrapper">
@@ -300,36 +275,30 @@ yhat = model.predict(df_future[features])</code></pre>
             </ul>
         </div>
     </section>
-    
     <!-- TECHNICAL BRIEFS -->
     <section class="light-section">
         <div class="content-wrapper">
             <div class="label fade-in">Technical Foundation</div>
             <h2 class="fade-in">What Makes It Work</h2>
-            
             <div class="fade-in" style="margin-top: clamp(2rem, 4vw, 4rem);">
                 <h3 style="font-size: clamp(1.1rem, 2vw, 1.6rem); margin-bottom: 1.2rem;">Harmonized Lags & Anomalies</h3>
                 <p>Convert noisy weather streams into biologically meaningful regressors while preserving interpretability.</p>
             </div>
-            
             <div class="fade-in" style="margin-top: clamp(2rem, 4vw, 4rem);">
                 <h3 style="font-size: clamp(1.1rem, 2vw, 1.6rem); margin-bottom: 1.2rem;">Dual‑Track Modeling</h3>
                 <p>Prophet + boosted trees provides both transparent baselines and non‑linear capture for robustness under changing behaviors.</p>
             </div>
-            
             <div class="fade-in" style="margin-top: clamp(2rem, 4vw, 4rem);">
                 <h3 style="font-size: clamp(1.1rem, 2vw, 1.6rem); margin-bottom: 1.2rem;">Data Integrity</h3>
                 <p>Low missingness and consistent ward delineations reduce label noise and improve week‑ahead stability.</p>
             </div>
         </div>
     </section>
-    
     <!-- OPERATIONALIZATION -->
     <section class="dark-section">
         <div class="content-wrapper">
             <div class="label fade-in">Deployment</div>
             <h2 class="fade-in">Operationalization & Outputs</h2>
-            
             <div class="grid-2">
                 <div class="fade-in">
                     <h3 style="font-size: clamp(1.1rem, 2vw, 1.6rem); margin-bottom: 1.2rem;">Deliverables</h3>
@@ -347,72 +316,65 @@ yhat = model.predict(df_future[features])</code></pre>
             </div>
         </div>
     </section>
-    
     <!-- LIMITATIONS -->
     <section class="light-section">
         <div class="content-wrapper">
             <div class="label fade-in">Constraints</div>
             <h2 class="fade-in">Limitations & Risks</h2>
-            
             <div class="fade-in">
                 <h3 style="font-size: clamp(1.1rem, 2vw, 1.6rem); margin-bottom: 1.2rem; margin-top: clamp(2rem, 4vw, 3rem);">Reporting Artifacts</h3>
                 <p>Case backlog dumps and testing policy shifts can transiently break stationarity; outlier detection and robust losses mitigate but do not remove risk.</p>
             </div>
-            
             <div class="fade-in" style="margin-top: clamp(2rem, 4vw, 4rem);">
                 <h3 style="font-size: clamp(1.1rem, 2vw, 1.6rem); margin-bottom: 1.2rem;">Exogenous Shocks</h3>
                 <p>Mobility restrictions or blackouts alter transmission dynamics; models require rapid recalibration using recent windows.</p>
             </div>
-            
             <div class="fade-in" style="margin-top: clamp(2rem, 4vw, 4rem);">
                 <h3 style="font-size: clamp(1.1rem, 2vw, 1.6rem); margin-bottom: 1.2rem;">Transferability</h3>
                 <p>Elasticities and optimal lags vary by microclimate; city‑specific validation is required when scaling nationally.</p>
             </div>
         </div>
     </section>
-    
     <!-- FUTURE SCOPE -->
     <section class="dark-section">
         <div class="content-wrapper">
             <div class="label fade-in">Roadmap</div>
             <h2 class="fade-in">Future Scope</h2>
-            
             <div class="fade-in">
                 <h3 style="font-size: clamp(1.1rem, 2vw, 1.6rem); margin-bottom: 1.2rem; margin-top: clamp(2rem, 4vw, 3rem);">Entomological Integration</h3>
                 <p>Fuse mosquito trap counts and vector suitabilities for mechanistic hybrid models.</p>
             </div>
-            
             <div class="fade-in" style="margin-top: clamp(2rem, 4vw, 4rem);">
                 <h3 style="font-size: clamp(1.1rem, 2vw, 1.6rem); margin-bottom: 1.2rem;">Spatial Diffusion</h3>
                 <p>Graph‑based spillover modeling between wards using mobility or road‑network priors.</p>
             </div>
-            
             <div class="fade-in" style="margin-top: clamp(2rem, 4vw, 4rem);">
                 <h3 style="font-size: clamp(1.1rem, 2vw, 1.6rem); margin-bottom: 1.2rem;">Active Monitoring</h3>
                 <p>Alerting when thermal/rainfall precursors cross city‑specific thresholds to trigger pre‑emptive operations.</p>
             </div>
         </div>
     </section>
-    
     <!-- Footer spacing -->
     <div style="height: 120px; background: var(--charcoal);"></div>
-    
     <!-- Bottom Navigation -->
     <div class="bottom-nav">
         <nav>
-            <a href="#" class="nav-logo">HAWKEYE</a>
-            <a href="#summary">Summary</a>
-            <a href="#scope">Scope</a>
-            <a href="#methodology">Method</a>
-            <a href="#results">Results</a>
-            <a href="#impact">Impact</a>
-            <a href="#future">Future</a>
+            <a href="/" class="nav-logo">HAWKEYE</a>
+            <button class="menu-trigger" id="menuTrigger">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                    <line x1="3" y1="12" x2="21" y2="12" stroke="currentColor" stroke-width="2"></line>
+                    <line x1="3" y1="6" x2="21" y2="6" stroke="currentColor" stroke-width="2"></line>
+                    <line x1="3" y1="18" x2="21" y2="18" stroke="currentColor" stroke-width="2"></line>
+                </svg>
+            </button>
         </nav>
     </div>
-    
-    <!-- GSAP -->
+    <!-- GSAP Core -->
     <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/gsap.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/ScrollTrigger.min.js"></script>
+    <!-- Smooth Scroll -->
+    <script src="https://cdn.jsdelivr.net/gh/studio-freight/lenis@latest/bundled/lenis.min.js"></script>
+    <!-- Main Script - PARENT DIRECTORY -->
     <script src="../script.js"></script>
 </body>
 </html>
