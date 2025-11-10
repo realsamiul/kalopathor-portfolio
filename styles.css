@@ -14,9 +14,29 @@
     --text-muted: #888888;
 }
 
-/* No scroll-behavior to avoid conflicts with ScrollSmoother */
+/* Lenis smooth scroll compatibility */
 html {
     overflow-x: hidden;
+}
+
+html.lenis {
+    height: auto;
+}
+
+.lenis.lenis-smooth {
+    scroll-behavior: auto;
+}
+
+.lenis.lenis-smooth [data-lenis-prevent] {
+    overscroll-behavior: contain;
+}
+
+.lenis.lenis-stopped {
+    overflow: hidden;
+}
+
+.lenis.lenis-scrolling iframe {
+    pointer-events: none;
 }
 
 body {
@@ -65,6 +85,46 @@ h3 {
     line-height: 1.05;
 }
 
+/* Rolling Text Animation Styles */
+.rolling-text {
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+    line-height: 1;
+    display: inline-block;
+    position: relative;
+}
+
+.rolling-text > div {
+    overflow: hidden;
+    display: inline-block;
+    position: relative;
+}
+
+.rolling-text .originalText,
+.rolling-text .cloneText {
+    display: block;
+}
+
+.rolling-text .cloneText {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+}
+
+/* Rolling text size variants */
+.rolling-text-large {
+    font-size: clamp(3rem, 9vw, 8rem);
+}
+
+.rolling-text-medium {
+    font-size: clamp(2rem, 6vw, 5rem);
+}
+
+.rolling-text-small {
+    font-size: clamp(1.2rem, 4vw, 2.5rem);
+}
+
 .label {
     font-family: 'Inter', sans-serif;
     font-size: clamp(0.7rem, 1.2vw, 0.85rem);
@@ -87,12 +147,12 @@ p, li {
 
 /* Sections - Taller with more breathing space */
 section {
-    min-height: 140vh; /* Increased from 120vh */
+    min-height: 140vh;
     position: relative;
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: clamp(12rem, 24vw, 30rem) clamp(3rem, 9vw, 14rem); /* Increased vertical padding */
+    padding: clamp(12rem, 24vw, 30rem) clamp(3rem, 9vw, 14rem);
 }
 
 .content-wrapper {
@@ -104,13 +164,13 @@ section {
 
 /* Hero Section */
 .hero {
-    min-height: 140vh; /* Increased from 120vh */
+    min-height: 140vh;
     background-position: center;
     background-size: cover;
     background-attachment: fixed;
     position: relative;
     color: var(--text-light);
-    padding: clamp(14rem, 26vw, 32rem) clamp(3rem, 10vw, 16rem); /* Increased vertical padding */
+    padding: clamp(14rem, 26vw, 32rem) clamp(3rem, 10vw, 16rem);
 }
 
 .hero h1 {
@@ -428,6 +488,6 @@ ul li::before {
     }
     
     section {
-        padding: clamp(8rem, 16vw, 14rem) clamp(2rem, 6vw, 4rem); /* Adjusted for mobile */
+        padding: clamp(8rem, 16vw, 14rem) clamp(2rem, 6vw, 4rem);
     }
 }
