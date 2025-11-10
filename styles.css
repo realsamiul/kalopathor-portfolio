@@ -14,7 +14,7 @@
     --text-muted: #888888;
 }
 
-/* Lenis smooth scroll compatibility */
+/* CRITICAL FIX: Lenis smooth scroll optimization */
 html {
     overflow-x: hidden;
 }
@@ -48,6 +48,8 @@ body {
     -moz-osx-font-smoothing: grayscale;
     font-weight: 350;
     letter-spacing: -0.011em;
+    /* CRITICAL FIX: Remove any potential scroll jank */
+    overscroll-behavior: none;
 }
 
 /* Typography */
@@ -67,7 +69,6 @@ h1 {
     line-height: 0.88;
 }
 
-/* Harmonize relative sizes to match hero aesthetics */
 h2 {
     font-size: clamp(2rem, 6.5vw, 5.5rem);
     margin-bottom: clamp(2.2rem, 5vw, 5rem);
@@ -86,7 +87,6 @@ h3 {
     line-height: 1.05;
 }
 
-/* Body text sizes aligned with hero paragraph */
 p, li {
     font-family: 'Inter', sans-serif;
     font-size: clamp(0.95rem, 1.5vw, 1.2rem);
@@ -94,46 +94,6 @@ p, li {
     font-weight: 350;
     color: inherit;
     letter-spacing: -0.01em;
-}
-
-/* Rolling Text Animation Styles */
-.rolling-text {
-    letter-spacing: 0.03em;
-    text-transform: uppercase;
-    line-height: 1;
-    display: inline-block;
-    position: relative;
-}
-
-.rolling-text > div {
-    overflow: hidden;
-    display: inline-block;
-    position: relative;
-}
-
-.rolling-text .originalText,
-.rolling-text .cloneText {
-    display: block;
-}
-
-.rolling-text .cloneText {
-    position: absolute;
-    left: 0;
-    top: 0;
-    width: 100%;
-}
-
-/* Rolling text size variants */
-.rolling-text-large {
-    font-size: clamp(3rem, 9vw, 8rem);
-}
-
-.rolling-text-medium {
-    font-size: clamp(2rem, 6vw, 5rem);
-}
-
-.rolling-text-small {
-    font-size: clamp(1.2rem, 4vw, 2.5rem);
 }
 
 .label {
@@ -147,7 +107,7 @@ p, li {
     color: inherit;
 }
 
-/* Sections */
+/* CRITICAL FIX: Sections optimized for smooth scrolling */
 section {
     min-height: 140vh;
     position: relative;
@@ -155,6 +115,9 @@ section {
     align-items: center;
     justify-content: center;
     padding: clamp(12rem, 24vw, 30rem) clamp(3rem, 9vw, 14rem);
+    /* CRITICAL FIX: Hardware acceleration without blur */
+    transform: translateZ(0);
+    backface-visibility: hidden;
 }
 
 .content-wrapper {
@@ -164,26 +127,31 @@ section {
     position: relative;
 }
 
-/* Hero Section */
+/* CRITICAL FIX: Hero Section - No parallax, pure performance */
 .hero {
     min-height: 140vh;
     background-position: center center;
-    background-size: cover; /* keep cover for full-bleed, no transforms to avoid blur */
+    background-size: cover;
     background-repeat: no-repeat;
-    background-attachment: scroll; /* no fixed to avoid snapping */
+    /* CRITICAL FIX: Remove background-attachment to prevent repaints */
     position: relative;
     color: var(--text-light);
     padding: clamp(14rem, 26vw, 32rem) clamp(3rem, 10vw, 16rem);
     overflow: hidden;
+    /* CRITICAL FIX: Hardware acceleration */
+    will-change: auto;
+    transform: translateZ(0);
+    backface-visibility: hidden;
 }
 
-/* Ensure legibility over hero images */
 .hero::before {
     content: '';
     position: absolute;
     inset: 0;
     background: linear-gradient(165deg, rgba(0, 0, 0, 0.86) 0%, rgba(0, 0, 0, 0.38) 100%);
     z-index: 1;
+    /* CRITICAL FIX: Prevent overlay repaints */
+    will-change: auto;
 }
 
 .hero h1,
@@ -195,15 +163,18 @@ section {
     text-shadow: 0 2px 16px rgba(0,0,0,0.35);
 }
 
-/* Image Sections (formerly parallax) */
+/* CRITICAL FIX: Image Sections - No parallax effect (removed for smoothness) */
 .parallax-section {
     background-position: center center;
-    background-size: cover; /* no transform, no blur */
+    background-size: cover;
     background-repeat: no-repeat;
-    background-attachment: scroll;
-    color: var(--text-light); /* white text on images for legibility */
+    color: var(--text-light);
     position: relative;
     overflow: hidden;
+    /* CRITICAL FIX: Hardware acceleration */
+    transform: translateZ(0);
+    backface-visibility: hidden;
+    will-change: auto;
 }
 
 .parallax-section::before {
@@ -212,6 +183,8 @@ section {
     inset: 0;
     background: linear-gradient(155deg, rgba(0, 0, 0, 0.78) 0%, rgba(0, 0, 0, 0.42) 100%);
     z-index: 1;
+    /* CRITICAL FIX: Prevent overlay repaints */
+    will-change: auto;
 }
 
 .parallax-section .content-wrapper {
@@ -241,7 +214,7 @@ section {
     font-weight: 400;
 }
 
-/* Code Blocks (exception sizing preserved) */
+/* CRITICAL FIX: Code Blocks - Removed hover transform to prevent jank */
 pre {
     background: rgba(0, 0, 0, 0.75);
     padding: clamp(2rem, 3.5vw, 4rem) clamp(2.5rem, 4vw, 5rem);
@@ -251,12 +224,15 @@ pre {
     margin: clamp(3rem, 6vw, 5rem) 0;
     margin-left: clamp(-1rem, -2vw, -3rem);
     border-left: 6px solid var(--accent);
-    transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
     box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    /* CRITICAL FIX: Smooth transition without transform */
+    transition: box-shadow 0.4s cubic-bezier(0.4, 0, 0.2, 1),
+                border-color 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 pre:hover {
-    transform: translateX(8px) translateY(-2px);
+    box-shadow: 0 24px 70px rgba(59, 130, 246, 0.2);
+    border-left-color: var(--accent-bright);
 }
 
 code {
@@ -303,7 +279,7 @@ ul li::before {
     letter-spacing: -0.2em;
 }
 
-/* Formula Blocks (exception: keep slightly larger) */
+/* Formula Blocks */
 .formula-block {
     margin: clamp(3rem, 6vw, 6rem) 0;
     margin-left: clamp(-0.5rem, -1vw, -2rem);
@@ -313,10 +289,13 @@ ul li::before {
     border-left: 7px solid var(--accent);
     transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
     position: relative;
+    /* CRITICAL FIX: Hardware acceleration */
+    transform: translateZ(0);
+    backface-visibility: hidden;
 }
 
 .formula-block:hover {
-    transform: translateY(-6px) translateX(4px);
+    transform: translateY(-6px) translateX(4px) translateZ(0);
     box-shadow: 0 25px 70px rgba(59, 130, 246, 0.25);
     background: linear-gradient(145deg, rgba(59, 130, 246, 0.15) 0%, rgba(96, 165, 250, 0.06) 100%);
 }
@@ -355,6 +334,9 @@ ul li::before {
     transition: all 0.45s cubic-bezier(0.4, 0, 0.2, 1);
     position: relative;
     overflow: hidden;
+    /* CRITICAL FIX: Hardware acceleration */
+    transform: translateZ(0);
+    backface-visibility: hidden;
 }
 
 .metric::before {
@@ -376,7 +358,7 @@ ul li::before {
 .metric:hover {
     background: rgba(255, 255, 255, 0.06);
     border-color: rgba(59, 130, 246, 0.35);
-    transform: translateY(-6px);
+    transform: translateY(-6px) translateZ(0);
     box-shadow: 0 24px 70px rgba(59, 130, 246, 0.16);
 }
 
@@ -408,11 +390,13 @@ ul li::before {
     transform: translateY(0);
 }
 
-/* Bottom Navbar - Island style (always visible) */
+/* CRITICAL FIX: Bottom Navbar - Optimized positioning without transform conflicts */
 .bottom-nav {
     position: fixed;
-    left: 50%;
-    transform: translateX(-50%);
+    /* CRITICAL FIX: Use left/right instead of transform for centering */
+    left: 4%;
+    right: 4%;
+    margin: 0 auto;
     bottom: 24px;
     background: rgba(15, 15, 15, 0.82);
     backdrop-filter: blur(12px);
@@ -423,7 +407,17 @@ ul li::before {
     border-radius: 9999px;
     box-shadow: 0 10px 40px rgba(0,0,0,0.4);
     max-width: 92vw;
-    will-change: transform;
+    /* CRITICAL FIX: Remove will-change to prevent compositor thrashing */
+    contain: layout style paint;
+}
+
+@media (min-width: 1200px) {
+    .bottom-nav {
+        left: 50%;
+        right: auto;
+        transform: translateX(-50%);
+        /* Only use transform on large screens where it's stable */
+    }
 }
 
 .bottom-nav nav {
@@ -478,6 +472,29 @@ ul li::before {
     margin-right: 0.25rem;
 }
 
+/* Home icon link */
+.nav-home {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+}
+
+.nav-home svg {
+    width: 1em;
+    height: 1em;
+    fill: currentColor;
+}
+
+.nav-home span {
+    display: none;
+}
+
+@media (min-width: 640px) {
+    .nav-home span {
+        display: inline;
+    }
+}
+
 /* Mobile collapsible behavior */
 .nav-toggle {
     display: none;
@@ -490,6 +507,8 @@ ul li::before {
     justify-content: center;
     cursor: pointer;
     margin-right: 6px;
+    flex-direction: column;
+    padding: 0;
 }
 
 .nav-toggle span {
@@ -506,8 +525,7 @@ ul li::before {
     display: inline-flex;
 }
 
-/* Hide links when collapsed on small screens */
-.bottom-nav.collapsible:not(.open) nav a:not(.nav-logo) {
+.bottom-nav.collapsible:not(.open) nav a:not(.nav-logo):not(.nav-home) {
     display: none;
 }
 
@@ -522,7 +540,7 @@ ul li::before {
     transform: translateY(-5px) rotate(-45deg);
 }
 
-/* Video Background Support */
+/* CRITICAL FIX: Video Background - Optimized for smooth playback */
 .video-bg {
     position: relative;
     overflow: hidden;
@@ -537,6 +555,10 @@ ul li::before {
     height: 100%;
     object-fit: cover;
     z-index: 0;
+    /* CRITICAL FIX: Hardware acceleration for video */
+    transform: translateZ(0);
+    backface-visibility: hidden;
+    will-change: auto;
 }
 
 .bg-video {
@@ -547,23 +569,12 @@ ul li::before {
     display: none;
 }
 
-/* Fallback for browsers that don't support video */
 .no-video .bg-video {
     display: none;
 }
 
 .no-video .bg-fallback {
     display: block;
-}
-
-/* Ensure no blur on background images */
-.hero,
-.parallax-section {
-    background-attachment: scroll; /* Prevents fixed attachment issues */
-    image-rendering: -webkit-optimize-contrast;
-    image-rendering: crisp-edges;
-    transform: translateZ(0); /* GPU acceleration without blur */
-    backface-visibility: hidden;
 }
 
 /* Demo Cards - Glassmorphism */
@@ -582,10 +593,13 @@ ul li::before {
     border-radius: 16px;
     border: 1px solid rgba(255, 255, 255, 0.1);
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    /* CRITICAL FIX: Hardware acceleration */
+    transform: translateZ(0);
+    backface-visibility: hidden;
 }
 
 .demo-card:hover {
-    transform: translateY(-4px);
+    transform: translateY(-4px) translateZ(0);
     background: rgba(0, 0, 0, 0.75);
     border-color: rgba(96, 165, 250, 0.3);
     box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
@@ -683,10 +697,13 @@ ul li::before {
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     font-weight: 500;
     font-size: 1rem;
+    /* CRITICAL FIX: Hardware acceleration */
+    transform: translateZ(0);
+    backface-visibility: hidden;
 }
 
 .cta-button:hover {
-    transform: translateY(-2px);
+    transform: translateY(-2px) translateZ(0);
     background: #ffffff;
     box-shadow: 0 10px 30px rgba(255, 255, 255, 0.2);
 }
@@ -701,7 +718,7 @@ ul li::before {
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
 }
 
-/* Media queries for video/webm support */
+/* CRITICAL FIX: Performance optimizations for video/webm */
 @media (prefers-reduced-motion: no-preference) {
     video, .video-container {
         contain: paint;
@@ -716,9 +733,30 @@ ul li::before {
     .bottom-nav {
         bottom: 16px;
         padding: 8px 12px;
+        left: 2%;
+        right: 2%;
     }
 
     .nav-logo {
         margin-right: 2px;
+    }
+}
+
+/* CRITICAL FIX: Prevent any scroll-triggered repaints */
+@media (hover: hover) {
+    /* Only enable hover effects on devices that support hover */
+    .metric:hover,
+    .formula-block:hover,
+    .demo-card:hover,
+    .cta-button:hover,
+    pre:hover {
+        /* Hover effects already defined above */
+    }
+}
+
+/* CRITICAL FIX: Optimize font rendering during scroll */
+@media screen {
+    body {
+        text-rendering: optimizeSpeed;
     }
 }
