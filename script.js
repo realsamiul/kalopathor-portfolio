@@ -3,126 +3,287 @@ document.addEventListener('DOMContentLoaded', function() {
     // Register GSAP plugins
     gsap.registerPlugin(ScrollTrigger);
 
-    // CRITICAL FIX: Initialize Lenis with optimized settings for smoothness
+    // Initialize Lenis with better momentum settings
     const lenis = new Lenis({
-        duration: 1.2,
-        easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)), // easeOutExpo
+        duration: 1.4, // Slightly longer for smoother deceleration
+        easing: (t) => 1 - Math.pow(1 - t, 3), // Cubic ease-out for natural feel
         orientation: 'vertical',
         gestureOrientation: 'vertical',
         smoothWheel: true,
-        wheelMultiplier: 1,
+        wheelMultiplier: 0.9, // Slightly reduced for better control
         smoothTouch: false,
         touchMultiplier: 2,
         infinite: false,
-        autoResize: true
+        autoResize: true,
+        lerp: 0.1 // Lower lerp for smoother momentum
     });
     window.lenis = lenis;
 
-    // CRITICAL FIX: Single RAF loop to prevent conflicts
+    // Optimized RAF loop
     function raf(time) {
         lenis.raf(time);
         requestAnimationFrame(raf);
     }
     requestAnimationFrame(raf);
 
-    // CRITICAL FIX: Debounced ScrollTrigger update (prevents over-refreshing)
-    let scrollTimeout;
-    lenis.on('scroll', () => {
-        clearTimeout(scrollTimeout);
-        scrollTimeout = setTimeout(() => ScrollTrigger.update(), 50);
-    });
+    // Direct ScrollTrigger update (no debounce for smoother sync)
+    lenis.on('scroll', ScrollTrigger.update);
 
-    // Initialize page transition
+    // Initialize all features
+    initFullscreenMenu();
     initPageTransition();
-    
-    // Initialize animations (non-blocking)
     initVideoBackgrounds();
     initScrollAnimations();
-    initNavbarBehavior();
     initMathJaxRefresh();
     initMetricAnimations();
-    initCodeBlockAnimations();
     enableSmoothAnchorScrolling();
 
-    // CRITICAL FIX: Single debounced resize handler
+    // Optimized resize handler
     let resizeTimer;
     window.addEventListener('resize', () => {
         clearTimeout(resizeTimer);
         resizeTimer = setTimeout(() => {
             ScrollTrigger.refresh();
-            if (lenis && typeof lenis.resize === 'function') {
-                lenis.resize();
-            }
-        }, 300);
+            lenis.resize();
+        }, 250);
     }, { passive: true });
 });
 
-// Page Transition System
+// NEW: Fullscreen Menu with GSAP
+function initFullscreenMenu() {
+    // Create fullscreen menu overlay
+    const menuHTML = `
+        <div class="fullscreen-menu" id="fullscreenMenu">
+            <button class="menu-close" id="menuClose">
+                <span></span>
+                <span></span>
+            </button>
+            <div class="fullscreen-menu-content">
+                <nav>
+                    <a href="/">Home</a>
+                    <a href="/flood/">Flood Intelligence</a>
+                    <a href="/disease/">Disease Forecasting</a>
+                    <a href="/nightlights/">Nightlights Analysis</a>
+                    <a href="/crops/">Crop Monitoring</a>
+                    <a href="/lpg/">LPG Demand</a>
+                    <a href="/freights/">Freight Prediction</a>
+                </nav>
+            </div>
+        </div>
+    `;
+    document.body.insertAdjacentHTML('beforeend', menuHTML);
+
+    const menu = document.getElementById('fullscreenMenu');
+    const menuLinks = menu.querySelectorAll('a');
+    const closeBtn = document.getElementById('menuClose');
+
+    // Create timeline
+    const menuTl = gsap.timeline({ paused: true });
+
+    menuTl
+        .to(menu, {
+            duration: 0,
+            visibility: 'visible',
+            pointerEvents: 'all'
+        })
+        .from(menu, {
+            opacity: 0,
+            duration: 0.4,
+            ease: 'power2.inOut'
+        })
+        .from(menuLinks, {
+            opacity: 0,
+            y: 30,
+            duration: 0.5,
+            stagger: 0.05,
+            ease: 'power2.out'
+        }, '-=0.2')
+        .from(closeBtn, {
+            opacity: 0,
+            rotation: -90,
+            duration: 0.4,
+            ease: 'power2.out'
+        }, '-=0.4');
+
+    // Replace bottom nav with simplified version
+    const bottomNav = document.querySelector('.bottom-nav');
+    if (bottomNav) {
+        bottomNav.innerHTML = `
+            <nav>
+                <a href="/" class="nav-logo">M0NARQ</a>
+                <button class="menu-trigger" id="menuTrigger">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                        <line x1="3" y1="12" x2="21" y2="12"></line>
+                        <line x1="3" y1="6" x2="21" y2="6"></line>
+                        <line x1="3" y1="18" x2="21" y2="18"></line>
+                    </svg>
+                </button>
+            </nav>
+        `;
+
+        const trigger = document.getElementById('menuTrigger');
+        
+        // Open menu
+        trigger.addEventListener('click', () => {
+            menuTl.play();
+            // Stop body scroll
+            if (window.lenis) window.lenis.stop();
+        });
+    }
+
+    // Close menu
+    closeBtn.addEventListener('click', () => {
+        menuTl.reverse();
+        // Resume body scroll
+        if (window.lenis) window.lenis.start();
+    });
+
+    // Close on link click
+    menuLinks.forEach(link => {
+        link.addEventListener('click', (e) => {
+            const href = link.getAttribute('href');
+            if (href && href !== '#') {
+                e.preventDefault();
+                menuTl.reverse();
+                setTimeout(() => {
+                    window.location.href = href;
+                }, 600);
+            }
+        });
+    });
+
+    // ESC key to close
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && menu.classList.contains('active')) {
+            menuTl.reverse();
+            if (window.lenis) window.lenis.start();
+        }
+    });
+}
+
+// Page Transitions (simplified)
 function initPageTransition() {
-    // Fade in on load
     gsap.from('body', {
         opacity: 0,
         duration: 0.6,
         ease: 'power2.out'
     });
-
-    // Handle all internal links
-    document.querySelectorAll('a[href^="/"], a[href^="./"], a[href^="../"]').forEach(link => {
-        link.addEventListener('click', function(e) {
-            const href = this.getAttribute('href');
-            if (!href || href === '#') return;
-
-            e.preventDefault();
-            
-            gsap.to('body', {
-                opacity: 0,
-                duration: 0.4,
-                ease: 'power2.in',
-                onComplete: () => {
-                    window.location.href = href;
-                }
-            });
-        });
-    });
 }
 
-// CRITICAL FIX: Optimized video backgrounds
+// Video Backgrounds
 function initVideoBackgrounds() {
     const videoSections = document.querySelectorAll('.video-bg');
-    
-    const supportsVideo = !!document.createElement('video').canPlayType;
-    if (!supportsVideo) {
-        document.body.classList.add('no-video');
-        return;
-    }
     
     videoSections.forEach(section => {
         const video = section.querySelector('.bg-video');
         const fallback = section.querySelector('.bg-fallback');
         
         if (video) {
-            // Optimize video playback
             video.setAttribute('playsinline', '');
-            video.setAttribute('webkit-playsinline', '');
             video.muted = true;
             video.loop = true;
             
             video.addEventListener('error', () => {
                 video.style.display = 'none';
                 if (fallback) fallback.style.display = 'block';
-            }, { once: true });
+            });
             
-            video.addEventListener('loadeddata', () => {
-                video.play().catch(() => {
+            // Try to play
+            const playPromise = video.play();
+            if (playPromise !== undefined) {
+                playPromise.catch(() => {
                     video.style.display = 'none';
                     if (fallback) fallback.style.display = 'block';
                 });
-            }, { once: true });
+            }
         }
     });
 }
 
-// CRITICAL FIX: Optimized metric counter animation
+// SIMPLIFIED: Scroll animations - ONLY FADE, NO MOVEMENT
+function initScrollAnimations() {
+    // Fade in elements - NO Y MOVEMENT
+    gsap.utils.toArray('.fade-in').forEach((element, index) => {
+        gsap.fromTo(element, 
+            {
+                opacity: 0
+            },
+            {
+                scrollTrigger: {
+                    trigger: element,
+                    start: "top 85%",
+                    once: true
+                },
+                opacity: 1,
+                duration: 0.8,
+                ease: "power2.out",
+                delay: index * 0.02
+            }
+        );
+    });
+
+    // Headings - ONLY FADE
+    gsap.utils.toArray('h1, h2').forEach((heading, index) => {
+        gsap.fromTo(heading,
+            {
+                opacity: 0
+            },
+            {
+                scrollTrigger: {
+                    trigger: heading,
+                    start: "top 85%",
+                    once: true
+                },
+                opacity: 1,
+                duration: 0.8,
+                ease: "power2.out",
+                delay: index * 0.02
+            }
+        );
+    });
+
+    // Code blocks - ONLY FADE
+    gsap.utils.toArray('pre').forEach((block, index) => {
+        gsap.fromTo(block,
+            {
+                opacity: 0
+            },
+            {
+                opacity: 1,
+                duration: 0.8,
+                ease: "power2.out",
+                scrollTrigger: {
+                    trigger: block,
+                    start: "top 85%",
+                    once: true
+                },
+                delay: index * 0.05
+            }
+        );
+    });
+
+    // Metrics - ONLY FADE
+    gsap.utils.toArray('.metric').forEach((metric, index) => {
+        gsap.fromTo(metric,
+            {
+                opacity: 0
+            },
+            {
+                opacity: 1,
+                duration: 0.8,
+                ease: "power2.out",
+                scrollTrigger: {
+                    trigger: metric,
+                    start: "top 85%",
+                    once: true
+                },
+                delay: index * 0.08
+            }
+        );
+    });
+}
+
+// Metric counter animations
 function initMetricAnimations() {
     document.querySelectorAll('.metric-value').forEach(el => {
         const endValue = parseFloat(el.getAttribute('data-count'));
@@ -132,7 +293,7 @@ function initMetricAnimations() {
         if (!isNaN(endValue)) {
             gsap.to(el, {
                 innerText: endValue,
-                duration: 2.5,
+                duration: 2,
                 ease: "power2.out",
                 scrollTrigger: {
                     trigger: el,
@@ -149,181 +310,49 @@ function initMetricAnimations() {
             });
         }
     });
-    
-    // Existing metric animations
-    gsap.utils.toArray('.metric').forEach((metric, index) => {
-        gsap.fromTo(metric,
-            {
-                y: 50,
-                opacity: 0
-            },
-            {
-                y: 0,
-                opacity: 1,
-                duration: 0.9,
-                ease: "power3.out",
-                scrollTrigger: {
-                    trigger: metric,
-                    start: "top 85%",
-                    once: true
-                },
-                delay: index * 0.12
-            }
-        );
-    });
 }
 
-// CRITICAL FIX: Simplified scroll animations (no transform conflicts)
-function initScrollAnimations() {
-    gsap.utils.toArray('.fade-in').forEach((element, index) => {
-        gsap.fromTo(element, 
-            {
-                y: 40,
-                opacity: 0
-            },
-            {
-                scrollTrigger: {
-                    trigger: element,
-                    start: "top 85%",
-                    once: true
-                },
-                y: 0,
-                opacity: 1,
-                duration: 0.8,
-                ease: "power2.out",
-                delay: index * 0.015
-            }
-        );
-    });
-
-    // Headings
-    gsap.utils.toArray('h1:not(.rolling-text), h2:not(.rolling-text)').forEach((heading, index) => {
-        gsap.fromTo(heading,
-            {
-                y: 50,
-                opacity: 0
-            },
-            {
-                scrollTrigger: {
-                    trigger: heading,
-                    start: "top 90%",
-                    once: true
-                },
-                y: 0,
-                opacity: 1,
-                duration: 0.8,
-                ease: "power2.out",
-                delay: index * 0.015
-            }
-        );
-    });
-}
-
-// CRITICAL FIX: Bottom nav without transform conflicts
-function initNavbarBehavior() {
-    const navContainer = document.querySelector('.bottom-nav');
-    if (!navContainer) return;
-
-    const nav = navContainer.querySelector('nav');
-    if (!nav) return;
-
-    // Insert hamburger toggle
-    const toggle = document.createElement('button');
-    toggle.className = 'nav-toggle';
-    toggle.setAttribute('aria-expanded', 'false');
-    toggle.setAttribute('aria-label', 'Toggle navigation');
-    toggle.innerHTML = '<span></span><span></span><span></span>';
-    nav.prepend(toggle);
-
-    const updateMode = () => {
-        if (window.innerWidth <= 860) {
-            navContainer.classList.add('collapsible');
-        } else {
-            navContainer.classList.remove('collapsible', 'open');
-            toggle.setAttribute('aria-expanded', 'false');
-        }
-    };
-    updateMode();
-    window.addEventListener('resize', updateMode, { passive: true });
-
-    toggle.addEventListener('click', () => {
-        const open = navContainer.classList.toggle('open');
-        toggle.setAttribute('aria-expanded', String(open));
-    });
-}
-
-// Smooth anchor scrolling via Lenis
+// Smooth anchor scrolling
 function enableSmoothAnchorScrolling() {
-    const links = document.querySelectorAll('a[href^="#"]');
-    if (!links.length) return;
-
-    links.forEach(a => {
-        a.addEventListener('click', e => {
-            const href = a.getAttribute('href');
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', (e) => {
+            const href = anchor.getAttribute('href');
             if (!href || !window.lenis) return;
 
             if (href === '#') {
                 e.preventDefault();
-                window.lenis.scrollTo(0, { duration: 1.2 });
+                window.lenis.scrollTo(0, { duration: 1.4 });
                 return;
             }
-            const id = href.slice(1);
-            const target = document.getElementById(id);
+
+            const target = document.querySelector(href);
             if (target) {
                 e.preventDefault();
-                window.lenis.scrollTo(target, { duration: 1.2, offset: -100 });
+                window.lenis.scrollTo(target, { 
+                    duration: 1.4,
+                    offset: -80 
+                });
             }
         });
     });
 }
 
-// CRITICAL FIX: Single MathJax refresh
+// MathJax refresh
 function initMathJaxRefresh() {
     if (window.MathJax && window.MathJax.typesetPromise) {
         window.MathJax.typesetPromise().then(() => {
-            setTimeout(() => ScrollTrigger.refresh(), 800);
+            setTimeout(() => ScrollTrigger.refresh(), 500);
         });
     }
 }
 
-// CRITICAL FIX: Optimized code block animations (no hover transform during scroll)
-function initCodeBlockAnimations() {
-    const codeBlocks = document.querySelectorAll('pre');
-
-    codeBlocks.forEach((block, index) => {
-        gsap.fromTo(block,
-            {
-                x: -30,
-                opacity: 0
-            },
-            {
-                x: 0,
-                opacity: 1,
-                duration: 0.9,
-                ease: "power3.out",
-                scrollTrigger: {
-                    trigger: block,
-                    start: "top 90%",
-                    once: true
-                },
-                delay: index * 0.08
-            }
-        );
-    });
-}
-
-// Utility: Check for reduced motion preference
-function prefersReducedMotion() {
-    return window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-}
-
-// Disable animations if user prefers reduced motion
-if (prefersReducedMotion()) {
+// Check reduced motion preference
+if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
     gsap.globalTimeline.pause();
     ScrollTrigger.disable();
 }
 
-// Clean up on page unload
+// Cleanup
 window.addEventListener('beforeunload', () => {
     ScrollTrigger.getAll().forEach(trigger => trigger.kill());
     if (window.lenis) window.lenis.destroy();
