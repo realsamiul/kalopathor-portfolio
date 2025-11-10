@@ -1,14 +1,16 @@
 // Wait for DOM to be fully loaded
 document.addEventListener('DOMContentLoaded', function() {
     
-    // Register GSAP plugins
-    gsap.registerPlugin(ScrollTrigger);
+    // Register GSAP plugins including ScrollSmoother
+    gsap.registerPlugin(ScrollTrigger, ScrollSmoother);
+    
+    // Initialize ScrollSmoother for smooth scrolling
+    initSmoothScrolling();
     
     // Initialize animations
     initScrollAnimations();
     initParallaxEffects();
     initNavbarBehavior();
-    initSmoothScrolling();
     initMathJaxRefresh();
     
     // Additional initialization
@@ -24,6 +26,36 @@ document.addEventListener('DOMContentLoaded', function() {
         }, 250);
     });
 });
+
+// Initialize ScrollSmoother for smooth scrolling
+function initSmoothScrolling() {
+    // Create ScrollSmoother instance
+    const smoother = ScrollSmoother.create({
+        wrapper: '#smooth-wrapper',
+        content: '#smooth-content',
+        smooth: 1.5, // Adjust for your preferred smoothness
+        effects: true,
+        smoothTouch: 0.1,
+        ease: 'power2.inOut'
+    });
+    
+    // Wrap content if not already wrapped
+    if (!document.querySelector('#smooth-wrapper')) {
+        const wrapper = document.createElement('div');
+        wrapper.id = 'smooth-wrapper';
+        wrapper.style.overflow = 'hidden';
+        document.body.appendChild(wrapper);
+        
+        const content = document.createElement('div');
+        content.id = 'smooth-content';
+        while (document.body.firstChild) {
+            content.appendChild(document.body.firstChild);
+        }
+        wrapper.appendChild(content);
+    }
+    
+    return smoother;
+}
 
 // Scroll-triggered fade-in animations
 function initScrollAnimations() {
@@ -44,9 +76,9 @@ function initScrollAnimations() {
                 y: 0,
                 opacity: 1,
                 scale: 1,
-                duration: 0.8, // Keep your original timing
-                ease: "power2.out", // Keep your original easing
-                delay: index * 0.03 // Keep your original delay
+                duration: 0.8,
+                ease: "power2.out",
+                delay: index * 0.03
             }
         );
     });
@@ -69,7 +101,7 @@ function initScrollAnimations() {
                 y: 0,
                 opacity: 1,
                 letterSpacing: heading.tagName === 'H1' ? "-0.06em" : "-0.035em",
-                duration: 0.8, // Keep consistent timing
+                duration: 0.8,
                 ease: "power2.out",
                 delay: index * 0.03
             }
@@ -167,17 +199,18 @@ function initNavbarBehavior() {
     });
 }
 
-// Smooth scrolling for navigation links
-function initSmoothScrolling() {
+// Smooth scrolling for navigation links (now works with ScrollSmoother)
+function initSmoothScrollingLinks() {
     document.querySelectorAll('a[href^="#"]').forEach(anchor => {
         anchor.addEventListener('click', function (e) {
             const href = this.getAttribute('href');
             
             if (href === '#') {
                 e.preventDefault();
-                window.scrollTo({
-                    top: 0,
-                    behavior: 'smooth'
+                gsap.to(window, {
+                    scrollTo: 0,
+                    duration: 1.5,
+                    ease: "power2.inOut"
                 });
                 return;
             }
@@ -189,12 +222,13 @@ function initSmoothScrolling() {
                 const navHeight = document.querySelector('.bottom-nav')?.offsetHeight || 0;
                 const offset = 100;
                 
-                const elementPosition = target.getBoundingClientRect().top;
-                const offsetPosition = elementPosition + window.pageYOffset - offset;
-                
-                window.scrollTo({
-                    top: offsetPosition,
-                    behavior: 'smooth'
+                gsap.to(window, {
+                    scrollTo: {
+                        y: target,
+                        offsetY: offset
+                    },
+                    duration: 1.5,
+                    ease: "power2.inOut"
                 });
             }
         });
