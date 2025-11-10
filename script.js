@@ -3,23 +3,22 @@ document.addEventListener('DOMContentLoaded', function() {
     // Register GSAP plugins
     gsap.registerPlugin(ScrollTrigger, SplitText);
 
-    // Initialize Lenis for buttery smooth, uninterrupted scrolling
+    // Initialize Lenis for smooth scrolling
     const lenis = new Lenis({
         duration: 1,
-        easing: (t) => t, // Linear easing for pure inertia feel
+        easing: (t) => t, // linear, inertia feel
         orientation: 'vertical',
         gestureOrientation: 'vertical',
         smoothWheel: true,
         wheelMultiplier: 1,
-        smoothTouch: false, // Don't interfere with touch scrolling
+        smoothTouch: false,
         touchMultiplier: 2,
         infinite: false,
         autoResize: true
     });
-    // Expose Lenis for other handlers
     window.lenis = lenis;
 
-    // Connect Lenis to GSAP ScrollTrigger (read-only connection)
+    // Connect Lenis to GSAP ScrollTrigger
     lenis.on('scroll', ScrollTrigger.update);
 
     // Run Lenis raf
@@ -29,12 +28,8 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     requestAnimationFrame(raf);
 
-    // Build transform-based parallax layers from existing CSS backgrounds
-    buildParallaxLayers();
-
-    // Initialize animations (one-way, non-blocking)
+    // Initialize animations (non-blocking)
     initScrollAnimations();
-    initParallaxEffects();
     initNavbarBehavior();
     initMathJaxRefresh();
     initRollingText();
@@ -54,26 +49,6 @@ document.addEventListener('DOMContentLoaded', function() {
         }, 250);
     });
 });
-
-// Build transform-based parallax layers from CSS background-image (if present)
-function buildParallaxLayers() {
-    document.querySelectorAll('.hero, .parallax-section').forEach(section => {
-        if (section.querySelector('.parallax-bg')) return;
-
-        const style = getComputedStyle(section);
-        const bg = style.backgroundImage;
-
-        if (!bg || bg === 'none') return;
-
-        // Move background image to a child layer for GPU-friendly transforms
-        section.style.backgroundImage = 'none';
-        section.style.position = section.style.position || 'relative';
-        const layer = document.createElement('div');
-        layer.className = 'parallax-bg';
-        layer.style.backgroundImage = bg;
-        section.prepend(layer);
-    });
-}
 
 // Rolling Text Animation (non-blocking)
 function initRollingText() {
@@ -109,7 +84,6 @@ function initRollingText() {
             paused: true
         });
 
-        // Set up trigger based on data attribute
         if (trigger === "scroll") {
             ScrollTrigger.create({
                 trigger: element,
@@ -126,143 +100,87 @@ function initRollingText() {
     });
 }
 
-// Scroll-triggered fade-in animations (non-blocking)
+// Scroll-triggered fade-in animations (non-blocking, no scaling to keep text crisp)
 function initScrollAnimations() {
     gsap.utils.toArray('.fade-in').forEach((element, index) => {
         gsap.fromTo(element, 
             {
-                y: 80,
-                opacity: 0,
-                scale: 0.98
+                y: 60,
+                opacity: 0
             },
             {
                 scrollTrigger: {
                     trigger: element,
                     start: "top 85%",
                     end: "top 55%",
-                    toggleActions: "play none none reverse",
+                    toggleActions: "play none none none",
+                    once: true
                 },
                 y: 0,
                 opacity: 1,
-                scale: 1,
-                duration: 0.8,
+                duration: 0.7,
                 ease: "power2.out",
-                delay: index * 0.03
+                delay: index * 0.02
             }
         );
     });
 
-    // Special animation for h1 and h2 elements (skip rolling-text elements)
+    // Headings (skip rolling-text elements), keep crisp (no scale)
     gsap.utils.toArray('h1:not(.rolling-text), h2:not(.rolling-text)').forEach((heading, index) => {
         gsap.fromTo(heading,
             {
-                y: 100,
-                opacity: 0,
-                letterSpacing: "0.1em"
+                y: 80,
+                opacity: 0
             },
             {
                 scrollTrigger: {
                     trigger: heading,
                     start: "top 90%",
                     end: "top 60%",
-                    toggleActions: "play none none reverse",
+                    toggleActions: "play none none none",
+                    once: true
                 },
                 y: 0,
                 opacity: 1,
-                letterSpacing: heading.tagName === 'H1' ? "-0.06em" : "-0.035em",
-                duration: 0.8,
+                duration: 0.7,
                 ease: "power2.out",
-                delay: index * 0.03
+                delay: index * 0.02
             }
         );
     });
 }
 
-// Parallax effect - using transform instead of background-position for performance
-function initParallaxEffects() {
-    const parallaxSections = document.querySelectorAll('.hero, .parallax-section');
-
-    parallaxSections.forEach(section => {
-        // Animate parallax layer if present
-        const parallaxBg = section.querySelector('.parallax-bg');
-        if (parallaxBg) {
-            gsap.to(parallaxBg, {
-                yPercent: 50,
-                ease: "none",
-                scrollTrigger: {
-                    trigger: section,
-                    start: "top top",
-                    end: "bottom top",
-                    scrub: true // Use scrub for parallax
-                }
-            });
-        }
-
-        // Subtle fade effect on content (non-blocking)
-        const content = section.querySelector('.content-wrapper');
-        if (content) {
-            ScrollTrigger.create({
-                trigger: section,
-                start: "top top",
-                end: "bottom top",
-                onUpdate: self => {
-                    const progress = self.progress;
-                    gsap.set(content, {
-                        opacity: 1 - (progress * 0.2),
-                        scale: 1 - (progress * 0.05)
-                    });
-                }
-            });
-        }
-    });
-}
-
-// Bottom navigation auto-hide behavior (passive observation)
+// Bottom navigation: island style, always visible; collapsible on small screens
 function initNavbarBehavior() {
-    let lastScroll = 0;
-    const nav = document.querySelector('.bottom-nav');
+    const navContainer = document.querySelector('.bottom-nav');
+    if (!navContainer) return;
 
+    const nav = navContainer.querySelector('nav');
     if (!nav) return;
 
-    // Use passive scroll observation
-    window.addEventListener('scroll', () => {
-        const currentScroll = window.pageYOffset;
+    // Insert a hamburger toggle for small screens
+    const toggle = document.createElement('button');
+    toggle.className = 'nav-toggle';
+    toggle.setAttribute('aria-expanded', 'false');
+    toggle.setAttribute('aria-label', 'Toggle navigation');
+    toggle.innerHTML = '<span></span><span></span><span></span>';
+    nav.prepend(toggle);
 
-        if (currentScroll <= 100) {
-            nav.classList.remove('hidden');
-            return;
+    const updateMode = () => {
+        if (window.innerWidth <= 860) {
+            navContainer.classList.add('collapsible');
+        } else {
+            navContainer.classList.remove('collapsible');
+            navContainer.classList.remove('open');
+            toggle.setAttribute('aria-expanded', 'false');
         }
+    };
+    updateMode();
+    window.addEventListener('resize', updateMode);
 
-        if (currentScroll > lastScroll && currentScroll > 500) {
-            nav.classList.add('hidden');
-        } else if (currentScroll < lastScroll - 5) {
-            nav.classList.remove('hidden');
-        }
-
-        lastScroll = currentScroll;
-    }, { passive: true }); // Passive listener for better performance
-
-    // Add active state to current section
-    const navLinks = nav.querySelectorAll('a[href^="#"]');
-    const sections = document.querySelectorAll('section[id]');
-
-    sections.forEach(section => {
-        ScrollTrigger.create({
-            trigger: section,
-            start: "top center",
-            end: "bottom center",
-            onToggle: self => {
-                if (self.isActive) {
-                    navLinks.forEach(link => {
-                        link.style.opacity = '0.55';
-                        const href = link.getAttribute('href');
-                        if (href === `#${section.id}`) {
-                            link.style.opacity = '1';
-                        }
-                    });
-                }
-            }
-        });
+    toggle.addEventListener('click', () => {
+        const open = navContainer.classList.toggle('open');
+        toggle.setAttribute('aria-expanded', String(open));
     });
 }
 
@@ -275,7 +193,6 @@ function enableSmoothAnchorScrolling() {
         a.addEventListener('click', e => {
             const href = a.getAttribute('href');
             if (!href) return;
-            // If Lenis isn't available, do nothing special
             if (!window.lenis) return;
 
             if (href === '#') {
@@ -283,7 +200,6 @@ function enableSmoothAnchorScrolling() {
                 window.lenis.scrollTo(0, { duration: 1, easing: t => 1 - Math.pow(1 - t, 3) });
                 return;
             }
-
             const id = href.slice(1);
             const target = document.getElementById(id);
             if (target) {
@@ -297,7 +213,6 @@ function enableSmoothAnchorScrolling() {
 // Refresh ScrollTrigger after MathJax renders
 function initMathJaxRefresh() {
     if (window.MathJax) {
-        // Wait for MathJax to fully load
         if (window.MathJax.typesetPromise) {
             window.MathJax.typesetPromise().then(() => {
                 setTimeout(() => {
@@ -305,7 +220,6 @@ function initMathJaxRefresh() {
                 }, 500);
             });
         } else {
-            // Fallback for older MathJax versions
             window.addEventListener('load', () => {
                 setTimeout(() => {
                     ScrollTrigger.refresh();
@@ -319,7 +233,6 @@ function initMathJaxRefresh() {
 function initMetricAnimations() {
     gsap.utils.toArray('.metric').forEach((metric, index) => {
         const value = metric.querySelector('.metric-value');
-        const label = metric.querySelector('.metric-label');
 
         if (value) {
             const finalText = value.textContent;
@@ -330,12 +243,10 @@ function initMetricAnimations() {
                 gsap.fromTo(value,
                     {
                         textContent: 0,
-                        scale: 0.8,
                         opacity: 0
                     },
                     {
                         textContent: numericValue,
-                        scale: 1,
                         opacity: 1,
                         duration: 2,
                         ease: "power2.out",
@@ -343,7 +254,8 @@ function initMetricAnimations() {
                         scrollTrigger: {
                             trigger: metric,
                             start: "top 80%",
-                            toggleActions: "play none none reverse"
+                            toggleActions: "play none none none",
+                            once: true
                         },
                         onUpdate: function() {
                             const current = this.targets()[0].textContent;
@@ -362,22 +274,21 @@ function initMetricAnimations() {
 
         gsap.fromTo(metric,
             {
-                y: 60,
-                opacity: 0,
-                rotateX: -10
+                y: 50,
+                opacity: 0
             },
             {
                 y: 0,
                 opacity: 1,
-                rotateX: 0,
-                duration: 1.2,
+                duration: 0.9,
                 ease: "power3.out",
                 scrollTrigger: {
                     trigger: metric,
                     start: "top 85%",
-                    toggleActions: "play none none reverse"
+                    toggleActions: "play none none none",
+                    once: true
                 },
-                delay: index * 0.15
+                delay: index * 0.12
             }
         );
     });
@@ -388,31 +299,30 @@ function initCodeBlockAnimations() {
     const codeBlocks = document.querySelectorAll('pre');
 
     codeBlocks.forEach((block, index) => {
-        // Use CSS transitions for hover instead of JS
         block.addEventListener('mouseenter', function() {
             this.style.transform = 'translateX(12px) translateY(-4px)';
         });
-
         block.addEventListener('mouseleave', function() {
             this.style.transform = 'translateX(8px) translateY(-2px)';
         });
 
         gsap.fromTo(block,
             {
-                x: -50,
+                x: -40,
                 opacity: 0
             },
             {
                 x: 0,
                 opacity: 1,
-                duration: 1,
+                duration: 0.9,
                 ease: "power3.out",
                 scrollTrigger: {
                     trigger: block,
                     start: "top 90%",
-                    toggleActions: "play none none reverse"
+                    toggleActions: "play none none none",
+                    once: true
                 },
-                delay: index * 0.1
+                delay: index * 0.08
             }
         );
     });
