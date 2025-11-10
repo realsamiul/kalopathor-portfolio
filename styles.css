@@ -1,31 +1,3 @@
-/* Add at the top of your CSS */
-html {
-    overflow: hidden;  /* Let Lenis handle scroll */
-    position: fixed;
-    width: 100%;
-    height: 100%;
-}
-
-body {
-    width: 100%;
-    height: 100%;
-    overflow: hidden;
-    position: fixed;
-}
-
-/* Create a scroll container */
-.scroll-container {
-    width: 100%;
-    height: 100%;
-    overflow: hidden;
-}
-
-/* Main content wrapper */
-main, .main-content {
-    width: 100%;
-    position: relative;
-}
-
 * {
     margin: 0;
     padding: 0;
@@ -42,113 +14,7 @@ main, .main-content {
     --text-muted: #888888;
 }
 
-/* Full Screen Navigation Menu */
-.fullscreen-menu {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100vh;
-    background: rgba(10, 10, 10, 0.98);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    z-index: 9999;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    visibility: hidden;
-    pointer-events: none;
-}
-
-.fullscreen-menu.active {
-    visibility: visible;
-    pointer-events: all;
-}
-
-.fullscreen-menu-content {
-    text-align: center;
-}
-
-.fullscreen-menu nav {
-    display: flex;
-    flex-direction: column;
-    gap: 2rem;
-}
-
-.fullscreen-menu a {
-    color: var(--text-light);
-    text-decoration: none;
-    font-size: clamp(2rem, 5vw, 4rem);
-    font-family: 'Crimson Pro', serif;
-    font-weight: 200;
-    letter-spacing: -0.02em;
-    opacity: 0;
-    transform: translateY(20px);
-    display: block;
-    transition: color 0.3s ease;
-}
-
-.fullscreen-menu a:hover {
-    color: var(--accent-bright);
-}
-
-.menu-close {
-    position: absolute;
-    top: 40px;
-    right: 40px;
-    width: 50px;
-    height: 50px;
-    cursor: pointer;
-    background: none;
-    border: none;
-    padding: 0;
-}
-
-.menu-close span {
-    display: block;
-    width: 30px;
-    height: 2px;
-    background: var(--text-light);
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform-origin: center;
-}
-
-.menu-close span:first-child {
-    transform: translate(-50%, -50%) rotate(45deg);
-}
-
-.menu-close span:last-child {
-    transform: translate(-50%, -50%) rotate(-45deg);
-}
-
-/* Hamburger Menu Button (for fullscreen trigger) */
-.menu-trigger {
-    background: none;
-    border: none;
-    color: var(--text-light);
-    cursor: pointer;
-    padding: 8px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: opacity 0.3s ease;
-}
-
-.menu-trigger:hover {
-    opacity: 0.7;
-}
-
-.menu-trigger svg {
-    width: 24px;
-    height: 24px;
-    fill: none;
-    stroke: currentColor;
-    stroke-width: 1.5;
-}
-
-/* CRITICAL FIX: Lenis smooth scroll optimization */
+/* Lenis smooth scroll compatibility */
 html {
     overflow-x: hidden;
 }
@@ -182,8 +48,8 @@ body {
     -moz-osx-font-smoothing: grayscale;
     font-weight: 350;
     letter-spacing: -0.011em;
-    /* CRITICAL FIX: Remove any potential scroll jank */
-    overscroll-behavior: none;
+    min-height: 100vh;
+    overflow-x: hidden;
 }
 
 /* Typography */
@@ -241,7 +107,7 @@ p, li {
     color: inherit;
 }
 
-/* CRITICAL FIX: Sections optimized for smooth scrolling */
+/* Sections */
 section {
     min-height: 140vh;
     position: relative;
@@ -249,9 +115,7 @@ section {
     align-items: center;
     justify-content: center;
     padding: clamp(12rem, 24vw, 30rem) clamp(3rem, 9vw, 14rem);
-    /* CRITICAL FIX: Hardware acceleration without blur */
-    transform: translateZ(0);
-    backface-visibility: hidden;
+    z-index: 1;
 }
 
 .content-wrapper {
@@ -261,21 +125,16 @@ section {
     position: relative;
 }
 
-/* CRITICAL FIX: Hero Section - No parallax, pure performance */
+/* Hero Section */
 .hero {
     min-height: 140vh;
     background-position: center center;
     background-size: cover;
     background-repeat: no-repeat;
-    /* CRITICAL FIX: Remove background-attachment to prevent repaints */
     position: relative;
     color: var(--text-light);
     padding: clamp(14rem, 26vw, 32rem) clamp(3rem, 10vw, 16rem);
     overflow: hidden;
-    /* CRITICAL FIX: Hardware acceleration */
-    will-change: auto;
-    transform: translateZ(0);
-    backface-visibility: hidden;
 }
 
 .hero::before {
@@ -284,8 +143,6 @@ section {
     inset: 0;
     background: linear-gradient(165deg, rgba(0, 0, 0, 0.86) 0%, rgba(0, 0, 0, 0.38) 100%);
     z-index: 1;
-    /* CRITICAL FIX: Prevent overlay repaints */
-    will-change: auto;
 }
 
 .hero h1,
@@ -297,7 +154,7 @@ section {
     text-shadow: 0 2px 16px rgba(0,0,0,0.35);
 }
 
-/* CRITICAL FIX: Image Sections - No parallax effect (removed for smoothness) */
+/* Image Sections */
 .parallax-section {
     background-position: center center;
     background-size: cover;
@@ -305,10 +162,6 @@ section {
     color: var(--text-light);
     position: relative;
     overflow: hidden;
-    /* CRITICAL FIX: Hardware acceleration */
-    transform: translateZ(0);
-    backface-visibility: hidden;
-    will-change: auto;
 }
 
 .parallax-section::before {
@@ -317,8 +170,6 @@ section {
     inset: 0;
     background: linear-gradient(155deg, rgba(0, 0, 0, 0.78) 0%, rgba(0, 0, 0, 0.42) 100%);
     z-index: 1;
-    /* CRITICAL FIX: Prevent overlay repaints */
-    will-change: auto;
 }
 
 .parallax-section .content-wrapper {
@@ -348,7 +199,7 @@ section {
     font-weight: 400;
 }
 
-/* CRITICAL FIX: Code Blocks - Removed hover transform to prevent jank */
+/* Code Blocks */
 pre {
     background: rgba(0, 0, 0, 0.75);
     padding: clamp(2rem, 3.5vw, 4rem) clamp(2.5rem, 4vw, 5rem);
@@ -359,7 +210,6 @@ pre {
     margin-left: clamp(-1rem, -2vw, -3rem);
     border-left: 6px solid var(--accent);
     box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-    /* CRITICAL FIX: Smooth transition without transform */
     transition: box-shadow 0.4s cubic-bezier(0.4, 0, 0.2, 1),
                 border-color 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
@@ -421,15 +271,12 @@ ul li::before {
     background: linear-gradient(145deg, rgba(59, 130, 246, 0.12) 0%, rgba(96, 165, 250, 0.04) 100%);
     border-radius: 28px;
     border-left: 7px solid var(--accent);
-    transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: box-shadow 0.5s cubic-bezier(0.4, 0, 0.2, 1),
+                background 0.5s cubic-bezier(0.4, 0, 0.2, 1);
     position: relative;
-    /* CRITICAL FIX: Hardware acceleration */
-    transform: translateZ(0);
-    backface-visibility: hidden;
 }
 
 .formula-block:hover {
-    transform: translateY(-6px) translateX(4px) translateZ(0);
     box-shadow: 0 25px 70px rgba(59, 130, 246, 0.25);
     background: linear-gradient(145deg, rgba(59, 130, 246, 0.15) 0%, rgba(96, 165, 250, 0.06) 100%);
 }
@@ -468,9 +315,6 @@ ul li::before {
     transition: all 0.45s cubic-bezier(0.4, 0, 0.2, 1);
     position: relative;
     overflow: hidden;
-    /* CRITICAL FIX: Hardware acceleration */
-    transform: translateZ(0);
-    backface-visibility: hidden;
 }
 
 .metric::before {
@@ -492,7 +336,6 @@ ul li::before {
 .metric:hover {
     background: rgba(255, 255, 255, 0.06);
     border-color: rgba(59, 130, 246, 0.35);
-    transform: translateY(-6px) translateZ(0);
     box-shadow: 0 24px 70px rgba(59, 130, 246, 0.16);
 }
 
@@ -521,160 +364,151 @@ ul li::before {
 /* Animations */
 .fade-in {
     opacity: 1;
-    transform: translateY(0);
 }
 
-/* CRITICAL FIX: Bottom Navbar - Optimized positioning without transform conflicts */
+/* Full Screen Navigation Menu */
+.fullscreen-menu {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100vh;
+    background: rgba(10, 10, 10, 0.98);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    visibility: hidden;
+    pointer-events: none;
+}
+
+.fullscreen-menu.active {
+    visibility: visible;
+    pointer-events: all;
+}
+
+.fullscreen-menu-content {
+    text-align: center;
+}
+
+.fullscreen-menu nav {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+.fullscreen-menu a {
+    color: var(--text-light);
+    text-decoration: none;
+    font-size: clamp(2rem, 5vw, 4rem);
+    font-family: 'Crimson Pro', serif;
+    font-weight: 200;
+    letter-spacing: -0.02em;
+    display: block;
+    transition: color 0.3s ease;
+}
+
+.fullscreen-menu a:hover {
+    color: var(--accent-bright);
+}
+
+.menu-close {
+    position: absolute;
+    top: 40px;
+    right: 40px;
+    width: 50px;
+    height: 50px;
+    cursor: pointer;
+    background: none;
+    border: none;
+    padding: 0;
+}
+
+.menu-close span {
+    display: block;
+    width: 30px;
+    height: 2px;
+    background: var(--text-light);
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform-origin: center;
+}
+
+.menu-close span:first-child {
+    transform: translate(-50%, -50%) rotate(45deg);
+}
+
+.menu-close span:last-child {
+    transform: translate(-50%, -50%) rotate(-45deg);
+}
+
+/* Bottom Navigation */
 .bottom-nav {
     position: fixed;
-    /* CRITICAL FIX: Use left/right instead of transform for centering */
-    left: 4%;
-    right: 4%;
-    margin: 0 auto;
+    left: 50%;
+    transform: translateX(-50%);
     bottom: 24px;
-    background: rgba(15, 15, 15, 0.82);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    padding: 10px 14px;
+    background: rgba(15, 15, 15, 0.92);
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    padding: 12px 16px;
     z-index: 1000;
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    border-radius: 9999px;
-    box-shadow: 0 10px 40px rgba(0,0,0,0.4);
-    max-width: 92vw;
-    /* CRITICAL FIX: Remove will-change to prevent compositor thrashing */
-    contain: layout style paint;
-}
-
-@media (min-width: 1200px) {
-    .bottom-nav {
-        left: 50%;
-        right: auto;
-        transform: translateX(-50%);
-        /* Only use transform on large screens where it's stable */
-    }
+    border: 0.5px solid rgba(255, 255, 255, 0.1);
+    border-radius: 100px;
+    box-shadow: 
+        0 0 0 0.5px rgba(255, 255, 255, 0.05) inset,
+        0 10px 40px rgba(0, 0, 0, 0.8);
+    width: auto;
+    max-width: 90vw;
 }
 
 .bottom-nav nav {
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: clamp(0.6rem, 1.8vw, 1.4rem);
+    gap: 1.5rem;
 }
 
-/* Nav links */
-.bottom-nav a {
-    color: #ffffff;
-    text-decoration: none;
-    font-size: clamp(0.8rem, 1.3vw, 1rem);
-    font-weight: 500;
-    letter-spacing: 0.08em;
-    transition: opacity 0.25s ease, letter-spacing 0.25s ease, color 0.25s ease;
-    opacity: 0.7;
-    position: relative;
-    text-transform: uppercase;
-    white-space: nowrap;
-}
-
-.bottom-nav a:hover {
-    opacity: 1;
-    letter-spacing: 0.1em;
-}
-
-.bottom-nav a::after {
-    content: '';
-    position: absolute;
-    bottom: -6px;
-    left: 0;
-    width: 0;
-    height: 2px;
-    background: var(--accent-bright);
-    transition: width 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.bottom-nav a:hover::after {
-    width: 100%;
-}
-
-/* Brand */
-.nav-logo {
-    font-family: 'Crimson Pro', serif;
-    font-size: clamp(1.1rem, 1.8vw, 1.4rem);
-    font-weight: 300;
-    opacity: 0.95 !important;
-    letter-spacing: 0.08em;
-    text-transform: none;
-    margin-right: 0.25rem;
-}
-
-/* Home icon link */
-.nav-home {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.3rem;
-}
-
-.nav-home svg {
-    width: 1em;
-    height: 1em;
-    fill: currentColor;
-}
-
-.nav-home span {
-    display: none;
-}
-
-@media (min-width: 640px) {
-    .nav-home span {
-        display: inline;
-    }
-}
-
-/* Mobile collapsible behavior */
-.nav-toggle {
-    display: none;
-    width: 42px;
-    height: 42px;
-    border-radius: 999px;
-    border: 1px solid rgba(255,255,255,0.15);
-    background: rgba(255,255,255,0.05);
+/* Hamburger Menu Button */
+.menu-trigger {
+    background: none;
+    border: none;
+    color: var(--text-light);
+    cursor: pointer;
+    padding: 8px;
+    display: flex;
     align-items: center;
     justify-content: center;
-    cursor: pointer;
-    margin-right: 6px;
-    flex-direction: column;
-    padding: 0;
+    transition: opacity 0.3s ease;
 }
 
-.nav-toggle span {
-    display: block;
-    width: 18px;
-    height: 2px;
-    background: #fff;
-    margin: 3px 0;
-    border-radius: 2px;
-    transition: transform 0.25s ease, opacity 0.25s ease;
+.menu-trigger:hover {
+    opacity: 0.7;
 }
 
-.bottom-nav.collapsible .nav-toggle {
-    display: inline-flex;
+.menu-trigger svg {
+    width: 24px;
+    height: 24px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.5;
 }
 
-.bottom-nav.collapsible:not(.open) nav a:not(.nav-logo):not(.nav-home) {
-    display: none;
+/* Nav Logo */
+.bottom-nav .nav-logo {
+    font-family: 'Crimson Pro', serif;
+    font-size: 1.3rem;
+    font-weight: 300;
+    color: var(--text-light);
+    opacity: 0.9;
+    letter-spacing: 0.02em;
+    text-decoration: none;
 }
 
-/* Animate hamburger to X when open */
-.bottom-nav.open .nav-toggle span:nth-child(1) {
-    transform: translateY(5px) rotate(45deg);
-}
-.bottom-nav.open .nav-toggle span:nth-child(2) {
-    opacity: 0;
-}
-.bottom-nav.open .nav-toggle span:nth-child(3) {
-    transform: translateY(-5px) rotate(-45deg);
-}
-
-/* CRITICAL FIX: Video Background - Optimized for smooth playback */
+/* Video Background Support */
 .video-bg {
     position: relative;
     overflow: hidden;
@@ -689,10 +523,6 @@ ul li::before {
     height: 100%;
     object-fit: cover;
     z-index: 0;
-    /* CRITICAL FIX: Hardware acceleration for video */
-    transform: translateZ(0);
-    backface-visibility: hidden;
-    will-change: auto;
 }
 
 .bg-video {
@@ -711,7 +541,7 @@ ul li::before {
     display: block;
 }
 
-/* Demo Cards - Glassmorphism */
+/* Demo Cards */
 .demo-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
@@ -727,13 +557,9 @@ ul li::before {
     border-radius: 16px;
     border: 1px solid rgba(255, 255, 255, 0.1);
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    /* CRITICAL FIX: Hardware acceleration */
-    transform: translateZ(0);
-    backface-visibility: hidden;
 }
 
 .demo-card:hover {
-    transform: translateY(-4px) translateZ(0);
     background: rgba(0, 0, 0, 0.75);
     border-color: rgba(96, 165, 250, 0.3);
     box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
@@ -780,7 +606,6 @@ ul li::before {
 
 .demo-link:hover {
     color: #93c5fd;
-    transform: translateX(4px);
 }
 
 /* Funding Cards */
@@ -831,13 +656,9 @@ ul li::before {
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     font-weight: 500;
     font-size: 1rem;
-    /* CRITICAL FIX: Hardware acceleration */
-    transform: translateZ(0);
-    backface-visibility: hidden;
 }
 
 .cta-button:hover {
-    transform: translateY(-2px) translateZ(0);
     background: #ffffff;
     box-shadow: 0 10px 30px rgba(255, 255, 255, 0.2);
 }
@@ -852,13 +673,7 @@ ul li::before {
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
 }
 
-/* CRITICAL FIX: Performance optimizations for video/webm */
-@media (prefers-reduced-motion: no-preference) {
-    video, .video-container {
-        contain: paint;
-    }
-}
-
+/* Media Queries */
 @media (max-width: 860px) {
     section {
         padding: clamp(8rem, 16vw, 14rem) clamp(2rem, 6vw, 4rem);
@@ -867,44 +682,20 @@ ul li::before {
     .bottom-nav {
         bottom: 16px;
         padding: 8px 12px;
-        left: 2%;
-        right: 2%;
     }
 
     .nav-logo {
-        margin-right: 2px;
+        font-size: 1.1rem;
     }
 }
 
-/* CRITICAL FIX: Prevent any scroll-triggered repaints */
-@media (hover: hover) {
-    /* Only enable hover effects on devices that support hover */
-    .metric:hover,
-    .formula-block:hover,
-    .demo-card:hover,
-    .cta-button:hover,
-    pre:hover {
-        /* Hover effects already defined above */
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
     }
-}
-
-/* CRITICAL FIX: Optimize font rendering during scroll */
-@media screen {
-    body {
-        text-rendering: optimizeSpeed;
-    }
-}
-
-/* Ensure no transform on hover states */
-pre:hover,
-.metric:hover,
-.formula-block:hover,
-.demo-card:hover,
-.cta-button:hover {
-    transform: none;
-}
-
-/* Override any remaining transforms */
-* {
-    transform: translateZ(0);
 }
