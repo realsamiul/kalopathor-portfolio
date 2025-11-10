@@ -3,7 +3,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Register GSAP plugins
     gsap.registerPlugin(ScrollTrigger);
 
-    // Initialize Lenis WITHOUT wrapper manipulation
+    // CRITICAL: Initialize Lenis with proper momentum settings
     const lenis = new Lenis({
         duration: 1.2,
         easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
@@ -14,46 +14,66 @@ document.addEventListener('DOMContentLoaded', function() {
         smoothTouch: false,
         touchMultiplier: 2,
         infinite: false,
-        autoResize: true
+        autoResize: true,
+        // IMPORTANT: Add these for momentum
+        lerp: 0.1, // Lower value = more momentum
+        smoothWheel: true,
+        syncTouch: false,
+        touchInertia: true
     });
     
     // Store globally
     window.lenis = lenis;
 
-    // RAF loop
+    // CRITICAL: Proper ScrollTrigger integration
+    ScrollTrigger.scrollerProxy(document.body, {
+        scrollTop(value) {
+            if (arguments.length) {
+                lenis.scroll = value;
+            }
+            return lenis.scroll;
+        }
+    });
+
+    // CRITICAL: Single RAF loop without conflicts
+    let rafId;
     function raf(time) {
         lenis.raf(time);
-        requestAnimationFrame(raf);
+        ScrollTrigger.update();
+        rafId = requestAnimationFrame(raf);
     }
-    requestAnimationFrame(raf);
+    rafId = requestAnimationFrame(raf);
 
-    // Update ScrollTrigger on scroll
-    lenis.on('scroll', ScrollTrigger.update);
+    // REMOVED: Don't call ScrollTrigger.update separately on scroll
+    // This was causing the sudden stops
 
-    // Initialize all features
-    initFullscreenMenu();
-    initVideoBackgrounds();
-    initScrollAnimations();
-    initMetricAnimations();
-    enableSmoothAnchorScrolling();
+    // Initialize features after a small delay
+    setTimeout(() => {
+        initFullscreenMenu();
+        initVideoBackgrounds();
+        initScrollAnimations();
+        initMetricAnimations();
+        enableSmoothAnchorScrolling();
+        
+        // CRITICAL: Refresh after all animations are set up
+        ScrollTrigger.refresh();
+    }, 100);
 
-    // Resize handler
+    // CRITICAL: Debounced resize handler
     let resizeTimer;
     window.addEventListener('resize', () => {
         clearTimeout(resizeTimer);
         resizeTimer = setTimeout(() => {
-            ScrollTrigger.refresh();
             lenis.resize();
+            ScrollTrigger.refresh();
         }, 250);
     }, { passive: true });
 });
 
-// Fullscreen Menu
+// Fullscreen Menu (keep as is, but with fix)
 function initFullscreenMenu() {
-    // Check if menu already exists
     if (document.getElementById('fullscreenMenu')) return;
     
-    // Create menu HTML
     const menuHTML = `
         <div class="fullscreen-menu" id="fullscreenMenu">
             <button class="menu-close" id="menuClose">
@@ -79,7 +99,6 @@ function initFullscreenMenu() {
     const menuLinks = menu.querySelectorAll('a');
     const closeBtn = document.getElementById('menuClose');
 
-    // Create timeline
     const menuTl = gsap.timeline({ paused: true });
 
     menuTl
@@ -106,32 +125,37 @@ function initFullscreenMenu() {
             ease: 'power2.out'
         }, '-=0.4');
 
-    // Find menu trigger
     const trigger = document.getElementById('menuTrigger');
     
     if (trigger) {
         trigger.addEventListener('click', () => {
             menuTl.play();
-            if (window.lenis) window.lenis.stop();
+            // CRITICAL: Use lenis.stop() correctly
+            if (window.lenis) {
+                window.lenis.stop();
+            }
         });
     }
 
-    // Close menu
     if (closeBtn) {
         closeBtn.addEventListener('click', () => {
             menuTl.reverse();
-            if (window.lenis) window.lenis.start();
+            // CRITICAL: Use lenis.start() correctly
+            if (window.lenis) {
+                window.lenis.start();
+            }
         });
     }
 
-    // Close on link click
     menuLinks.forEach(link => {
         link.addEventListener('click', (e) => {
             const href = link.getAttribute('href');
             if (href && href !== '#') {
                 e.preventDefault();
                 menuTl.reverse();
-                if (window.lenis) window.lenis.start();
+                if (window.lenis) {
+                    window.lenis.start();
+                }
                 setTimeout(() => {
                     window.location.href = href;
                 }, 600);
@@ -139,16 +163,17 @@ function initFullscreenMenu() {
         });
     });
 
-    // ESC key to close
     document.addEventListener('keydown', (e) => {
         if (e.key === 'Escape') {
             menuTl.reverse();
-            if (window.lenis) window.lenis.start();
+            if (window.lenis) {
+                window.lenis.start();
+            }
         }
     });
 }
 
-// Video Backgrounds
+// Video Backgrounds (keep as is)
 function initVideoBackgrounds() {
     const videoSections = document.querySelectorAll('.video-bg, [data-video]');
     
@@ -206,90 +231,74 @@ function initVideoBackgrounds() {
     });
 }
 
-// Scroll Animations - FADE ONLY
+// CRITICAL: Optimized scroll animations
 function initScrollAnimations() {
-    // Fade in elements
-    gsap.utils.toArray('.fade-in').forEach((element, index) => {
-        gsap.fromTo(element, 
-            {
-                opacity: 0
-            },
-            {
-                scrollTrigger: {
-                    trigger: element,
-                    start: "top 85%",
-                    once: true
-                },
-                opacity: 1,
-                duration: 0.8,
+    // Use batch for better performance
+    ScrollTrigger.batch('.fade-in', {
+        onEnter: batch => gsap.fromTo(batch, 
+            { opacity: 0 },
+            { 
+                opacity: 1, 
+                duration: 0.8, 
                 ease: "power2.out",
-                delay: index * 0.02
+                stagger: 0.02,
+                overwrite: 'auto'
             }
-        );
+        ),
+        start: "top 85%",
+        once: true
     });
 
     // Headings
-    gsap.utils.toArray('h1, h2').forEach((heading, index) => {
-        gsap.fromTo(heading,
-            {
-                opacity: 0
-            },
-            {
-                scrollTrigger: {
-                    trigger: heading,
-                    start: "top 85%",
-                    once: true
-                },
-                opacity: 1,
-                duration: 0.8,
+    ScrollTrigger.batch('h1, h2', {
+        onEnter: batch => gsap.fromTo(batch,
+            { opacity: 0 },
+            { 
+                opacity: 1, 
+                duration: 0.8, 
                 ease: "power2.out",
-                delay: index * 0.02
+                stagger: 0.02,
+                overwrite: 'auto'
             }
-        );
+        ),
+        start: "top 85%",
+        once: true
     });
 
     // Code blocks
-    gsap.utils.toArray('pre').forEach((block, index) => {
-        gsap.fromTo(block,
-            {
-                opacity: 0
-            },
-            {
-                opacity: 1,
-                duration: 0.8,
+    ScrollTrigger.batch('pre', {
+        onEnter: batch => gsap.fromTo(batch,
+            { opacity: 0 },
+            { 
+                opacity: 1, 
+                duration: 0.8, 
                 ease: "power2.out",
-                scrollTrigger: {
-                    trigger: block,
-                    start: "top 85%",
-                    once: true
-                },
-                delay: index * 0.05
+                stagger: 0.05,
+                overwrite: 'auto'
             }
-        );
+        ),
+        start: "top 85%",
+        once: true
     });
 
     // Metrics
-    gsap.utils.toArray('.metric').forEach((metric, index) => {
-        gsap.fromTo(metric,
-            {
-                opacity: 0
-            },
-            {
-                opacity: 1,
-                duration: 0.8,
+    ScrollTrigger.batch('.metric', {
+        onEnter: batch => gsap.fromTo(batch,
+            { opacity: 0 },
+            { 
+                opacity: 1, 
+                duration: 0.8, 
                 ease: "power2.out",
-                scrollTrigger: {
-                    trigger: metric,
-                    start: "top 85%",
-                    once: true
-                },
-                delay: index * 0.08
+                stagger: 0.08,
+                overwrite: 'auto'
             }
-        );
+        ),
+        start: "top 85%",
+        once: true
     });
 }
 
-// Metric Animations
+// Metric Animations (keep as is)
 function initMetricAnimations() {
     document.querySelectorAll('.metric-value').forEach(el => {
         const endValue = parseFloat(el.getAttribute('data-count'));
@@ -299,46 +308,52 @@ function initMetricAnimations() {
         if (!isNaN(endValue)) {
             const obj = { value: 0 };
             
-            gsap.to(obj, {
-                value: endValue,
-                duration: 2,
-                ease: "power2.out",
-                scrollTrigger: {
-                    trigger: el,
-                    start: "top 80%",
-                    once: true
-                },
-                onUpdate: function() {
-                    const current = obj.value;
-                    const formatted = hasDecimal ? 
-                        current.toFixed(1) : 
-                        Math.round(current);
-                    el.textContent = formatted + suffix;
+            ScrollTrigger.create({
+                trigger: el,
+                start: "top 80%",
+                once: true,
+                onEnter: () => {
+                    gsap.to(obj, {
+                        value: endValue,
+                        duration: 2,
+                        ease: "power2.out",
+                        onUpdate: function() {
+                            const current = obj.value;
+                            const formatted = hasDecimal ? 
+                                current.toFixed(1) : 
+                                Math.round(current);
+                            el.textContent = formatted + suffix;
+                        }
+                    });
                 }
             });
         }
     });
 }
 
-// Smooth Anchor Scrolling
+// CRITICAL: Fixed anchor scrolling
 function enableSmoothAnchorScrolling() {
     document.querySelectorAll('a[href^="#"]').forEach(anchor => {
         anchor.addEventListener('click', (e) => {
             const href = anchor.getAttribute('href');
             if (!href || !window.lenis) return;
 
+            e.preventDefault();
+
             if (href === '#') {
-                e.preventDefault();
-                window.lenis.scrollTo(0, { duration: 1.2 });
+                window.lenis.scrollTo(0, { 
+                    duration: 1.2,
+                    easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t))
+                });
                 return;
             }
 
             const target = document.querySelector(href);
             if (target) {
-                e.preventDefault();
                 window.lenis.scrollTo(target, { 
                     duration: 1.2,
-                    offset: -80 
+                    offset: -80,
+                    easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t))
                 });
             }
         });
@@ -347,6 +362,7 @@ function enableSmoothAnchorScrolling() {
 
 // Cleanup
 window.addEventListener('beforeunload', () => {
+    if (window.rafId) cancelAnimationFrame(window.rafId);
     ScrollTrigger.getAll().forEach(trigger => trigger.kill());
     if (window.lenis) window.lenis.destroy();
 });
