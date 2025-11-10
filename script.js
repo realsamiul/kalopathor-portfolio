@@ -1,9 +1,8 @@
 // Wait for DOM to be fully loaded
 document.addEventListener('DOMContentLoaded', function() {
-    
     // Register GSAP plugins
     gsap.registerPlugin(ScrollTrigger, SplitText);
-    
+
     // Initialize Lenis for buttery smooth, uninterrupted scrolling
     const lenis = new Lenis({
         duration: 1,
@@ -17,17 +16,22 @@ document.addEventListener('DOMContentLoaded', function() {
         infinite: false,
         autoResize: true
     });
-    
+    // Expose Lenis for other handlers
+    window.lenis = lenis;
+
     // Connect Lenis to GSAP ScrollTrigger (read-only connection)
     lenis.on('scroll', ScrollTrigger.update);
-    
+
     // Run Lenis raf
     function raf(time) {
         lenis.raf(time);
         requestAnimationFrame(raf);
     }
     requestAnimationFrame(raf);
-    
+
+    // Build transform-based parallax layers from existing CSS backgrounds
+    buildParallaxLayers();
+
     // Initialize animations (one-way, non-blocking)
     initScrollAnimations();
     initParallaxEffects();
@@ -36,17 +40,40 @@ document.addEventListener('DOMContentLoaded', function() {
     initRollingText();
     initMetricAnimations();
     initCodeBlockAnimations();
-    
+    enableSmoothAnchorScrolling();
+
     // Refresh ScrollTrigger on window resize
     let resizeTimer;
     window.addEventListener('resize', () => {
         clearTimeout(resizeTimer);
         resizeTimer = setTimeout(() => {
             ScrollTrigger.refresh();
-            lenis.resize();
+            if (lenis && typeof lenis.resize === 'function') {
+                lenis.resize();
+            }
         }, 250);
     });
 });
+
+// Build transform-based parallax layers from CSS background-image (if present)
+function buildParallaxLayers() {
+    document.querySelectorAll('.hero, .parallax-section').forEach(section => {
+        if (section.querySelector('.parallax-bg')) return;
+
+        const style = getComputedStyle(section);
+        const bg = style.backgroundImage;
+
+        if (!bg || bg === 'none') return;
+
+        // Move background image to a child layer for GPU-friendly transforms
+        section.style.backgroundImage = 'none';
+        section.style.position = section.style.position || 'relative';
+        const layer = document.createElement('div');
+        layer.className = 'parallax-bg';
+        layer.style.backgroundImage = bg;
+        section.prepend(layer);
+    });
+}
 
 // Rolling Text Animation (non-blocking)
 function initRollingText() {
@@ -55,10 +82,10 @@ function initRollingText() {
         const duration = parseFloat(element.dataset.duration) || 4;
         const ease = element.dataset.ease || "power4.inOut";
         const trigger = element.dataset.trigger || "scroll";
-        
+
         const tl = gsap.timeline({ paused: true });
         const split = new SplitText(element, { type: "chars" });
-        
+
         split.chars.forEach((obj, i) => {
             let txt = obj.innerText;
             let clone = `<div class="cloneText">${txt}</div>`;
@@ -74,14 +101,14 @@ function initRollingText() {
             });
             tl.add(tween, 0);
         });
-        
+
         const mainAnimation = gsap.to(tl, { 
             progress: 1, 
             duration: duration, 
             ease: ease,
             paused: true
         });
-        
+
         // Set up trigger based on data attribute
         if (trigger === "scroll") {
             ScrollTrigger.create({
@@ -114,7 +141,6 @@ function initScrollAnimations() {
                     start: "top 85%",
                     end: "top 55%",
                     toggleActions: "play none none reverse",
-                    // No scrub - animations play independently of scroll
                 },
                 y: 0,
                 opacity: 1,
@@ -125,7 +151,7 @@ function initScrollAnimations() {
             }
         );
     });
-    
+
     // Special animation for h1 and h2 elements (skip rolling-text elements)
     gsap.utils.toArray('h1:not(.rolling-text), h2:not(.rolling-text)').forEach((heading, index) => {
         gsap.fromTo(heading,
@@ -140,7 +166,6 @@ function initScrollAnimations() {
                     start: "top 90%",
                     end: "top 60%",
                     toggleActions: "play none none reverse",
-                    // No scrub - animations play independently
                 },
                 y: 0,
                 opacity: 1,
@@ -156,9 +181,9 @@ function initScrollAnimations() {
 // Parallax effect - using transform instead of background-position for performance
 function initParallaxEffects() {
     const parallaxSections = document.querySelectorAll('.hero, .parallax-section');
-    
+
     parallaxSections.forEach(section => {
-        // Create a separate parallax layer if needed
+        // Animate parallax layer if present
         const parallaxBg = section.querySelector('.parallax-bg');
         if (parallaxBg) {
             gsap.to(parallaxBg, {
@@ -168,11 +193,11 @@ function initParallaxEffects() {
                     trigger: section,
                     start: "top top",
                     end: "bottom top",
-                    scrub: true // True for parallax, but won't affect scroll smoothness
+                    scrub: true // Use scrub for parallax
                 }
             });
         }
-        
+
         // Subtle fade effect on content (non-blocking)
         const content = section.querySelector('.content-wrapper');
         if (content) {
@@ -196,31 +221,31 @@ function initParallaxEffects() {
 function initNavbarBehavior() {
     let lastScroll = 0;
     const nav = document.querySelector('.bottom-nav');
-    
+
     if (!nav) return;
-    
+
     // Use passive scroll observation
     window.addEventListener('scroll', () => {
         const currentScroll = window.pageYOffset;
-        
+
         if (currentScroll <= 100) {
             nav.classList.remove('hidden');
             return;
         }
-        
+
         if (currentScroll > lastScroll && currentScroll > 500) {
             nav.classList.add('hidden');
         } else if (currentScroll < lastScroll - 5) {
             nav.classList.remove('hidden');
         }
-        
+
         lastScroll = currentScroll;
     }, { passive: true }); // Passive listener for better performance
-    
+
     // Add active state to current section
     const navLinks = nav.querySelectorAll('a[href^="#"]');
     const sections = document.querySelectorAll('section[id]');
-    
+
     sections.forEach(section => {
         ScrollTrigger.create({
             trigger: section,
@@ -236,6 +261,34 @@ function initNavbarBehavior() {
                         }
                     });
                 }
+            }
+        });
+    });
+}
+
+// Smooth anchor scrolling via Lenis (prevents native jump)
+function enableSmoothAnchorScrolling() {
+    const links = document.querySelectorAll('a[href^="#"]');
+    if (!links.length) return;
+
+    links.forEach(a => {
+        a.addEventListener('click', e => {
+            const href = a.getAttribute('href');
+            if (!href) return;
+            // If Lenis isn't available, do nothing special
+            if (!window.lenis) return;
+
+            if (href === '#') {
+                e.preventDefault();
+                window.lenis.scrollTo(0, { duration: 1, easing: t => 1 - Math.pow(1 - t, 3) });
+                return;
+            }
+
+            const id = href.slice(1);
+            const target = document.getElementById(id);
+            if (target) {
+                e.preventDefault();
+                window.lenis.scrollTo(target, { duration: 1.1, easing: t => 1 - Math.pow(1 - t, 3) });
             }
         });
     });
@@ -267,12 +320,12 @@ function initMetricAnimations() {
     gsap.utils.toArray('.metric').forEach((metric, index) => {
         const value = metric.querySelector('.metric-value');
         const label = metric.querySelector('.metric-label');
-        
+
         if (value) {
             const finalText = value.textContent;
             const hasDecimal = finalText.includes('.');
             const numericValue = parseFloat(finalText.replace(/[^\d.-]/g, ''));
-            
+
             if (!isNaN(numericValue)) {
                 gsap.fromTo(value,
                     {
@@ -291,14 +344,13 @@ function initMetricAnimations() {
                             trigger: metric,
                             start: "top 80%",
                             toggleActions: "play none none reverse"
-                            // No scrub - plays independently
                         },
                         onUpdate: function() {
                             const current = this.targets()[0].textContent;
                             const formatted = hasDecimal ? 
                                 parseFloat(current).toFixed(2) : 
                                 Math.round(current);
-                            
+
                             const suffix = finalText.replace(/[\d.-]/g, '');
                             this.targets()[0].textContent = formatted + suffix;
                         },
@@ -307,7 +359,7 @@ function initMetricAnimations() {
                 );
             }
         }
-        
+
         gsap.fromTo(metric,
             {
                 y: 60,
@@ -324,7 +376,6 @@ function initMetricAnimations() {
                     trigger: metric,
                     start: "top 85%",
                     toggleActions: "play none none reverse"
-                    // No scrub
                 },
                 delay: index * 0.15
             }
@@ -335,17 +386,17 @@ function initMetricAnimations() {
 // Enhance code block interactions (non-blocking)
 function initCodeBlockAnimations() {
     const codeBlocks = document.querySelectorAll('pre');
-    
+
     codeBlocks.forEach((block, index) => {
         // Use CSS transitions for hover instead of JS
         block.addEventListener('mouseenter', function() {
             this.style.transform = 'translateX(12px) translateY(-4px)';
         });
-        
+
         block.addEventListener('mouseleave', function() {
             this.style.transform = 'translateX(8px) translateY(-2px)';
         });
-        
+
         gsap.fromTo(block,
             {
                 x: -50,
@@ -360,7 +411,6 @@ function initCodeBlockAnimations() {
                     trigger: block,
                     start: "top 90%",
                     toggleActions: "play none none reverse"
-                    // No scrub
                 },
                 delay: index * 0.1
             }
